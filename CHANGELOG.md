@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Documentation
+
+- Clarify README and public-page workflow explanations, including trains,
+  gates, and task-agent handoff boundaries.
+- Require project gates and committed setup instructions before the first
+  task worktree in onboarding examples. Show a separate task worktree in
+  the quickstart.
+- Document retry after a rejected push and the manual or newly approved
+  recovery paths for changed daemon authorization.
+- Correct the public-page Codex install link and generated instruction filenames.
+
 ## 3.4.1 - 2026-10-03
 
 ### Upgrade notes

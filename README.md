@@ -9,15 +9,18 @@
 
 **Safely integrate committed branches from parallel coding agents.**
 
-mergetrain is a local-first deploy train for coding-agent worktrees. Agents
-commit and enqueue their branches; one runner assembles them in order, tests the
-combined tree, and atomically updates your Git refs only after explicit approval.
-It is intentionally optimized as an owner-operated local utility, not a hosted
-team platform.
+mergetrain integrates committed branches from coding-agent Git worktrees on
+your machine. A train is a group of queued task branches. A gate is a configured
+test or check. Each agent commits and enqueues its branch. One runner merges
+branches in enqueue order and runs gates on the combined result. It updates
+your Git refs atomically only after explicit approval.
+
+mergetrain is designed for one operator managing local repositories.
 
 There is no mergetrain account, hosted control plane, OAuth app, or product
-telemetry. Queue and runner state stay on your machine; only your configured Git
-remote and trusted gate or verification commands may contact external services.
+telemetry. Queue and runner state stay on your machine. Only your configured
+Git remote and trusted gate or verification commands may contact external
+services.
 
 ## The problem
 
@@ -25,10 +28,9 @@ Worktrees let several agents edit one repository without sharing a checkout.
 They do not decide landing order, test the combined result, prevent push races,
 or tell you what happened if a laptop dies mid-push.
 
-Without an integration boundary, the human becomes that boundary: rebase every
-finished branch, rerun gates after each merge, resolve cross-branch failures,
-and decide which session may push. The parallel coding gain disappears at the
-last mile.
+Without a shared integration workflow, the operator chooses branch order and
+resolves cross-branch failures. The operator also reruns tests and controls
+pushes. Repeating these actions can slow parallel work.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer.gif"
@@ -36,10 +38,10 @@ last mile.
        width="720">
 </p>
 
-mergetrain makes that last mile a durable protocol:
+mergetrain records this workflow in a durable local queue:
 
 ```text
-agent branches → FIFO queue → isolated integration worktree → combined gates
+agent branches → ordered queue → isolated integration worktree → combined gates
                → explicit approval → one atomic push → post-push verification
 ```
 
@@ -94,9 +96,9 @@ uvx mergetrain demo
 ```
 
 The demo creates a disposable repository and local bare remote, then runs four
-real branches through FIFO merge, a combined-only gate failure, conflict
-attribution, and deployment of the compatible train. Use `--keep` to inspect the
-result afterward.
+real branches through merges in enqueue order, a combined-only gate failure,
+conflict attribution, and deployment of the compatible train. Use `--keep` to
+inspect the result afterward.
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/demo.gif"
@@ -117,18 +119,43 @@ codex plugin add mergetrain@mergetrain
 
 # agy: install the native skill + pinned MCP server
 agy plugin install https://github.com/yongjip/mergetrain
+```
 
+Initialize the repository:
+
+```sh
 cd /path/to/your/repo
-
-# Write .mergetrain.yaml plus agent instructions
 mergetrain init --project my-app --write
+```
 
-# After an agent commits its task branch
+Add at least one project gate to `.mergetrain.yaml`. A new configuration has
+`gates: []`, so it runs no project tests. For a Python project that uses pytest:
+
+```yaml
+gates:
+  - name: tests
+    run: python -B -m pytest -q -p no:cacheprovider
+```
+
+Use test commands for your project. Gates must leave the assembled checkout
+unchanged. `init` also creates `AGENTS.mergetrain.md` and
+`CLAUDE.mergetrain.md`. Link them from your existing `AGENTS.md` or `CLAUDE.md`.
+Commit and land the configuration and instructions through your normal
+integration path before creating task worktrees.
+
+After the task agent commits a clean branch in its own worktree:
+
+```sh
+mergetrain status --json
 mergetrain enqueue \
   --task "add health check" \
   --branch agent/health
+```
 
-# Read state and deploy end to end
+The task agent stops after enqueueing. From the operator checkout, run these
+commands when validation and deployment are authorized:
+
+```sh
 mergetrain status
 mergetrain deploy
 ```
@@ -139,8 +166,7 @@ leaves one exact train Ready for the later `deploy` confirmation.
 `deploy` names the configured atomic Git ref update; it does not imply an App
 Store, Kubernetes, or other provider release.
 
-`mergetrain init` also writes agent-facing instructions. The essential rule is
-simple: agents commit and enqueue; one runner owns merge → test → push → verify.
+Agents commit and enqueue. One runner owns merge → test → push → verify.
 Unattended daemons process only jobs that a human explicitly enqueued with
 `--auto`. For manual jobs, `daemon --validate-only` can run merge and gates in
 the background, but it pauses at the validated-train approval boundary and
@@ -156,15 +182,15 @@ integration**.
 
 | Integration concern | Worktrees + manual merge | mergetrain |
 |---|---|---|
-| Landing order | A person or agent decides repeatedly | Durable FIFO queue |
+| Landing order | A person or agent decides repeatedly | Durable queue in enqueue order |
 | Combined validation | Rerun manually after each merge | Gates run over the exact assembled train |
 | Cross-branch failure | Diagnose by hand | Isolation runs identify the conflicting pair |
 | Push ownership | Every session can race the ref | One lease-fenced runner owns the push |
 | Approval | Shell convention | Explicit validate/deploy intent; `--auto` is opt-in |
 | Crash recovery | Infer from local logs | Reconcile SQLite evidence against remote refs |
 
-Plain worktrees remain the execution lanes. mergetrain is the spine that joins
-their results without turning the operator into a merge coordinator.
+Agents keep their separate worktrees. One mergetrain runner integrates their
+committed results.
 
 ## Why not GitHub or GitLab merge queues?
 

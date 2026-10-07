@@ -103,15 +103,28 @@ job that should rejoin the queue.
 
 ## Push failure
 
-A push the remote **rejects for policy/permission** — a protected branch, a
-required pull request, a denied ref update, a declined pre-receive hook — is a
-repo-configuration issue, not bad code. mergetrain parks that job **`blocked`**
-(not `failed`, which would tell an agent to rebase and re-enqueue) with
-`push_status=failed`, and `inspect` reports the `push_rejected` category. Fix
-the branch protection / push permission (or point `git.push_refs` at a branch
-you can push, and land through your forge's own flow), then re-deploy. Because
-this rejection proves that no ref update landed, mergetrain clears the durable
-push marker and its pending pin.
+A remote can reject a push because of branch protection, a required pull
+request, denied push permission, or a declined pre-receive hook. mergetrain
+marks the job `blocked` with `push_status=failed`. `inspect` reports the
+`push_rejected` category. This rejection proves that no ref update landed, so
+mergetrain clears the durable push marker and its pending pin.
+
+Fix the branch protection or push permission. Alternatively, point
+`git.push_refs` at a branch you can push and use your forge's review flow.
+Commit any code fixes in the owning branch and leave its worktree clean. Then
+replace each blocked job with a queued job:
+
+```sh
+mergetrain status --json
+mergetrain retry <blocked-job-id>
+```
+
+Fixing permission alone does not return the blocked job to the queue. `retry`
+replaces it with a job pinned to the current commits. Retry does not authorize
+validation or deployment. If the destination or execution policy changed,
+the replacement is manual. See
+[Deploy authorization changed](#deploy-authorization-changed) before renewing
+unattended-deploy approval.
 
 Any other push error after the write-ahead marker is durable — including a
 transport drop or timeout — has an **ambiguous remote outcome**. The remote may

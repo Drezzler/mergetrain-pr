@@ -26,7 +26,11 @@ mergetrain daemon --validate-only --once
   and runs the configuration it checked; the runner reloads the file and
   checks it again before gates and before the push marker. A blank
   legacy hash or mismatch becomes `blocked` with
-  `approval_execution_policy_changed` and requires a fresh `--auto` enqueue.
+  `approval_execution_policy_changed`. For either approval mismatch, `retry`
+  creates a manual replacement. To renew unattended-deploy approval, review the
+  changed destination or policy, dismiss the old blocked job, then enqueue
+  with `--auto` under renewed explicit approval. See
+  [Deploy authorization changed](failure-modes.md#deploy-authorization-changed).
   The tick counts a job blocked for either mismatch as one that did not land,
   so `--notify` reports it under the `blocked` transition.
 - `--validate-only` claims only manual jobs (`auto_deploy = 0`) and invokes the

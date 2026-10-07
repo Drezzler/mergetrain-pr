@@ -1,7 +1,7 @@
 # Quickstart
 
-mergetrain gives parallel coding-agent worktrees one serialized path into an
-integration branch. The normal workflow is intentionally small:
+mergetrain integrates branches from parallel coding-agent worktrees in enqueue
+order. The normal workflow is:
 
 ```text
 enqueue → validate → approve → push
@@ -22,7 +22,9 @@ The generated `.mergetrain.yaml` contains only the schema version, project
 name, and gates. Git remote `origin`, integration branch `main`, local state
 paths, sequential gates, and no validation reuse are code defaults.
 
-Add at least one meaningful project gate before deploying. For example:
+Add at least one meaningful project gate before deploying. A gate is a test or
+check that must pass. The generated configuration has no project gates. For
+example:
 
 ```yaml
 version: 2
@@ -41,8 +43,9 @@ repository that does not ignore those paths will safely block after the test
 command succeeds.
 
 `init --write` also creates `AGENTS.mergetrain.md` and
-`CLAUDE.mergetrain.md`. Link the relevant sidecar from your root agent
-instructions, then commit the config and instructions. Existing files are
+`CLAUDE.mergetrain.md`. Link the relevant file from your root `AGENTS.md` or
+`CLAUDE.md`. Commit and land the configuration and instructions through your
+normal integration path before creating task worktrees. Existing files are
 never overwritten.
 
 After an upgrade, refresh only generated instructions with:
@@ -53,13 +56,17 @@ mergetrain init --refresh-instructions
 
 ## 2. Commit and enqueue a task branch
 
+From the operator checkout, create a separate task worktree. Use your configured
+integration branch if it differs from `main`:
+
 ```sh
-git switch -c codex/feature-a
+git worktree add -b codex/feature-a ../example-app-feature-a main
+cd ../example-app-feature-a
 # edit and test
 git add .
 git commit -m "feature a"
 
-mergetrain status
+mergetrain status --json
 mergetrain enqueue --task "feature a" --branch codex/feature-a
 ```
 
@@ -72,6 +79,9 @@ explicitly authorized validation or the complete validation-and-deployment
 workflow. Asking to queue branches for validation authorizes enqueue only.
 
 ## 3. Deploy
+
+Return to the operator checkout. Run this command only when validation and
+deployment are authorized:
 
 ```sh
 mergetrain deploy
