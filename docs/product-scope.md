@@ -801,10 +801,10 @@ they add no automatic upgrade, restart, or recovery authority.
 ## Search wording for parallel LLM integration — 2026-10-08
 
 An operator could not find mergetrain with the category query `local merge
-queue`. A repository-scoped GitHub search for that phrase in the name,
-description, and README returned no match. The phrase already appeared in
-launch drafts and the landing page's structured data, but not in the README
-introduction, GitHub About description, or visible landing-page copy.
+queue`. Inspection confirmed that the phrase already appeared in launch drafts
+and the landing page's structured data, but not in the README introduction,
+GitHub About description, or visible landing-page copy. This wording gap does
+not establish why a particular search result omitted the project.
 The operator requested broader search wording and the phrase `local merge
 queue for parallel LLM agents`.
 

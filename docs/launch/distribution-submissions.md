@@ -44,7 +44,8 @@ title, and descriptions. Package keywords, plugin tags, and GitHub topics come
 from `discovery/metadata.yaml`. Do not broaden skill activation to all agent,
 worktree, or merge questions: the existing suitability boundaries still apply.
 
-Google does not use the HTML `meta keywords` tag. Its
+Google does not use the HTML
+[`meta keywords` tag](https://developers.google.com/search/docs/crawling-indexing/special-tags). Its
 [title guidance](https://developers.google.com/search/docs/appearance/title-link)
 and [snippet guidance](https://developers.google.com/search/docs/appearance/snippet)
 describe the relevant page text and descriptions. After publication, compare
