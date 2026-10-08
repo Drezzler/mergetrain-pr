@@ -49,8 +49,8 @@ def test_landing_page_has_problem_first_search_metadata() -> None:
     parser = _LandingParser()
     parser.feed((SITE / "index.html").read_text(encoding="utf-8"))
 
-    assert "Merge queue for parallel coding agents" in parser.title
-    assert "parallel coding-agent worktrees" in parser.meta["description"]
+    assert "Local merge queue for parallel LLM agents" in parser.title
+    assert "parallel LLM agents in Git worktrees" in parser.meta["description"]
     assert parser.meta["robots"] == "index,follow"
     assert parser.meta["og:url"] == "https://yongjip.github.io/mergetrain/"
     data = json.loads("".join(parser.structured_data))

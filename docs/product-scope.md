@@ -797,3 +797,29 @@ also closes the future minor-contract exception, documents Hub restart boundarie
 and records the intended gate environment after a deployment retry selected a
 global Python without `pytest`. These remain guidance and distribution changes;
 they add no automatic upgrade, restart, or recovery authority.
+
+## Search wording for parallel LLM integration — 2026-10-08
+
+An operator could not find mergetrain with the category query `local merge
+queue`. A repository-scoped GitHub search for that phrase in the name,
+description, and README returned no match. The phrase already appeared in
+launch drafts and the landing page's structured data, but not in the README
+introduction, GitHub About description, or visible landing-page copy.
+The operator requested broader search wording and the phrase `local merge
+queue for parallel LLM agents`.
+
+Use that category in the existing descriptions and landing-page title. Explain
+that these agents write code in Git worktrees. Describe the related workflows:
+Git worktree branch integration, parallel Claude Code sessions and Codex
+worktrees, combined testing, and interrupted Git push recovery. Add matching
+package keywords, catalog tags, and desired GitHub topics. Record the query
+groups in the existing distribution packet; search volume is unmeasured.
+
+Keep the problem-first headline, skill activation descriptions, MCP
+descriptions, and operating protocol unchanged. The six-command/five-tool
+baseline is unchanged; this adds no product behavior or distribution surface.
+
+The discovery-metadata and landing-page checks must pass. After publication,
+repeat the category search and use the existing weekly traffic snapshots to
+check discovery. Text changes do not prove indexing, ranking, adoption, or
+better agent activation.

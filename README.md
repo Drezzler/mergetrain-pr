@@ -9,8 +9,9 @@
 
 **Safely integrate committed branches from parallel coding agents.**
 
-mergetrain integrates committed branches from coding-agent Git worktrees on
-your machine. A train is a group of queued task branches. A gate is a configured
+mergetrain is a local merge queue for parallel LLM agents. These coding agents
+use large language models and work in Git worktrees. mergetrain runs on your
+machine. A train is a group of queued task branches. A gate is a configured
 test or check. Each agent commits and enqueues its branch. One runner merges
 branches in enqueue order and runs gates on the combined result. It updates
 your Git refs atomically only after explicit approval.
@@ -175,6 +176,14 @@ never pushes.
 See the [quickstart](https://github.com/yongjip/mergetrain/blob/main/docs/quickstart.md)
 for configuration, daemon, and multi-repository Hub setup.
 
+## Integrating parallel Claude Code sessions and Codex worktrees
+
+Use a Git worktree merge queue when parallel Claude Code sessions or parallel
+Codex worktrees produce committed branches in the same repository. The
+[plugin install guide](https://github.com/yongjip/mergetrain/blob/main/docs/install.md)
+connects either client to the queue. Task agents commit, enqueue, and stop. A
+separately authorized runner tests the combined branches and handles the push.
+
 ## Why not just worktrees and `git merge`?
 
 Worktrees solve **parallel editing**. mergetrain solves **serialized
@@ -208,6 +217,14 @@ The models can coexist: push a validated train to a review branch and open one
 PR, or reserve individual PRs for changes that need discussion. The
 [PR workflow guide](https://github.com/yongjip/mergetrain/blob/main/docs/pr-workflows.md)
 covers direct, one-PR, split-PR, and validation-only patterns.
+
+## Recovering an interrupted Git push
+
+A stopped or timed-out Git push does not prove whether the remote accepted the
+update. mergetrain records deployment evidence. Its recovery procedure checks
+remote refs before another attempt. Start with `mergetrain status --json` and
+follow the reported recovery action and its approval requirement. See the
+[recovery guide](https://github.com/yongjip/mergetrain/blob/main/docs/failure-modes.md).
 
 ## Core safety guarantees
 

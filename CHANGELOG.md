@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Identify mergetrain as a local merge queue for parallel LLM agents in the
+  README, public-page search metadata, and package descriptions. Describe Git
+  worktree integration, parallel Claude Code sessions and Codex worktrees, and
+  interrupted Git push recovery. Align package keywords, catalog tags, and
+  desired GitHub About metadata with those workflows.
 - Clarify README and public-page workflow explanations, including trains,
   gates, and task-agent handoff boundaries.
 - Require project gates and committed setup instructions before the first

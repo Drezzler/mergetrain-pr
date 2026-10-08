@@ -3,13 +3,13 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Merge queue for parallel coding agents — mergetrain</title>
-    <meta name="description" content="Queue committed branches from parallel coding-agent worktrees, test the combined tree, and ship through one approval-gated atomic push.">
+    <title>Local merge queue for parallel LLM agents — mergetrain</title>
+    <meta name="description" content="A local merge queue for parallel LLM agents in Git worktrees. Test combined code changes, require approval for Git pushes, and recover interrupted pushes.">
     <meta name="robots" content="index,follow">
     <link rel="canonical" href="https://yongjip.github.io/mergetrain/">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Merge queue for parallel coding agents">
-    <meta property="og:description" content="Finish in parallel. Integrate safely. Test agent branches together before one approved push.">
+    <meta property="og:title" content="Local merge queue for parallel LLM agents">
+    <meta property="og:description" content="A local merge queue for parallel LLM agents in Git worktrees. Test combined code changes, require approval for Git pushes, and recover interrupted pushes.">
     <meta property="og:url" content="https://yongjip.github.io/mergetrain/">
     <meta property="og:image" content="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer-still.png">
     <meta name="twitter:card" content="summary_large_image">
@@ -22,7 +22,7 @@
         "name": "mergetrain",
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Linux, Windows",
-        "description": "A local merge queue for branches produced by parallel coding agents.",
+        "description": "A local merge queue for parallel LLM agents in Git worktrees. Test combined code changes, require approval for Git pushes, and recover interrupted pushes.",
         "url": "https://yongjip.github.io/mergetrain/",
         "downloadUrl": "https://pypi.org/project/mergetrain/",
         "softwareHelp": "https://github.com/yongjip/mergetrain/tree/main/docs",
@@ -47,9 +47,9 @@
     <main id="top">
       <section class="hero shell">
         <div class="hero-copy">
-          <p class="eyebrow">Local-first integration for agent worktrees</p>
+          <p class="eyebrow">Local merge queue for Git worktrees</p>
           <h1>Finish in parallel.<br><span>Integrate safely.</span></h1>
-          <p class="lede">Coding agents can complete branches at the same time. They still need one place to choose order, test the combined result, and own the final push.</p>
+          <p class="lede">mergetrain is a local merge queue for parallel LLM agents. These coding agents use large language models and work in Git worktrees. One runner merges queued branches in order, tests them together, and pushes the approved plan.</p>
           <div class="actions">
             <a class="button primary" href="#demo">Run the 60-second demo</a>
             <a class="button secondary" href="https://github.com/yongjip/mergetrain">View on GitHub</a>
@@ -85,11 +85,11 @@
       <section id="how" class="section shell">
         <p class="eyebrow">One narrow workflow</p>
         <h2>Commit. Enqueue. Let one runner integrate.</h2>
-        <p>Queued branches form a train. Gates are the tests or checks you configure for the combined result.</p>
+        <p>mergetrain provides a Git worktree merge queue for committed branches. Queued branches form a train. Gates are the tests or checks you configure for the combined result.</p>
         <div class="steps">
           <article><span>01</span><h3>Agents hand off exact commits</h3><p>Each agent commits and enqueues its branch. The queue records the exact commit.</p></article>
           <article><span>02</span><h3>The train is tested together</h3><p>One runner merges branches in enqueue order in an isolated worktree. It runs gates against the combined result.</p></article>
-          <article><span>03</span><h3>One approval, one push</h3><p>The runner pushes the approved plan atomically. It records evidence for recovery after an interrupted push.</p></article>
+          <article><span>03</span><h3>One approval, one push</h3><p>The runner pushes the approved plan atomically. It records evidence for interrupted Git push recovery.</p></article>
         </div>
         <div class="flow" aria-label="Workflow: agent branches, queue, combined gates, approval, atomic push">
           <span>agent branches</span><b>→</b><span>ordered queue</span><b>→</b><span>combined gates</span><b>→</b><span>approval</span><b>→</b><span>atomic push</span>
@@ -126,8 +126,8 @@
           <p class="eyebrow">Works with the agents you already use</p>
           <h2>One CLI and machine contract.</h2>
           <div class="integration-grid">
-            <article><h3>Claude Code</h3><p>The plugin includes workflow guidance and a Model Context Protocol (MCP) server. Deploy tools require human confirmation.</p><a href="https://github.com/yongjip/mergetrain/blob/main/docs/install.md#claude-code-plugin">Claude install guide →</a></article>
-            <article><h3>Codex</h3><p>Add the Git marketplace and install the native skill. Its MCP server is pinned to the plugin release.</p><a href="https://github.com/yongjip/mergetrain/blob/main/docs/install.md#codex-native-plugin">Codex install guide →</a></article>
+            <article><h3>Claude Code</h3><p>Agents in parallel Claude Code sessions commit and enqueue their branches. The plugin provides workflow guidance and a Model Context Protocol (MCP) server. Deploy tools require human confirmation.</p><a href="https://github.com/yongjip/mergetrain/blob/main/docs/install.md#claude-code-plugin">Claude install guide →</a></article>
+            <article><h3>Codex</h3><p>Queue branches from parallel Codex worktrees with the native skill. Add the Git marketplace and install the plugin. Its MCP server is pinned to the plugin release.</p><a href="https://github.com/yongjip/mergetrain/blob/main/docs/install.md#codex-native-plugin">Codex install guide →</a></article>
             <article><h3>Any coding agent</h3><p>Link the generated <code>AGENTS.mergetrain.md</code> or <code>CLAUDE.mergetrain.md</code> from your existing agent instructions. Task agents commit, enqueue, and stop.</p><a href="https://github.com/yongjip/mergetrain/blob/main/docs/agent-contract.md">Read the contract →</a></article>
           </div>
         </div>

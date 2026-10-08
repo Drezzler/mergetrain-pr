@@ -3,9 +3,9 @@ schema_version: 1
 headline: Safely integrate committed branches from parallel coding agents.
 
 short_description: >-
-  Queue committed branches from parallel coding-agent worktrees, test the
-  combined tree in order, give integration pushes one approval-gated owner,
-  and recover interrupted Git pushes.
+  Queue committed branches from parallel LLM coding agents in Git worktrees.
+  Test the combined tree in a local merge queue, require approval for Git
+  pushes, and recover interrupted pushes.
 
 mcp_description: >-
   Queue parallel-agent worktree branches, test together, serialize and recover
@@ -34,25 +34,37 @@ deploy_skill_description: >-
 keywords:
   - ai-agent
   - coding-agent
+  - llm-agents
   - parallel-agents
   - git
   - git-worktree
+  - worktree-workflow
   - branch-integration
   - combined-testing
   - merge-queue
+  - local-merge-queue
+  - git-merge-queue
   - merge-train
   - atomic-push
   - push-recovery
   - local-first
+  - claude-code
+  - codex
 
 catalog_tags:
   - git
   - git-worktree
+  - worktree-workflow
   - branch-integration
   - merge-queue
+  - local-merge-queue
+  - git-merge-queue
   - mcp
   - coding-agents
+  - llm-agents
   - parallel-agents
+  - claude-code
+  - codex
   - push-recovery
 
 codex_default_prompts:
@@ -62,18 +74,21 @@ codex_default_prompts:
 
 github_about:
   description: >-
-    Queue committed branches from parallel coding-agent worktrees, test them
-    together in order, keep integration pushes human-gated, and recover
-    interrupted pushes.
+    Local merge queue for parallel LLM agents in Git worktrees. Test combined
+    code changes, require approval for Git pushes, and recover interrupted pushes.
   topics:
     - ai-agents
     - coding-agents
+    - llm-agents
     - parallel-agents
     - git
     - git-worktree
+    - worktree-workflow
     - branch-integration
     - combined-testing
     - merge-queue
+    - local-merge-queue
+    - git-merge-queue
     - merge-train
     - atomic-push
     - mcp-server

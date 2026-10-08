@@ -27,6 +27,30 @@ branches directly or before opening a pull request.
 Single-agent work, hosted review workflows, or teams already served by a
 forge-native pull-request merge queue.
 
+## Search terms
+
+Use these query groups to describe the existing product. They are candidate
+search terms, not measured search-volume or ranking results.
+
+| Search intent | Candidate queries | Matching product behavior |
+| --- | --- | --- |
+| Find a local Git queue | `local merge queue`, `local Git merge queue`, `Git worktree merge queue` | Queue committed branches and test their combined result locally. |
+| Integrate agent-written code | `local merge queue for parallel LLM agents`, `AI coding agent merge queue`, `parallel coding agent integration` | One runner integrates committed branches from separate agent worktrees. |
+| Use an existing coding client | `parallel Claude Code sessions`, `Claude Code worktree merge`, `parallel Codex worktrees`, `Codex branch integration` | Native plugins teach exact-commit enqueue and the stop-before-deploy boundary. |
+| Investigate integration failures | `test branches together before merging`, `cross-branch test failures`, `interrupted Git push recovery` | Configured tests detect combined failures; recovery checks deployment evidence against remote refs. |
+
+Use natural explanations in README headings, visible page text, the page
+title, and descriptions. Package keywords, plugin tags, and GitHub topics come
+from `discovery/metadata.yaml`. Do not broaden skill activation to all agent,
+worktree, or merge questions: the existing suitability boundaries still apply.
+
+Google does not use the HTML `meta keywords` tag. Its
+[title guidance](https://developers.google.com/search/docs/appearance/title-link)
+and [snippet guidance](https://developers.google.com/search/docs/appearance/snippet)
+describe the relevant page text and descriptions. After publication, compare
+the same queries and the weekly voluntary discovery measures below. A new
+description does not prove improved search ranking or agent recommendation.
+
 ## Canonical links
 
 - Landing page: <https://yongjip.github.io/mergetrain/>
