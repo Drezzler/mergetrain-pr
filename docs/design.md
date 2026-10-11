@@ -389,6 +389,15 @@ a shared train identity and validation SHA. Path-scoped gates are evaluated
 against each probe's captured base and exact probe SHA, so a skipped gate cannot
 hide a failure during isolation.
 
+Failed trains containing two or three merged jobs probe individual jobs in
+train order until one is proven to fail alone. The remaining jobs then run as
+a fresh combined train; another failure there triggers isolation again. If
+every individual job passes, joint-failure minimization still verifies the
+conflict members and their combination. Larger failed trains retain recursive
+subset bisection. This reduces probes for a small train with one bad job, while
+multiple independent failures can require an extra gate run. Final-combination
+gates and the default pre-push gate rerun remain required.
+
 During a later validated deploy, the selected train is atomic: every current
 task branch must still resolve to its recorded `validated_head_sha`, and the
 stored member count and shared metadata must be complete. The runner starts

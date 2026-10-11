@@ -740,6 +740,16 @@ class GitRunner:
             if len(subset) == 1:
                 singles.append(subset[0])
                 return
+            if len(merged_jobs) <= 3:
+                # A small train needs no intermediate subset probes to find
+                # one solo failure. The survivors run as a fresh train below;
+                # another failure there is isolated before anything can ship.
+                for job in subset:
+                    if not probe([job]):
+                        singles.append(job)
+                        return
+                minimize_joint_failure(subset)
+                return
             mid = len(subset) // 2
             left, right = subset[:mid], subset[mid:]
             left_fails = not probe(left)

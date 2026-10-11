@@ -64,6 +64,18 @@ job. Error messages and repair documentation now direct that existing path.
 Classification: correction of existing recovery guidance, not a new recovery
 action or automatic execution policy. The surface baseline above is unchanged.
 
+Small-train failure isolation (2026-10-11): a disposable three-worktree exercise
+with one individually bad middle job used nine project-gate invocations through
+repair and deployment under the default rerun policy. Probing individuals until
+one confirmed failure is found, then gating the fresh surviving combination,
+reduces that case to seven invocations. A two-failure exercise increases initial
+processing from six to seven invocations; the optimization does not promise
+fewer checks for every failure. The change applies to two or three merged jobs
+and preserves final-combination gating, default pre-push reruns, exact identity,
+approval, leases, and push recovery. Classification: internal optimization of
+existing failure isolation. The command, config, MCP, and state baselines stay
+unchanged, and the owner has no additional choice to make.
+
 ### Core
 
 - exact-SHA enqueue from a clean task worktree;

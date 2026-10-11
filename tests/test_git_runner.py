@@ -3200,7 +3200,137 @@ class SingleJobGateFailureTests(unittest.TestCase):
         self.assertIn(f"Job #{first.id} failed", progress["message"])
 
 
+def _record_subset_gate(history: Path, names: tuple[str, ...], failure: str) -> str:
+    """Record each real gate's input outside the tree whose integrity is checked."""
+
+    return (
+        f'{SHELL_PYTHON} -c "import json, pathlib, sys; '
+        f"members=[name for name in {names!r} if pathlib.Path(name+'.txt').exists()]; "
+        f"p=pathlib.Path('{py_path(history)}'); "
+        "p.open('a', encoding='utf-8').write(json.dumps(members)+chr(10)); "
+        f'sys.exit(1 if {failure} else 0)"'
+    )
+
+
 class BisectIsolationTests(unittest.TestCase):
+    def test_small_train_reduces_probes_and_keeps_default_deploy_rerun(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            history = root / "gate-inputs.jsonl"
+            gate = _record_subset_gate(history, ("a", "bad", "c"), "'bad' in members")
+            repo, _ = make_demo_repo(root, gate_command=gate)
+            add_branch(repo, "agent/bad", "bad.txt")
+            add_branch(repo, "agent/c", "c.txt")
+            config = load_config(repo=repo)
+            self.assertFalse(config.deploy.reuse.enabled)
+            remote = root / "remote.git"
+            before = git(remote, "rev-parse", "main")
+            runner = GitRunner(config)
+            conn = connect(config.state.db)
+            try:
+                jobs = [
+                    enqueue_job(conn, task="a", branch="feature/a"),
+                    enqueue_job(conn, task="bad", branch="agent/bad"),
+                    enqueue_job(conn, task="c", branch="agent/c"),
+                ]
+                runner.process_batch(conn, jobs, deploy=False)
+                stored = [get_job(conn, job.id) for job in jobs]
+                self.assertEqual([job.status for job in stored], ["validated", "failed", "validated"])
+                self.assertEqual(git(remote, "rev-parse", "main"), before)
+                self.assertEqual(
+                    [json.loads(line) for line in history.read_text().splitlines()],
+                    [["a", "bad", "c"], ["a"], ["bad"], ["a", "c"]],
+                )
+                self.assertEqual(stored[0].train_id, stored[2].train_id)
+                self.assertEqual(stored[0].train_size, 2)
+                results = runner.process_batch(conn, [stored[0], stored[2]], deploy=True)
+                self.assertEqual([job.status for job in results], ["deployed", "deployed"])
+                self.assertTrue(all(not job.reused_validation_sha for job in results))
+                self.assertEqual(get_job(conn, jobs[1].id).status, "failed")
+            finally:
+                conn.close()
+
+            self.assertEqual(
+                [json.loads(line) for line in history.read_text().splitlines()],
+                [["a", "bad", "c"], ["a"], ["bad"], ["a", "c"], ["a", "c"]],
+            )
+            deployed_files = git(remote, "ls-tree", "--name-only", "main").splitlines()
+            self.assertIn("a.txt", deployed_files)
+            self.assertIn("c.txt", deployed_files)
+            self.assertNotIn("bad.txt", deployed_files)
+
+    def test_small_train_finds_a_second_solo_failure_in_survivors(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            history = root / "gate-inputs.jsonl"
+            gate = _record_subset_gate(history, ("a", "b", "c"), "'b' in members or 'c' in members")
+            repo, _ = make_demo_repo(root, gate_command=gate)
+            add_branch(repo, "agent/b", "b.txt")
+            add_branch(repo, "agent/c", "c.txt")
+            config = load_config(repo=repo)
+            remote = root / "remote.git"
+            before = git(remote, "rev-parse", "main")
+            conn = connect(config.state.db)
+            try:
+                jobs = [
+                    enqueue_job(conn, task="a", branch="feature/a"),
+                    enqueue_job(conn, task="b", branch="agent/b"),
+                    enqueue_job(conn, task="c", branch="agent/c"),
+                ]
+                results = GitRunner(config).process_batch(conn, jobs, deploy=False)
+                stored = [get_job(conn, job.id) for job in jobs]
+                self.assertEqual([job.status for job in stored], ["validated", "failed", "failed"])
+                self.assertEqual(len(results), 3)
+                self.assertTrue(all(not job.conflict_with for job in stored))
+                self.assertEqual(stored[0].train_size, 1)
+                ready = [train for train in validated_train_summaries(conn) if train["deploy_eligible"]]
+                self.assertEqual(len(ready), 1)
+            finally:
+                conn.close()
+
+            self.assertEqual(git(remote, "rev-parse", "main"), before)
+            self.assertEqual(
+                [json.loads(line) for line in history.read_text().splitlines()],
+                [["a", "b", "c"], ["a"], ["b"], ["a", "c"], ["a"], ["c"], ["a"]],
+            )
+
+    def test_small_train_finds_a_joint_failure_after_removing_a_solo_failure(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            history = root / "gate-inputs.jsonl"
+            gate = _record_subset_gate(
+                history,
+                ("a", "bad", "c"),
+                "'bad' in members or ('a' in members and 'c' in members)",
+            )
+            repo, _ = make_demo_repo(root, gate_command=gate)
+            add_branch(repo, "agent/bad", "bad.txt")
+            add_branch(repo, "agent/c", "c.txt")
+            config = load_config(repo=repo)
+            remote = root / "remote.git"
+            before = git(remote, "rev-parse", "main")
+            conn = connect(config.state.db)
+            try:
+                jobs = [
+                    enqueue_job(conn, task="a", branch="feature/a"),
+                    enqueue_job(conn, task="bad", branch="agent/bad"),
+                    enqueue_job(conn, task="c", branch="agent/c"),
+                ]
+                GitRunner(config).process_batch(conn, jobs, deploy=False)
+                stored = [get_job(conn, job.id) for job in jobs]
+                self.assertEqual([job.status for job in stored], ["blocked", "failed", "blocked"])
+                self.assertEqual(stored[0].conflict_with, str(jobs[2].id))
+                self.assertEqual(stored[2].conflict_with, str(jobs[0].id))
+                self.assertFalse(stored[1].conflict_with)
+                self.assertFalse(validated_train_summaries(conn))
+            finally:
+                conn.close()
+
+            self.assertEqual(git(remote, "rev-parse", "main"), before)
+            members = [json.loads(line) for line in history.read_text().splitlines()]
+            self.assertIn(["a", "c"], members)
+            self.assertIn(["c"], members)
+
     def test_semantic_conflict_classification_is_independent_of_batch_size(self) -> None:
         for filler_count in (0, 2):
             with self.subTest(filler_count=filler_count), tempfile.TemporaryDirectory() as td:

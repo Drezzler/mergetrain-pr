@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Changes
+
+- Reduce failure-isolation probes for trains of two or three jobs by finding
+  one confirmed individual failure before revalidating the surviving
+  combination. Further failures are isolated before deployment. Keep joint
+  conflict attribution and the default pre-push gate rerun unchanged. A
+  three-job single-failure repair exercise uses seven project-gate runs instead
+  of nine; multiple independent failures can require an extra run.
+
 ### Documentation
 
 - Identify mergetrain as a local merge queue for parallel LLM agents in the
