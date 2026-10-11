@@ -1,0 +1,869 @@
+{
+  "version": "3.5.0",
+  "source_commit": "f09034ae77ed098156ba5bbed95557cad375cad1",
+  "captured_at": "2026-10-11T16:26:05.169383+00:00",
+  "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
+  "normalization": "Sandbox, Python executable, and installed package paths are replaced by $DEMO, $PYTHON, and $MERGETRAIN. The Python -m mergetrain prefix is displayed as mergetrain in command labels; argv preserves the normalized argument vector. Output, return codes, and recorded timings are otherwise unchanged.",
+  "records": [
+    {
+      "step": 0,
+      "command": "git --version",
+      "argv": [
+        "git",
+        "--version"
+      ],
+      "returncode": 0,
+      "stdout": "git version 2.56.0\n",
+      "stderr": "",
+      "seconds": 0.013
+    },
+    {
+      "step": 0,
+      "command": "git config --file $DEMO/gitconfig init.defaultBranch main",
+      "argv": [
+        "git",
+        "config",
+        "--file",
+        "$DEMO/gitconfig",
+        "init.defaultBranch",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.009
+    },
+    {
+      "step": 0,
+      "command": "git config --file $DEMO/gitconfig user.email demo@example.invalid",
+      "argv": [
+        "git",
+        "config",
+        "--file",
+        "$DEMO/gitconfig",
+        "user.email",
+        "demo@example.invalid"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.007
+    },
+    {
+      "step": 0,
+      "command": "git config --file $DEMO/gitconfig user.name 'Mergetrain Demo'",
+      "argv": [
+        "git",
+        "config",
+        "--file",
+        "$DEMO/gitconfig",
+        "user.name",
+        "Mergetrain Demo"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.008
+    },
+    {
+      "step": 0,
+      "command": "git config --file $DEMO/gitconfig commit.gpgsign false",
+      "argv": [
+        "git",
+        "config",
+        "--file",
+        "$DEMO/gitconfig",
+        "commit.gpgsign",
+        "false"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.008
+    },
+    {
+      "step": 0,
+      "command": "git config --file $DEMO/gitconfig protocol.file.allow always",
+      "argv": [
+        "git",
+        "config",
+        "--file",
+        "$DEMO/gitconfig",
+        "protocol.file.allow",
+        "always"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.008
+    },
+    {
+      "step": 0,
+      "command": "git init --bare $DEMO/remote.git",
+      "argv": [
+        "git",
+        "init",
+        "--bare",
+        "$DEMO/remote.git"
+      ],
+      "returncode": 0,
+      "stdout": "Initialized empty Git repository in $DEMO/remote.git/\n",
+      "stderr": "",
+      "seconds": 0.017
+    },
+    {
+      "step": 0,
+      "command": "git clone $DEMO/remote.git $DEMO/repo",
+      "argv": [
+        "git",
+        "clone",
+        "$DEMO/remote.git",
+        "$DEMO/repo"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "Cloning into '$DEMO/repo'...\nwarning: You appear to have cloned an empty repository.\ndone.\n",
+      "seconds": 0.032
+    },
+    {
+      "step": 1,
+      "command": "mergetrain --repo $DEMO/repo init --project demo --write",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "init",
+        "--project",
+        "demo",
+        "--write"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"next_step\": \"link the generated sidecars from the repository's standard AGENTS.md and/or CLAUDE.md, then commit these files (git add . && git commit); mergetrain's own .mergetrain/ state directory is git-ignored automatically\",\n  \"ok\": true,\n  \"written\": [\n    \"$DEMO/repo/.mergetrain.yaml\",\n    \"$DEMO/repo/AGENTS.mergetrain.md\",\n    \"$DEMO/repo/CLAUDE.mergetrain.md\"\n  ]\n}\n",
+      "stderr": "",
+      "seconds": 0.106
+    },
+    {
+      "step": 1,
+      "command": "git add .",
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.014
+    },
+    {
+      "step": 1,
+      "command": "git commit -m 'seed demo project'",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "seed demo project"
+      ],
+      "returncode": 0,
+      "stdout": "[main (root-commit) 87f4eef] seed demo project\n 7 files changed, 119 insertions(+)\n create mode 100644 .gitignore\n create mode 100644 .mergetrain.yaml\n create mode 100644 AGENTS.mergetrain.md\n create mode 100644 CLAUDE.mergetrain.md\n create mode 100644 app/__init__.py\n create mode 100644 app/config.py\n create mode 100644 tests/test_config.py\n",
+      "stderr": "",
+      "seconds": 0.024
+    },
+    {
+      "step": 1,
+      "command": "git branch -M main",
+      "argv": [
+        "git",
+        "branch",
+        "-M",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.011
+    },
+    {
+      "step": 1,
+      "command": "git push -u origin main",
+      "argv": [
+        "git",
+        "push",
+        "-u",
+        "origin",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "branch 'main' set up to track 'origin/main'.\n",
+      "stderr": "To $DEMO/remote.git\n * [new branch]      main -> main\n",
+      "seconds": 0.08
+    },
+    {
+      "step": 1,
+      "command": "git worktree add -b agent/faster-timeout $DEMO/agents/faster-timeout main",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "agent/faster-timeout",
+        "$DEMO/agents/faster-timeout",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "HEAD is now at 87f4eef seed demo project\n",
+      "stderr": "Preparing worktree (new branch 'agent/faster-timeout')\n",
+      "seconds": 0.034
+    },
+    {
+      "step": 1,
+      "command": "git add .",
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.01
+    },
+    {
+      "step": 1,
+      "command": "git commit -m agent/faster-timeout",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "agent/faster-timeout"
+      ],
+      "returncode": 0,
+      "stdout": "[agent/faster-timeout f423eb5] agent/faster-timeout\n 2 files changed, 2 insertions(+), 2 deletions(-)\n",
+      "stderr": "",
+      "seconds": 0.023
+    },
+    {
+      "step": 1,
+      "command": "git worktree add -b agent/health-check $DEMO/agents/health-check main",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "agent/health-check",
+        "$DEMO/agents/health-check",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "HEAD is now at 87f4eef seed demo project\n",
+      "stderr": "Preparing worktree (new branch 'agent/health-check')\n",
+      "seconds": 0.028
+    },
+    {
+      "step": 1,
+      "command": "git add .",
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.01
+    },
+    {
+      "step": 1,
+      "command": "git commit -m agent/health-check",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "agent/health-check"
+      ],
+      "returncode": 0,
+      "stdout": "[agent/health-check db1b5be] agent/health-check\n 2 files changed, 10 insertions(+)\n create mode 100644 app/health.py\n create mode 100644 tests/test_health.py\n",
+      "stderr": "",
+      "seconds": 0.022
+    },
+    {
+      "step": 1,
+      "command": "git worktree add -b agent/add-retries $DEMO/agents/add-retries main",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "agent/add-retries",
+        "$DEMO/agents/add-retries",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "HEAD is now at 87f4eef seed demo project\n",
+      "stderr": "Preparing worktree (new branch 'agent/add-retries')\n",
+      "seconds": 0.031
+    },
+    {
+      "step": 1,
+      "command": "git add .",
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.011
+    },
+    {
+      "step": 1,
+      "command": "git commit -m agent/add-retries",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "agent/add-retries"
+      ],
+      "returncode": 0,
+      "stdout": "[agent/add-retries db13cfb] agent/add-retries\n 2 files changed, 9 insertions(+)\n create mode 100644 app/retries.py\n create mode 100644 tests/test_retries.py\n",
+      "stderr": "",
+      "seconds": 0.024
+    },
+    {
+      "step": 1,
+      "command": "git worktree add -b agent/request-logging $DEMO/agents/request-logging main",
+      "argv": [
+        "git",
+        "worktree",
+        "add",
+        "-b",
+        "agent/request-logging",
+        "$DEMO/agents/request-logging",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "HEAD is now at 87f4eef seed demo project\n",
+      "stderr": "Preparing worktree (new branch 'agent/request-logging')\n",
+      "seconds": 0.034
+    },
+    {
+      "step": 1,
+      "command": "git add .",
+      "argv": [
+        "git",
+        "add",
+        "."
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "",
+      "seconds": 0.011
+    },
+    {
+      "step": 1,
+      "command": "git commit -m agent/request-logging",
+      "argv": [
+        "git",
+        "commit",
+        "-m",
+        "agent/request-logging"
+      ],
+      "returncode": 0,
+      "stdout": "[agent/request-logging 5b96d88] agent/request-logging\n 2 files changed, 9 insertions(+)\n create mode 100644 app/request_logging.py\n create mode 100644 tests/test_request_logging.py\n",
+      "stderr": "",
+      "seconds": 0.025
+    },
+    {
+      "step": 1,
+      "command": "$PYTHON -B -m unittest discover -s tests",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ".\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n",
+      "seconds": 0.043,
+      "branch": "agent/faster-timeout"
+    },
+    {
+      "step": 1,
+      "command": "$PYTHON -B -m unittest discover -s tests",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+      "seconds": 0.041,
+      "branch": "agent/health-check"
+    },
+    {
+      "step": 1,
+      "command": "$PYTHON -B -m unittest discover -s tests",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+      "seconds": 0.039,
+      "branch": "agent/add-retries"
+    },
+    {
+      "step": 1,
+      "command": "$PYTHON -B -m unittest discover -s tests",
+      "argv": [
+        "$PYTHON",
+        "-B",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": "..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n",
+      "seconds": 0.038,
+      "branch": "agent/request-logging"
+    },
+    {
+      "step": 2,
+      "command": "mergetrain --repo $DEMO/repo status --diagnose --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status",
+        "--diagnose",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"attention_jobs\": [],\n  \"contract_version\": 5,\n  \"counts\": {\n    \"attention\": 0,\n    \"done\": 0,\n    \"ready\": 0,\n    \"running\": 0,\n    \"waiting\": 0\n  },\n  \"diagnostics\": {\n    \"config\": {\n      \"config_exists\": true,\n      \"config_path\": \"$DEMO/repo/.mergetrain.yaml\",\n      \"config_version\": 2,\n      \"deploy\": {\n        \"reuse\": {\n          \"enabled\": false,\n          \"fingerprints\": [],\n          \"max_age_minutes\": 60,\n          \"on_mismatch\": \"rerun\"\n        },\n        \"verify\": [\n          {\n            \"always_rerun_on_deploy\": false,\n            \"name\": \"bare-remote-main\",\n            \"run\": \"git --git-dir=\\\"$DEMO/remote.git\\\" log -1 --format=%H main\"\n          }\n        ]\n      },\n      \"gate_parallelism\": {\n        \"max_workers\": 1,\n        \"timeout_seconds\": null\n      },\n      \"gates\": [\n        {\n          \"always_rerun_on_deploy\": false,\n          \"name\": \"tests\",\n          \"run\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\"\n        }\n      ],\n      \"git\": {\n        \"integration_branch\": \"main\",\n        \"integration_ref\": \"origin/main\",\n        \"push_refs\": [\n          \"main\"\n        ],\n        \"remote\": \"origin\"\n      },\n      \"notify\": {\n        \"timeout_seconds\": 10,\n        \"transitions\": [\n          \"landed\",\n          \"blocked\",\n          \"needs_reconcile\",\n          \"daemon_paused\"\n        ],\n        \"webhook_configured\": false\n      },\n      \"project\": {\n        \"name\": \"demo\"\n      },\n      \"queue\": {\n        \"command_timeout_seconds\": 60,\n        \"daemon_interval_seconds\": 1,\n        \"heartbeat_interval_seconds\": 1,\n        \"lock_ttl_minutes\": 5\n      },\n      \"repo\": \"$DEMO/repo\",\n      \"state\": {\n        \"db\": \"$DEMO/repo/.mergetrain/queue.sqlite\",\n        \"logs\": \"$DEMO/repo/.mergetrain/logs\",\n        \"validation_workspace\": {\n          \"cache_key\": \"\",\n          \"cache_paths\": [],\n          \"mode\": \"ephemeral\",\n          \"path\": \"$DEMO/repo/.mergetrain/worktrees/demo-validation-workspace\"\n        },\n        \"worktree_root\": \"$DEMO/repo/.mergetrain/worktrees\"\n      }\n    },\n    \"config_drift\": {\n      \"comparable\": true,\n      \"integration\": {\n        \"blob_sha\": \"5dadd57d48bf38d0d464234b12d7519a6e796fb6\",\n        \"config_exists\": true,\n        \"ref\": \"origin/main\",\n        \"ref_exists\": true\n      },\n      \"local\": {\n        \"blob_sha\": \"5dadd57d48bf38d0d464234b12d7519a6e796fb6\",\n        \"exists\": true,\n        \"path\": \".mergetrain.yaml\"\n      },\n      \"matches\": true,\n      \"state\": \"in_sync\"\n    },\n    \"config_exists\": true,\n    \"db\": \"$DEMO/repo/.mergetrain/queue.sqlite\",\n    \"gc\": {\n      \"worktree_candidates\": []\n    },\n    \"git\": {\n      \"current_branch\": \"main\",\n      \"integration_ref\": \"origin/main\",\n      \"integration_ref_exists\": true,\n      \"remote_exists\": true,\n      \"remote_url\": \"$DEMO/remote.git\",\n      \"repo_root\": \"$DEMO/repo\",\n      \"worktree_clean\": true\n    },\n    \"lock\": null,\n    \"raw_counts\": {\n      \"auto_queued\": 0,\n      \"blocked\": 0,\n      \"blocked_with_marker\": 0,\n      \"canceled\": 0,\n      \"deployed\": 0,\n      \"deployed_verify_failed\": 0,\n      \"deployed_verify_unknown\": 0,\n      \"failed\": 0,\n      \"in_progress\": 0,\n      \"in_progress_with_marker\": 0,\n      \"manual_queued\": 0,\n      \"needs_reconcile\": 0,\n      \"queued\": 0,\n      \"validated\": 0\n    },\n    \"recommendations\": [],\n    \"runtime\": {\n      \"distribution_version\": \"3.5.0\",\n      \"install_mode\": \"unknown\",\n      \"package_path\": \"$MERGETRAIN\",\n      \"source_commit\": \"f09034ae77ed098156ba5bbed95557cad375cad1\",\n      \"source_dirty\": true,\n      \"source_path\": \"/Users/yongjip/.codex/worktrees/demo-video-3-5/mergetrain\"\n    },\n    \"state\": {\n      \"logs\": \"$DEMO/repo/.mergetrain/logs\",\n      \"validation_workspace\": {\n        \"cache_key\": \"\",\n        \"cache_paths\": [],\n        \"exists\": false,\n        \"initialized\": false,\n        \"mode\": \"ephemeral\",\n        \"path\": \"$DEMO/repo/.mergetrain/worktrees/demo-validation-workspace\"\n      },\n      \"worktree_root\": \"$DEMO/repo/.mergetrain/worktrees\"\n    },\n    \"validated_trains\": [],\n    \"version\": \"3.5.0\"\n  },\n  \"health\": \"healthy\",\n  \"next_action\": {\n    \"code\": \"enqueue_clean_branch\",\n    \"command\": null,\n    \"reason_code\": null,\n    \"requires_approval\": \"none\",\n    \"target_job_id\": null\n  },\n  \"ok\": true,\n  \"recent_jobs\": [],\n  \"state\": \"idle\",\n  \"summary\": \"No active work; enqueue a clean task branch when ready\",\n  \"warnings\": []\n}\n",
+      "stderr": "",
+      "seconds": 0.336
+    },
+    {
+      "step": 3,
+      "command": "mergetrain --repo $DEMO/repo enqueue --task 'reduce the default timeout' --branch agent/faster-timeout --worktree $DEMO/agents/faster-timeout",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "enqueue",
+        "--task",
+        "reduce the default timeout",
+        "--branch",
+        "agent/faster-timeout",
+        "--worktree",
+        "$DEMO/agents/faster-timeout"
+      ],
+      "returncode": 0,
+      "stdout": "queued job 1: reduce the default timeout (agent/faster-timeout)\n",
+      "stderr": "",
+      "seconds": 0.178
+    },
+    {
+      "step": 3,
+      "command": "mergetrain --repo $DEMO/repo enqueue --task 'add a timeout-aware health check' --branch agent/health-check --worktree $DEMO/agents/health-check",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "enqueue",
+        "--task",
+        "add a timeout-aware health check",
+        "--branch",
+        "agent/health-check",
+        "--worktree",
+        "$DEMO/agents/health-check"
+      ],
+      "returncode": 0,
+      "stdout": "queued job 2: add a timeout-aware health check (agent/health-check)\n",
+      "stderr": "",
+      "seconds": 0.171
+    },
+    {
+      "step": 3,
+      "command": "mergetrain --repo $DEMO/repo enqueue --task 'add retry policy' --branch agent/add-retries --worktree $DEMO/agents/add-retries",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "enqueue",
+        "--task",
+        "add retry policy",
+        "--branch",
+        "agent/add-retries",
+        "--worktree",
+        "$DEMO/agents/add-retries"
+      ],
+      "returncode": 0,
+      "stdout": "queued job 3: add retry policy (agent/add-retries)\n",
+      "stderr": "",
+      "seconds": 0.175
+    },
+    {
+      "step": 3,
+      "command": "mergetrain --repo $DEMO/repo enqueue --task 'add request logging' --branch agent/request-logging --worktree $DEMO/agents/request-logging",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "enqueue",
+        "--task",
+        "add request logging",
+        "--branch",
+        "agent/request-logging",
+        "--worktree",
+        "$DEMO/agents/request-logging"
+      ],
+      "returncode": 0,
+      "stdout": "queued job 4: add request logging (agent/request-logging)\n",
+      "stderr": "",
+      "seconds": 0.172
+    },
+    {
+      "step": 4,
+      "command": "mergetrain --repo $DEMO/repo status --limit 10",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status",
+        "--limit",
+        "10"
+      ],
+      "returncode": 0,
+      "stdout": "health: healthy\nWAITING: 4 job(s) are waiting for validation\nnext: mergetrain validate\napproval: runner\n",
+      "stderr": "",
+      "seconds": 0.118
+    },
+    {
+      "step": 5,
+      "command": "mergetrain --repo $DEMO/repo validate",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "validate"
+      ],
+      "returncode": 1,
+      "stdout": "#1 blocked: agent/faster-timeout\n#2 blocked: agent/health-check\n#3 validated: agent/add-retries\n#4 validated: agent/request-logging\nresult: partial\n",
+      "stderr": "",
+      "seconds": 1.738
+    },
+    {
+      "step": 5,
+      "command": "mergetrain --repo $DEMO/repo inspect 1 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "1",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 5,\n      \"job_id\": 1,\n      \"message\": \"Merging agent/faster-timeout\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 6,\n      \"job_id\": 1,\n      \"message\": \"Merged agent/faster-timeout\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 24,\n      \"job_id\": 1,\n      \"message\": \"Job #1 blocked\",\n      \"phase\": \"blocked\",\n      \"state\": \"error\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/faster-timeout\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"2\",\n    \"deploy_sha\": \"\",\n    \"finished_at\": \"2026-10-11T16:26:02Z\",\n    \"head_sha\": \"f423eb5143ee3cba65fce40621631a9723c6aefc\",\n    \"id\": 1,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-1-20261011T162601-99a90dca.log\",\n    \"note\": \"semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ db1b5be5c62a); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"not_run\",\n    \"requested_at\": \"2026-10-11T16:26:00Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"status\": \"blocked\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"reduce the default timeout\",\n    \"train_id\": \"\",\n    \"train_size\": 0,\n    \"validated_at\": \"\",\n    \"validated_head_sha\": \"\",\n    \"validation_base_sha\": \"\",\n    \"validation_environment_sha\": \"\",\n    \"validation_gate_policy_sha\": \"\",\n    \"validation_sha\": \"\",\n    \"validation_train_sha\": \"\",\n    \"validation_tree_sha\": \"\",\n    \"verify_status\": \"not_run\",\n    \"worktree_path\": \"$DEMO/agents/faster-timeout\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"semantic_conflict\",\n    \"failure_category\": \"semantic_conflict\",\n    \"message\": \"semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ db1b5be5c62a); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1\",\n    \"message_truncated\": false,\n    \"severity\": \"failure\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 1.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 40,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"All train gates passed\",\n    \"message_truncated\": false,\n    \"phase\": \"gating\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:03Z\"\n  },\n  \"train\": null\n}\n",
+      "stderr": "",
+      "seconds": 0.085
+    },
+    {
+      "step": 5,
+      "command": "mergetrain --repo $DEMO/repo inspect 2 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "2",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 7,\n      \"job_id\": 2,\n      \"message\": \"Merging agent/health-check\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 8,\n      \"job_id\": 2,\n      \"message\": \"Merged agent/health-check\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 25,\n      \"job_id\": 2,\n      \"message\": \"Job #2 blocked\",\n      \"phase\": \"blocked\",\n      \"state\": \"error\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/health-check\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"1\",\n    \"deploy_sha\": \"\",\n    \"finished_at\": \"2026-10-11T16:26:02Z\",\n    \"head_sha\": \"db1b5be5c62a0f5272d9fa1f35fe0c690d09c7e8\",\n    \"id\": 2,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-1-20261011T162601-99a90dca.log\",\n    \"note\": \"semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ f423eb5143ee); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"not_run\",\n    \"requested_at\": \"2026-10-11T16:26:00Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"status\": \"blocked\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"add a timeout-aware health check\",\n    \"train_id\": \"\",\n    \"train_size\": 0,\n    \"validated_at\": \"\",\n    \"validated_head_sha\": \"\",\n    \"validation_base_sha\": \"\",\n    \"validation_environment_sha\": \"\",\n    \"validation_gate_policy_sha\": \"\",\n    \"validation_sha\": \"\",\n    \"validation_train_sha\": \"\",\n    \"validation_tree_sha\": \"\",\n    \"verify_status\": \"not_run\",\n    \"worktree_path\": \"$DEMO/agents/health-check\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"semantic_conflict\",\n    \"failure_category\": \"semantic_conflict\",\n    \"message\": \"semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ f423eb5143ee); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2\",\n    \"message_truncated\": false,\n    \"severity\": \"failure\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 1.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 40,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"All train gates passed\",\n    \"message_truncated\": false,\n    \"phase\": \"gating\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:03Z\"\n  },\n  \"train\": null\n}\n",
+      "stderr": "",
+      "seconds": 0.079
+    },
+    {
+      "step": 5,
+      "command": "mergetrain --repo $DEMO/repo inspect 3 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "3",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 9,\n      \"job_id\": 3,\n      \"message\": \"Merging agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 10,\n      \"job_id\": 3,\n      \"message\": \"Merged agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 30,\n      \"job_id\": 3,\n      \"message\": \"Merging agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 31,\n      \"job_id\": 3,\n      \"message\": \"Merged agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 41,\n      \"job_id\": 3,\n      \"message\": \"Job #3 validated\",\n      \"phase\": \"ready\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/add-retries\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"\",\n    \"deploy_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"finished_at\": \"\",\n    \"head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n    \"id\": 3,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162602-5be7a57b.log\",\n    \"note\": \"batch ok; merged 2 job(s)\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"not_run\",\n    \"requested_at\": \"2026-10-11T16:26:01Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"status\": \"validated\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"add retry policy\",\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2,\n    \"validated_at\": \"2026-10-11T16:26:03Z\",\n    \"validated_head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n    \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n    \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n    \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n    \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n    \"verify_status\": \"not_run\",\n    \"worktree_path\": \"$DEMO/agents/add-retries\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"validated\",\n    \"failure_category\": null,\n    \"message\": \"batch ok; merged 2 job(s)\",\n    \"message_truncated\": false,\n    \"severity\": \"success\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 2.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 41,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"Job #3 validated\",\n    \"message_truncated\": false,\n    \"phase\": \"ready\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:03Z\"\n  },\n  \"train\": {\n    \"jobs\": [\n      {\n        \"branch\": \"agent/add-retries\",\n        \"id\": 3,\n        \"outcome\": {\n          \"category\": \"validated\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"validated\"\n      },\n      {\n        \"branch\": \"agent/request-logging\",\n        \"id\": 4,\n        \"outcome\": {\n          \"category\": \"validated\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"validated\"\n      }\n    ],\n    \"outcome\": {\n      \"category\": \"train_completed\",\n      \"failure_categories\": [],\n      \"failures\": [],\n      \"severity\": \"success\",\n      \"status_counts\": {\n        \"validated\": 2\n      },\n      \"warning_categories\": [],\n      \"warnings\": []\n    },\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2\n  }\n}\n",
+      "stderr": "",
+      "seconds": 0.086
+    },
+    {
+      "step": 5,
+      "command": "mergetrain --repo $DEMO/repo inspect 4 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "4",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 11,\n      \"job_id\": 4,\n      \"message\": \"Merging agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 12,\n      \"job_id\": 4,\n      \"message\": \"Merged agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 32,\n      \"job_id\": 4,\n      \"message\": \"Merging agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 33,\n      \"job_id\": 4,\n      \"message\": \"Merged agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 42,\n      \"job_id\": 4,\n      \"message\": \"Job #4 validated\",\n      \"phase\": \"ready\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/request-logging\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"\",\n    \"deploy_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"finished_at\": \"\",\n    \"head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n    \"id\": 4,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162602-5be7a57b.log\",\n    \"note\": \"batch ok; merged 2 job(s)\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"not_run\",\n    \"requested_at\": \"2026-10-11T16:26:01Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"status\": \"validated\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"add request logging\",\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2,\n    \"validated_at\": \"2026-10-11T16:26:03Z\",\n    \"validated_head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n    \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n    \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n    \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n    \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n    \"verify_status\": \"not_run\",\n    \"worktree_path\": \"$DEMO/agents/request-logging\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"validated\",\n    \"failure_category\": null,\n    \"message\": \"batch ok; merged 2 job(s)\",\n    \"message_truncated\": false,\n    \"severity\": \"success\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 2.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 42,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"Job #4 validated\",\n    \"message_truncated\": false,\n    \"phase\": \"ready\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:03Z\"\n  },\n  \"train\": {\n    \"jobs\": [\n      {\n        \"branch\": \"agent/add-retries\",\n        \"id\": 3,\n        \"outcome\": {\n          \"category\": \"validated\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"validated\"\n      },\n      {\n        \"branch\": \"agent/request-logging\",\n        \"id\": 4,\n        \"outcome\": {\n          \"category\": \"validated\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"validated\"\n      }\n    ],\n    \"outcome\": {\n      \"category\": \"train_completed\",\n      \"failure_categories\": [],\n      \"failures\": [],\n      \"severity\": \"success\",\n      \"status_counts\": {\n        \"validated\": 2\n      },\n      \"warning_categories\": [],\n      \"warnings\": []\n    },\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2\n  }\n}\n",
+      "stderr": "",
+      "seconds": 0.08
+    },
+    {
+      "step": 6,
+      "command": "mergetrain --repo $DEMO/repo inspect 1 --event-limit 3 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "1",
+        "--event-limit",
+        "3",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/faster-timeout\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"2\",\n    \"deploy_sha\": \"\",\n    \"finished_at\": \"2026-10-11T16:26:02Z\",\n    \"head_sha\": \"f423eb5143ee3cba65fce40621631a9723c6aefc\",\n    \"id\": 1,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-1-20261011T162601-99a90dca.log\",\n    \"note\": \"semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ db1b5be5c62a); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"not_run\",\n    \"requested_at\": \"2026-10-11T16:26:00Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"status\": \"blocked\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"reduce the default timeout\",\n    \"train_id\": \"\",\n    \"train_size\": 0,\n    \"validated_at\": \"\",\n    \"validated_head_sha\": \"\",\n    \"validation_base_sha\": \"\",\n    \"validation_environment_sha\": \"\",\n    \"validation_gate_policy_sha\": \"\",\n    \"validation_sha\": \"\",\n    \"validation_train_sha\": \"\",\n    \"validation_tree_sha\": \"\",\n    \"verify_status\": \"not_run\",\n    \"worktree_path\": \"$DEMO/agents/faster-timeout\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"semantic_conflict\",\n    \"failure_category\": \"semantic_conflict\",\n    \"message\": \"semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ db1b5be5c62a); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1\",\n    \"message_truncated\": false,\n    \"severity\": \"failure\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 1.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 40,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"All train gates passed\",\n    \"message_truncated\": false,\n    \"phase\": \"gating\",\n    \"started_at\": \"2026-10-11T16:26:01Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:03Z\"\n  },\n  \"train\": null\n}\n",
+      "stderr": "",
+      "seconds": 0.082
+    },
+    {
+      "step": 7,
+      "command": "mergetrain --repo $DEMO/repo dismiss --all --note 'demo: semantic conflict acknowledged; reconcile the pair and enqueue fresh commits'",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "dismiss",
+        "--all",
+        "--note",
+        "demo: semantic conflict acknowledged; reconcile the pair and enqueue fresh commits"
+      ],
+      "returncode": 0,
+      "stdout": "dismissed job 1: agent/faster-timeout\ndismissed job 2: agent/health-check\nnext action: deploy_when_approved\n",
+      "stderr": "",
+      "seconds": 0.084
+    },
+    {
+      "step": 7,
+      "command": "mergetrain --repo $DEMO/repo status",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status"
+      ],
+      "returncode": 0,
+      "stdout": "health: healthy\nREADY: 2 job(s) are ready to deploy\nnext: mergetrain deploy\napproval: deploy\n",
+      "stderr": "",
+      "seconds": 0.135
+    },
+    {
+      "step": 7,
+      "command": "mergetrain --repo $DEMO/repo status --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"attention_jobs\": [],\n  \"contract_version\": 5,\n  \"counts\": {\n    \"attention\": 0,\n    \"done\": 2,\n    \"ready\": 2,\n    \"running\": 0,\n    \"waiting\": 0\n  },\n  \"health\": \"healthy\",\n  \"next_action\": {\n    \"code\": \"deploy_when_approved\",\n    \"command\": \"mergetrain deploy\",\n    \"reason_code\": null,\n    \"requires_approval\": \"deploy\",\n    \"target_job_id\": null\n  },\n  \"ok\": true,\n  \"recent_jobs\": [\n    {\n      \"branch\": \"agent/request-logging\",\n      \"id\": 4,\n      \"outcome\": null,\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"ready\",\n      \"task\": \"add request logging\",\n      \"updated_at\": \"2026-10-11T16:26:01Z\"\n    },\n    {\n      \"branch\": \"agent/add-retries\",\n      \"id\": 3,\n      \"outcome\": null,\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"ready\",\n      \"task\": \"add retry policy\",\n      \"updated_at\": \"2026-10-11T16:26:01Z\"\n    },\n    {\n      \"branch\": \"agent/health-check\",\n      \"id\": 2,\n      \"outcome\": \"canceled\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"add a timeout-aware health check\",\n      \"updated_at\": \"2026-10-11T16:26:03Z\"\n    },\n    {\n      \"branch\": \"agent/faster-timeout\",\n      \"id\": 1,\n      \"outcome\": \"canceled\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"reduce the default timeout\",\n      \"updated_at\": \"2026-10-11T16:26:03Z\"\n    }\n  ],\n  \"state\": \"ready\",\n  \"summary\": \"2 job(s) are ready to deploy\",\n  \"warnings\": []\n}\n",
+      "stderr": "",
+      "seconds": 0.136
+    },
+    {
+      "step": 8,
+      "command": "mergetrain --repo $DEMO/repo deploy --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "deploy",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"deploy_plan_sha\": \"2f584ca42559e74f4f7403dd90b5421317ac15e955977106cc4e840d3183d542\",\n  \"jobs\": [\n    {\n      \"auto_deploy\": false,\n      \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n      \"branch\": \"agent/add-retries\",\n      \"cancel_requested_at\": \"\",\n      \"conflict_with\": \"\",\n      \"deploy_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n      \"finished_at\": \"\",\n      \"head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n      \"id\": 3,\n      \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162602-5be7a57b.log\",\n      \"note\": \"batch ok; merged 2 job(s)\",\n      \"note_truncated\": false,\n      \"pending_deploy_sha\": \"\",\n      \"push_status\": \"not_run\",\n      \"requested_at\": \"2026-10-11T16:26:01Z\",\n      \"reused_validation_sha\": \"\",\n      \"started_at\": \"2026-10-11T16:26:01Z\",\n      \"status\": \"validated\",\n      \"supersedes_train_id\": \"\",\n      \"supersession_id\": \"\",\n      \"task\": \"add retry policy\",\n      \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n      \"train_size\": 2,\n      \"validated_at\": \"2026-10-11T16:26:03Z\",\n      \"validated_head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n      \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n      \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n      \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n      \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n      \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n      \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n      \"verify_status\": \"not_run\",\n      \"worktree_path\": \"$DEMO/agents/add-retries\"\n    },\n    {\n      \"auto_deploy\": false,\n      \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n      \"branch\": \"agent/request-logging\",\n      \"cancel_requested_at\": \"\",\n      \"conflict_with\": \"\",\n      \"deploy_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n      \"finished_at\": \"\",\n      \"head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n      \"id\": 4,\n      \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162602-5be7a57b.log\",\n      \"note\": \"batch ok; merged 2 job(s)\",\n      \"note_truncated\": false,\n      \"pending_deploy_sha\": \"\",\n      \"push_status\": \"not_run\",\n      \"requested_at\": \"2026-10-11T16:26:01Z\",\n      \"reused_validation_sha\": \"\",\n      \"started_at\": \"2026-10-11T16:26:01Z\",\n      \"status\": \"validated\",\n      \"supersedes_train_id\": \"\",\n      \"supersession_id\": \"\",\n      \"task\": \"add request logging\",\n      \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n      \"train_size\": 2,\n      \"validated_at\": \"2026-10-11T16:26:03Z\",\n      \"validated_head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n      \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n      \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n      \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n      \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n      \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n      \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n      \"verify_status\": \"not_run\",\n      \"worktree_path\": \"$DEMO/agents/request-logging\"\n    }\n  ],\n  \"ok\": true,\n  \"push_plan\": {\n    \"atomic\": true,\n    \"audit_ref\": {\n      \"retention\": \"permanent\",\n      \"source\": \"DEPLOY_SHA\",\n      \"spec\": \"DEPLOY_SHA:refs/mergetrain/deploys/<DEPLOY_SHA>\",\n      \"target\": \"refs/mergetrain/deploys/<DEPLOY_SHA>\"\n    },\n    \"destination_sha\": \"a4d40ac2dd39479d30cd43e16fc2c56a890238b798e8b5b5cb7c7f0d2a06da03\",\n    \"fetch_url\": \"$DEMO/remote.git\",\n    \"refs\": [\n      {\n        \"source\": \"HEAD\",\n        \"spec\": \"HEAD:main\",\n        \"target\": \"main\"\n      }\n    ],\n    \"remote\": \"origin\",\n    \"url\": \"$DEMO/remote.git\"\n  },\n  \"result\": \"confirmation_required\",\n  \"reuse\": {\n    \"action\": \"rerun\",\n    \"authorized\": false,\n    \"eligible\": false,\n    \"estimated_savings\": {\n      \"authorizes_reuse\": false,\n      \"basis\": \"sum_of_per_gate_medians\",\n      \"candidate_gate_count\": 2,\n      \"confidence\": \"low\",\n      \"coverage\": 1.0,\n      \"mode\": \"potential\",\n      \"sample_count\": 1,\n      \"sample_limit_per_gate\": 20,\n      \"seconds\": 0.0,\n      \"timed_gate_count\": 2\n    },\n    \"evaluation\": \"exact\",\n    \"gates\": [\n      {\n        \"action\": \"potential_reuse\",\n        \"always_rerun_on_deploy\": false,\n        \"name\": \"diff-check\",\n        \"parallel_group\": \"\",\n        \"reason_code\": \"authorization_required\",\n        \"scope\": {\n          \"kind\": \"all_changes\",\n          \"paths\": []\n        },\n        \"timing\": {\n          \"median_seconds\": 0.0,\n          \"sample_count\": 2\n        },\n        \"workers\": 1\n      },\n      {\n        \"action\": \"potential_reuse\",\n        \"always_rerun_on_deploy\": false,\n        \"name\": \"tests\",\n        \"parallel_group\": \"\",\n        \"reason_code\": \"authorization_required\",\n        \"scope\": {\n          \"kind\": \"all_changes\",\n          \"paths\": []\n        },\n        \"timing\": {\n          \"median_seconds\": 0.0,\n          \"sample_count\": 1\n        },\n        \"workers\": 1\n      }\n    ],\n    \"identity_checks\": [\n      {\n        \"actual\": false,\n        \"code\": \"authorization\",\n        \"detail\": \"validated gate reuse is not authorized\",\n        \"expected\": true,\n        \"status\": \"mismatch\"\n      }\n    ],\n    \"reasons\": [\n      \"validated gate reuse is not authorized\"\n    ],\n    \"reused_validation_sha\": \"\",\n    \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\"\n  },\n  \"warnings\": []\n}\n",
+      "stderr": "",
+      "seconds": 0.111
+    },
+    {
+      "step": 8,
+      "command": "mergetrain --repo $DEMO/repo deploy --expected-plan 2f584ca42559e74f4f7403dd90b5421317ac15e955977106cc4e840d3183d542",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "deploy",
+        "--expected-plan",
+        "2f584ca42559e74f4f7403dd90b5421317ac15e955977106cc4e840d3183d542"
+      ],
+      "returncode": 0,
+      "stdout": "#3 deployed (push=succeeded, verify=succeeded): agent/add-retries\n#4 deployed (push=succeeded, verify=succeeded): agent/request-logging\n",
+      "stderr": "",
+      "seconds": 0.708
+    },
+    {
+      "step": 8,
+      "command": "mergetrain --repo $DEMO/repo inspect 3 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "3",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 9,\n      \"job_id\": 3,\n      \"message\": \"Merging agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 10,\n      \"job_id\": 3,\n      \"message\": \"Merged agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 30,\n      \"job_id\": 3,\n      \"message\": \"Merging agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 31,\n      \"job_id\": 3,\n      \"message\": \"Merged agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 41,\n      \"job_id\": 3,\n      \"message\": \"Job #3 validated\",\n      \"phase\": \"ready\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"mode=deploy\",\n      \"id\": 43,\n      \"job_id\": null,\n      \"message\": \"Deploy runner claimed 2 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 44,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 45,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 46,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 47,\n      \"job_id\": 3,\n      \"message\": \"Merging agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 48,\n      \"job_id\": 3,\n      \"message\": \"Merged agent/add-retries\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 51,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 52,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 53,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 54,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 55,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 56,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 57,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 58,\n      \"job_id\": null,\n      \"message\": \"Pushing verified HEAD atomically\",\n      \"phase\": \"pushing\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 59,\n      \"job_id\": null,\n      \"message\": \"Atomic push completed\",\n      \"phase\": \"pushing\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 60,\n      \"job_id\": null,\n      \"message\": \"Running post-push verification\",\n      \"phase\": \"verifying\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 61,\n      \"job_id\": null,\n      \"message\": \"Post-push verification passed\",\n      \"phase\": \"verifying\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 62,\n      \"job_id\": 3,\n      \"message\": \"Job #3 deployed\",\n      \"phase\": \"complete\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/add-retries\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"\",\n    \"deploy_sha\": \"bd08ec3795c40a3ebdf9c6b1fbec4bd4c7df614a\",\n    \"finished_at\": \"2026-10-11T16:26:04Z\",\n    \"head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n    \"id\": 3,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162604-229d9040.log\",\n    \"note\": \"batch ok; merged 2 job(s)\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"succeeded\",\n    \"requested_at\": \"2026-10-11T16:26:01Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:04Z\",\n    \"status\": \"deployed\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"add retry policy\",\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2,\n    \"validated_at\": \"2026-10-11T16:26:03Z\",\n    \"validated_head_sha\": \"db13cfbe412c6293c2fa4db617b494f5a590b73a\",\n    \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n    \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n    \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n    \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n    \"verify_status\": \"succeeded\",\n    \"worktree_path\": \"$DEMO/agents/add-retries\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"deployed\",\n    \"failure_category\": null,\n    \"message\": \"batch ok; merged 2 job(s)\",\n    \"message_truncated\": false,\n    \"severity\": \"success\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 0.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 62,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"Job #3 deployed\",\n    \"message_truncated\": false,\n    \"phase\": \"complete\",\n    \"started_at\": \"2026-10-11T16:26:04Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:04Z\"\n  },\n  \"train\": {\n    \"jobs\": [\n      {\n        \"branch\": \"agent/add-retries\",\n        \"id\": 3,\n        \"outcome\": {\n          \"category\": \"deployed\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"deployed\"\n      },\n      {\n        \"branch\": \"agent/request-logging\",\n        \"id\": 4,\n        \"outcome\": {\n          \"category\": \"deployed\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"deployed\"\n      }\n    ],\n    \"outcome\": {\n      \"category\": \"train_completed\",\n      \"failure_categories\": [],\n      \"failures\": [],\n      \"severity\": \"success\",\n      \"status_counts\": {\n        \"deployed\": 2\n      },\n      \"warning_categories\": [],\n      \"warnings\": []\n    },\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2\n  }\n}\n",
+      "stderr": "",
+      "seconds": 0.084
+    },
+    {
+      "step": 8,
+      "command": "mergetrain --repo $DEMO/repo inspect 4 --json",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "inspect",
+        "4",
+        "--json"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"contract_version\": 5,\n  \"events\": [\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"mode=validate\",\n      \"id\": 1,\n      \"job_id\": null,\n      \"message\": \"Validation runner claimed 4 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 2,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 3,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 4,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 11,\n      \"job_id\": 4,\n      \"message\": \"Merging agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 12,\n      \"job_id\": 4,\n      \"message\": \"Merged agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 13,\n      \"job_id\": null,\n      \"message\": \"Assembled 4 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\",\n      \"id\": 14,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 15,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 16,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:01Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 17,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 18,\n      \"job_id\": null,\n      \"message\": \"Failed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"failure\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"exit_code=1\",\n      \"id\": 19,\n      \"job_id\": null,\n      \"message\": \"Train gate failed; probing 4 jobs for semantic conflicts\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 20,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 1: jobs [1, 2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 21,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 2: jobs [3, 4]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 22,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 3: jobs [1]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 23,\n      \"job_id\": null,\n      \"message\": \"Bisect probe 4: jobs [2]\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"bisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\",\n      \"id\": 26,\n      \"job_id\": null,\n      \"message\": \"Bisect isolation complete: 2 job(s) rejoin the train\",\n      \"phase\": \"gating\",\n      \"state\": \"warning\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 27,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 28,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 29,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:02Z\",\n      \"detail\": \"\",\n      \"id\": 32,\n      \"job_id\": 4,\n      \"message\": \"Merging agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 33,\n      \"job_id\": 4,\n      \"message\": \"Merged agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 34,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 35,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 36,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 37,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 38,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 39,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 40,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:03Z\",\n      \"detail\": \"\",\n      \"id\": 42,\n      \"job_id\": 4,\n      \"message\": \"Job #4 validated\",\n      \"phase\": \"ready\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"mode=deploy\",\n      \"id\": 43,\n      \"job_id\": null,\n      \"message\": \"Deploy runner claimed 2 job(s)\",\n      \"phase\": \"claiming\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 44,\n      \"job_id\": null,\n      \"message\": \"Fetching origin/main\",\n      \"phase\": \"fetching\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 45,\n      \"job_id\": null,\n      \"message\": \"Integration worktree prepared\",\n      \"phase\": \"fetching\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 46,\n      \"job_id\": null,\n      \"message\": \"Assembling train with 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 49,\n      \"job_id\": 4,\n      \"message\": \"Merging agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 50,\n      \"job_id\": 4,\n      \"message\": \"Merged agent/request-logging\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 51,\n      \"job_id\": null,\n      \"message\": \"Assembled 2 job(s)\",\n      \"phase\": \"assembling\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 52,\n      \"job_id\": null,\n      \"message\": \"Running train gates\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 53,\n      \"job_id\": null,\n      \"message\": \"Running gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"git diff --check refs/remotes/origin/main..HEAD\",\n      \"id\": 54,\n      \"job_id\": null,\n      \"message\": \"Passed gate 1/2: diff-check\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 55,\n      \"job_id\": null,\n      \"message\": \"Running gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\\\"$PYTHON\\\" -m unittest discover -s tests\",\n      \"id\": 56,\n      \"job_id\": null,\n      \"message\": \"Passed gate 2/2: tests\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 57,\n      \"job_id\": null,\n      \"message\": \"All train gates passed\",\n      \"phase\": \"gating\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 58,\n      \"job_id\": null,\n      \"message\": \"Pushing verified HEAD atomically\",\n      \"phase\": \"pushing\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 59,\n      \"job_id\": null,\n      \"message\": \"Atomic push completed\",\n      \"phase\": \"pushing\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 60,\n      \"job_id\": null,\n      \"message\": \"Running post-push verification\",\n      \"phase\": \"verifying\",\n      \"state\": \"active\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 61,\n      \"job_id\": null,\n      \"message\": \"Post-push verification passed\",\n      \"phase\": \"verifying\",\n      \"state\": \"success\"\n    },\n    {\n      \"created_at\": \"2026-10-11T16:26:04Z\",\n      \"detail\": \"\",\n      \"id\": 63,\n      \"job_id\": 4,\n      \"message\": \"Job #4 deployed\",\n      \"phase\": \"complete\",\n      \"state\": \"success\"\n    }\n  ],\n  \"job\": {\n    \"auto_deploy\": false,\n    \"base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"branch\": \"agent/request-logging\",\n    \"cancel_requested_at\": \"\",\n    \"conflict_with\": \"\",\n    \"deploy_sha\": \"bd08ec3795c40a3ebdf9c6b1fbec4bd4c7df614a\",\n    \"finished_at\": \"2026-10-11T16:26:04Z\",\n    \"head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n    \"id\": 4,\n    \"log_path\": \"$DEMO/repo/.mergetrain/logs/batch-3-20261011T162604-229d9040.log\",\n    \"note\": \"batch ok; merged 2 job(s)\",\n    \"note_truncated\": false,\n    \"pending_deploy_sha\": \"\",\n    \"push_status\": \"succeeded\",\n    \"requested_at\": \"2026-10-11T16:26:01Z\",\n    \"reused_validation_sha\": \"\",\n    \"started_at\": \"2026-10-11T16:26:04Z\",\n    \"status\": \"deployed\",\n    \"supersedes_train_id\": \"\",\n    \"supersession_id\": \"\",\n    \"task\": \"add request logging\",\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2,\n    \"validated_at\": \"2026-10-11T16:26:03Z\",\n    \"validated_head_sha\": \"5b96d888a97ddd54800417cf508ac6f2ff336777\",\n    \"validation_base_sha\": \"87f4eefde468e041bb55ff60b3702fd70f69d9cb\",\n    \"validation_environment_sha\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\",\n    \"validation_gate_policy_sha\": \"5cb3d2835d54e3092b8fa0559867ad18d9d1f694b038111abf16292ff49412d2\",\n    \"validation_sha\": \"bc0efe2259ff10783e048ec62f4a21745963cabf\",\n    \"validation_train_sha\": \"0dc29dd3fa6d8d385115c547091962872804aa865068591dbb241f6c7969ddc4\",\n    \"validation_tree_sha\": \"d46705d031c5404f3c9ba81e5852bcd9cfce6fed\",\n    \"verify_status\": \"succeeded\",\n    \"worktree_path\": \"$DEMO/agents/request-logging\"\n  },\n  \"ok\": true,\n  \"outcome\": {\n    \"category\": \"deployed\",\n    \"failure_category\": null,\n    \"message\": \"batch ok; merged 2 job(s)\",\n    \"message_truncated\": false,\n    \"severity\": \"success\",\n    \"warning_categories\": []\n  },\n  \"progress\": {\n    \"detail\": \"\",\n    \"elapsed_seconds\": 0.0,\n    \"gate\": null,\n    \"heartbeat_at\": \"\",\n    \"latest_event_id\": 63,\n    \"lease_expires_at\": \"\",\n    \"lease_liveness\": \"inactive\",\n    \"lost_lease\": false,\n    \"message\": \"Job #4 deployed\",\n    \"message_truncated\": false,\n    \"phase\": \"complete\",\n    \"started_at\": \"2026-10-11T16:26:04Z\",\n    \"state\": \"success\",\n    \"updated_at\": \"2026-10-11T16:26:04Z\"\n  },\n  \"train\": {\n    \"jobs\": [\n      {\n        \"branch\": \"agent/add-retries\",\n        \"id\": 3,\n        \"outcome\": {\n          \"category\": \"deployed\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"deployed\"\n      },\n      {\n        \"branch\": \"agent/request-logging\",\n        \"id\": 4,\n        \"outcome\": {\n          \"category\": \"deployed\",\n          \"failure_category\": null,\n          \"message\": \"batch ok; merged 2 job(s)\",\n          \"message_truncated\": false,\n          \"severity\": \"success\",\n          \"warning_categories\": []\n        },\n        \"status\": \"deployed\"\n      }\n    ],\n    \"outcome\": {\n      \"category\": \"train_completed\",\n      \"failure_categories\": [],\n      \"failures\": [],\n      \"severity\": \"success\",\n      \"status_counts\": {\n        \"deployed\": 2\n      },\n      \"warning_categories\": [],\n      \"warnings\": []\n    },\n    \"train_id\": \"436f1e8d495542139a1967f35ec41c1a\",\n    \"train_size\": 2\n  }\n}\n",
+      "stderr": "",
+      "seconds": 0.084
+    },
+    {
+      "step": 9,
+      "command": "mergetrain --repo $DEMO/repo status --limit 10",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status",
+        "--limit",
+        "10"
+      ],
+      "returncode": 0,
+      "stdout": "health: healthy\nIDLE: No active work; enqueue a clean task branch when ready\nnext: enqueue clean branch\n",
+      "stderr": "",
+      "seconds": 0.121
+    },
+    {
+      "step": 9,
+      "command": "mergetrain --repo $DEMO/repo status --json --limit 10",
+      "argv": [
+        "$PYTHON",
+        "-m",
+        "mergetrain",
+        "--repo",
+        "$DEMO/repo",
+        "status",
+        "--json",
+        "--limit",
+        "10"
+      ],
+      "returncode": 0,
+      "stdout": "{\n  \"attention_jobs\": [],\n  \"contract_version\": 5,\n  \"counts\": {\n    \"attention\": 0,\n    \"done\": 4,\n    \"ready\": 0,\n    \"running\": 0,\n    \"waiting\": 0\n  },\n  \"health\": \"healthy\",\n  \"next_action\": {\n    \"code\": \"enqueue_clean_branch\",\n    \"command\": null,\n    \"reason_code\": null,\n    \"requires_approval\": \"none\",\n    \"target_job_id\": null\n  },\n  \"ok\": true,\n  \"recent_jobs\": [\n    {\n      \"branch\": \"agent/request-logging\",\n      \"id\": 4,\n      \"outcome\": \"deployed\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"add request logging\",\n      \"updated_at\": \"2026-10-11T16:26:04Z\"\n    },\n    {\n      \"branch\": \"agent/add-retries\",\n      \"id\": 3,\n      \"outcome\": \"deployed\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"add retry policy\",\n      \"updated_at\": \"2026-10-11T16:26:04Z\"\n    },\n    {\n      \"branch\": \"agent/health-check\",\n      \"id\": 2,\n      \"outcome\": \"canceled\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"add a timeout-aware health check\",\n      \"updated_at\": \"2026-10-11T16:26:03Z\"\n    },\n    {\n      \"branch\": \"agent/faster-timeout\",\n      \"id\": 1,\n      \"outcome\": \"canceled\",\n      \"reason\": null,\n      \"reason_code\": null,\n      \"reason_truncated\": false,\n      \"state\": \"done\",\n      \"task\": \"reduce the default timeout\",\n      \"updated_at\": \"2026-10-11T16:26:03Z\"\n    }\n  ],\n  \"state\": \"idle\",\n  \"summary\": \"No active work; enqueue a clean task branch when ready\",\n  \"warnings\": []\n}\n",
+      "stderr": "",
+      "seconds": 0.119
+    },
+    {
+      "step": 9,
+      "command": "git --git-dir $DEMO/remote.git log --oneline --decorate --max-count=8 main",
+      "argv": [
+        "git",
+        "--git-dir",
+        "$DEMO/remote.git",
+        "log",
+        "--oneline",
+        "--decorate",
+        "--max-count=8",
+        "main"
+      ],
+      "returncode": 0,
+      "stdout": "bd08ec3 (HEAD -> main) Merge commit '5b96d888a97ddd54800417cf508ac6f2ff336777' into HEAD\ndb13cfb agent/add-retries\n5b96d88 agent/request-logging\n87f4eef seed demo project\n",
+      "stderr": "",
+      "seconds": 0.01
+    }
+  ],
+  "transcript": "\n=== 1/9 Bootstrap a disposable repository ===\nThe remote, Git identity, config, queue, and worktrees all live inside this sandbox.\n$ mergetrain init --project demo --write\nSandbox: $DEMO\nCreated four clean agent worktrees; no network or user Git config was used.\n\n=== 2/9 Check readiness ===\nstatus returns one machine-readable next action before any branch is enqueued.\n$ mergetrain status --diagnose --json\nready: health=healthy clean=true next=enqueue_clean_branch\n\n=== 3/9 Enqueue four agent branches ===\nEach branch is committed, clean, and SHA-pinned at enqueue time.\n$ mergetrain enqueue --branch agent/faster-timeout \u2026\nqueued job 1: reduce the default timeout (agent/faster-timeout)\n$ mergetrain enqueue --branch agent/health-check \u2026\nqueued job 2: add a timeout-aware health check (agent/health-check)\n$ mergetrain enqueue --branch agent/add-retries \u2026\nqueued job 3: add retry policy (agent/add-retries)\n$ mergetrain enqueue --branch agent/request-logging \u2026\nqueued job 4: add request logging (agent/request-logging)\n\n=== 4/9 Read the queue ===\nThe queue is FIFO and the runner lock is still free.\n$ mergetrain status --limit 10\nhealth: healthy\nWAITING: 4 job(s) are waiting for validation\n\n=== 5/9 Validate the combined train ===\nEvery request is green on its own, and Git merges all four cleanly. Only the combined tree is red, so the train bisects to find which pair actually disagrees.\n$ mergetrain validate\n#1 blocked: agent/faster-timeout\n#2 blocked: agent/health-check\n#3 validated: agent/add-retries\n#4 validated: agent/request-logging\nresult: partial\nbisect result: #1 \u2194 #2 blocked as the minimal failing set; #3 and #4 rejoined.\nresult: partial \u2014 exit 1 means read the result, not that nothing ran.\ntwo compatible requests were validated together.\n\n=== 6/9 Inspect the blocked request ===\nNeither branch is at fault alone, so the note names the partner instead of blaming one side, and says what to do about it.\n$ mergetrain inspect 1 --event-limit 3 --json\njob: #1 blocked \u00b7 agent/faster-timeout\nconflict_with: #2\noutcome: semantic_conflict\n\n=== 7/9 Dismiss the blocked request ===\nBlocked requests never self-clear. Dismissing the pair leaves the already validated two-request train ready for explicit approval.\n$ mergetrain dismiss --all --note 'demo: semantic conflict acknowledged; reconcile the pair and enqueue fresh commits'\ndismissed job 1: agent/faster-timeout\ndismissed job 2: agent/health-check\nnext action: deploy_when_approved\n$ mergetrain status\nhealth: healthy\nREADY: 2 job(s) are ready to deploy\n\n=== 8/9 Deploy the exact validated train ===\nOne command shows the exact plan; approval then rechecks and pushes atomically.\n$ mergetrain deploy\n#3 deployed (push=succeeded, verify=succeeded): agent/add-retries\n#4 deployed (push=succeeded, verify=succeeded): agent/request-logging\nresult: success \u2014 the atomic local-remote push and verify hook both completed.\n\n=== 9/9 Prove what landed ===\nFinal state and the bare remote show exactly the two compatible requests, in FIFO order, on main.\n$ mergetrain status --limit 10\nhealth: healthy\nIDLE: No active work; enqueue a clean task branch when ready\n$ git log --oneline main\nbd08ec3 (HEAD -> main) Merge commit '<agent-commit>' into HEAD\ndb13cfb agent/add-retries\n5b96d88 agent/request-logging\n87f4eef seed demo project\n",
+  "gate_failure_logs": [
+    {
+      "path": ".mergetrain/logs/batch-1-20261011T162601-99a90dca.log",
+      "text": "mergetrain batch starting at job 1\njobs: [1, 2, 3, 4]\nmode: validate\n\n$ git fetch origin\n\n$ git worktree add --detach $DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-2f629e60 refs/remotes/origin/main\nPreparing worktree (detached HEAD 87f4eef)\nHEAD is now at 87f4eef seed demo project\n\n## merge job 1: agent/faster-timeout\n\n$ git merge --no-edit f423eb5143ee3cba65fce40621631a9723c6aefc\nUpdating 87f4eef..f423eb5\nFast-forward\n app/config.py        | 2 +-\n tests/test_config.py | 2 +-\n 2 files changed, 2 insertions(+), 2 deletions(-)\n\n## merge job 2: agent/health-check\n\n$ git merge --no-edit db1b5be5c62a0f5272d9fa1f35fe0c690d09c7e8\nMerge made by the 'ort' strategy.\n app/health.py        | 1 +\n tests/test_health.py | 9 +++++++++\n 2 files changed, 10 insertions(+)\n create mode 100644 app/health.py\n create mode 100644 tests/test_health.py\n\n## merge job 3: agent/add-retries\n\n$ git merge --no-edit db13cfbe412c6293c2fa4db617b494f5a590b73a\nMerge made by the 'ort' strategy.\n app/retries.py        | 1 +\n tests/test_retries.py | 8 ++++++++\n 2 files changed, 9 insertions(+)\n create mode 100644 app/retries.py\n create mode 100644 tests/test_retries.py\n\n## merge job 4: agent/request-logging\n\n$ git merge --no-edit 5b96d888a97ddd54800417cf508ac6f2ff336777\nMerge made by the 'ort' strategy.\n app/request_logging.py        | 1 +\n tests/test_request_logging.py | 8 ++++++++\n 2 files changed, 9 insertions(+)\n create mode 100644 app/request_logging.py\n create mode 100644 tests/test_request_logging.py\n\n$ git diff --check refs/remotes/origin/main..HEAD\n\n## gate: tests\n\n$ /bin/sh -c '\"$PYTHON\" -m unittest discover -s tests'\n.F..\n======================================================================\nFAIL: test_budget_matches_config (test_health.HealthTests.test_budget_matches_config)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"$DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-2f629e60/tests/test_health.py\", line 9, in test_budget_matches_config\n    self.assertEqual(TIMEOUT_BUDGET, DEFAULT_TIMEOUT)\nAssertionError: 30 != 10\n\n----------------------------------------------------------------------\nRan 4 tests in 0.000s\n\nFAILED (failures=1)\n\ntrain gate failed; probing 4 merged jobs for semantic conflicts\n\n$ git worktree add --detach $DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-46db5e3e 87f4eefde468e041bb55ff60b3702fd70f69d9cb\nPreparing worktree (detached HEAD 87f4eef)\nHEAD is now at 87f4eef seed demo project\n\n## bisect probe 1: jobs [1, 2]\n\n$ git reset --hard 87f4eefde468e041bb55ff60b3702fd70f69d9cb\nHEAD is now at 87f4eef seed demo project\n\n$ git clean -fdx\n\n$ git merge --no-edit f423eb5143ee3cba65fce40621631a9723c6aefc\nUpdating 87f4eef..f423eb5\nFast-forward\n app/config.py        | 2 +-\n tests/test_config.py | 2 +-\n 2 files changed, 2 insertions(+), 2 deletions(-)\n\n$ git merge --no-edit db1b5be5c62a0f5272d9fa1f35fe0c690d09c7e8\nMerge made by the 'ort' strategy.\n app/health.py        | 1 +\n tests/test_health.py | 9 +++++++++\n 2 files changed, 10 insertions(+)\n create mode 100644 app/health.py\n create mode 100644 tests/test_health.py\n\n$ git diff --check refs/remotes/origin/main..HEAD\n\n## gate: tests\n\n$ /bin/sh -c '\"$PYTHON\" -m unittest discover -s tests'\n.F\n======================================================================\nFAIL: test_budget_matches_config (test_health.HealthTests.test_budget_matches_config)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"$DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-46db5e3e/tests/test_health.py\", line 9, in test_budget_matches_config\n    self.assertEqual(TIMEOUT_BUDGET, DEFAULT_TIMEOUT)\nAssertionError: 30 != 10\n\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nFAILED (failures=1)\n\n## bisect probe 2: jobs [3, 4]\n\n$ git reset --hard 87f4eefde468e041bb55ff60b3702fd70f69d9cb\nHEAD is now at 87f4eef seed demo project\n\n$ git clean -fdx\nRemoving app/__pycache__/\nRemoving tests/__pycache__/\n\n$ git merge --no-edit db13cfbe412c6293c2fa4db617b494f5a590b73a\nUpdating 87f4eef..db13cfb\nFast-forward\n app/retries.py        | 1 +\n tests/test_retries.py | 8 ++++++++\n 2 files changed, 9 insertions(+)\n create mode 100644 app/retries.py\n create mode 100644 tests/test_retries.py\n\n$ git merge --no-edit 5b96d888a97ddd54800417cf508ac6f2ff336777\nMerge made by the 'ort' strategy.\n app/request_logging.py        | 1 +\n tests/test_request_logging.py | 8 ++++++++\n 2 files changed, 9 insertions(+)\n create mode 100644 app/request_logging.py\n create mode 100644 tests/test_request_logging.py\n\n$ git diff --check refs/remotes/origin/main..HEAD\n\n## gate: tests\n\n$ /bin/sh -c '\"$PYTHON\" -m unittest discover -s tests'\n...\n----------------------------------------------------------------------\nRan 3 tests in 0.000s\n\nOK\n\n## bisect probe 3: jobs [1]\n\n$ git reset --hard 87f4eefde468e041bb55ff60b3702fd70f69d9cb\nHEAD is now at 87f4eef seed demo project\n\n$ git clean -fdx\nRemoving app/__pycache__/\nRemoving tests/__pycache__/\n\n$ git merge --no-edit f423eb5143ee3cba65fce40621631a9723c6aefc\nUpdating 87f4eef..f423eb5\nFast-forward\n app/config.py        | 2 +-\n tests/test_config.py | 2 +-\n 2 files changed, 2 insertions(+), 2 deletions(-)\n\n$ git diff --check refs/remotes/origin/main..HEAD\n\n## gate: tests\n\n$ /bin/sh -c '\"$PYTHON\" -m unittest discover -s tests'\n.\n----------------------------------------------------------------------\nRan 1 test in 0.000s\n\nOK\n\n## bisect probe 4: jobs [2]\n\n$ git reset --hard 87f4eefde468e041bb55ff60b3702fd70f69d9cb\nHEAD is now at 87f4eef seed demo project\n\n$ git clean -fdx\nRemoving app/__pycache__/\nRemoving tests/__pycache__/\n\n$ git merge --no-edit db1b5be5c62a0f5272d9fa1f35fe0c690d09c7e8\nUpdating 87f4eef..db1b5be\nFast-forward\n app/health.py        | 1 +\n tests/test_health.py | 9 +++++++++\n 2 files changed, 10 insertions(+)\n create mode 100644 app/health.py\n create mode 100644 tests/test_health.py\n\n$ git diff --check refs/remotes/origin/main..HEAD\n\n## gate: tests\n\n$ /bin/sh -c '\"$PYTHON\" -m unittest discover -s tests'\n..\n----------------------------------------------------------------------\nRan 2 tests in 0.000s\n\nOK\n\n$ git worktree remove --force $DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-46db5e3e\n\nbisect isolation: 4 probe(s), 0 failing alone, 2 in conflict, 2 rejoining\n\n$ git worktree remove --force $DEMO/repo/.mergetrain/worktrees/demo-mergetrain-1-2f629e60\n"
+    }
+  ]
+}

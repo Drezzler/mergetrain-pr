@@ -1,0 +1,24 @@
+{
+  "model": "gpt-6-astra",
+  "reasoning_effort": "high",
+  "generation_method": "Authenticated Codex CLI, ephemeral read-only structured response, image reference and captured CLI evidence; no tools executed by the model.",
+  "design_summary": "A continuous four-module workflow on Oddfini\u2019s warm light canvas. Stable colors identify each branch. One shared gate exposes the paired failure by second 4. The operator explicitly dismisses that pair before the compatible work proceeds through exact-plan authorization, default recheck, atomic push, and verification. Recorded receipts preserve evidence text, including whitespace, with character-safe wrapping. Matching poster and four-panel explainer use native SVG only.",
+  "original_module_sha256": "77835534ec22c9ee5f928230757df6a9510a6880ef39012eb32668452b9c4667",
+  "source_commit": "f09034ae77ed098156ba5bbed95557cad375cad1",
+  "runtime_version": "3.5.0",
+  "duration_seconds": 50,
+  "renderer": "Deterministic SVG frames, Sharp 0.35.5, FFmpeg H.264; no model inference at playback.",
+  "local_edits": "Selected actual final-deploy output instead of its dry-run plan, selected relevant inspect lines, omitted rendered trailing blank lines, stopped route lines before labels, and labeled results clearly. Archived CLI evidence text remains unchanged. Receipts wrap at spaces without changing characters.",
+  "brand_reference": "Published Oddfini mergetrain page; oddfini-web/site/styles.css light canvas, dark ink and blue accent; checked 2026-10-12.",
+  "delivered_assets": {
+    "mergetrain-demo.mp4": "6922dce0448d17354012e927b147884c0d39d4a25b549ddf4b3b1d4f7a5b2fa8",
+    "mergetrain-demo-poster.png": "7ca33032c7fbd0a67d84d11a0222d4b81f12e75dd7b4966818c7eed23e074b1b",
+    "mergetrain-demo.vtt": "a552151a74ee6c4cddd8a0191e505167a9f9e73d026f10f2239bcda06d96bb56",
+    "mergetrain-explainer-still.png": "a0b9a8e4a0f06fcf4902a07f7a09739f7b39a4c7d764062d33519d9c5c77d6e3",
+    "demo.gif": "cfb8c32aa5d359e895faa865d8d5773ed6e311f4994f07e6d111e2c8bc2af247",
+    "mergetrain-explainer.gif": "efd2ad215c6b6fde8b05756a443b5b6d757ececf31f9d5608d0f671156f6afc1"
+  },
+  "render_evidence_sha256": "5c57187ada09211fae0635040acebeb8d5a5f6c488d63674e77361ed9199bfd8",
+  "reproduction_check": "Freshly captured CLI results produce identical visible content in all 1200 frames and both static images.",
+  "operator_actions": "DemoWalkthrough scripts the explicit pair dismissal and --expected-plan authorization in a disposable sandbox. No human approval prompt or reply is fabricated."
+}

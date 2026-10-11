@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+### Documentation
+
+- Add a 50-second demo and matching explainer built from recorded CLI results.
+  Show the combined-only failure, explicit exclusion of the conflicting pair,
+  and approval, default recheck, atomic local-remote push, and verification.
+- Bring the demo forward in the README and embed a captioned video on the
+  public page. Refresh the full CLI recording to use the current commands.
+
+
 ## 3.5.0 - 2026-10-11
 
 ### Upgrade notes

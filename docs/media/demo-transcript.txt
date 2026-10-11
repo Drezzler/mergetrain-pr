@@ -1,0 +1,75 @@
+
+=== 1/9 Bootstrap a disposable repository ===
+The remote, Git identity, config, queue, and worktrees all live inside this sandbox.
+$ mergetrain init --project demo --write
+Sandbox: $DEMO
+Created four clean agent worktrees; no network or user Git config was used.
+
+=== 2/9 Check readiness ===
+status returns one machine-readable next action before any branch is enqueued.
+$ mergetrain status --diagnose --json
+ready: health=healthy clean=true next=enqueue_clean_branch
+
+=== 3/9 Enqueue four agent branches ===
+Each branch is committed, clean, and SHA-pinned at enqueue time.
+$ mergetrain enqueue --branch agent/faster-timeout …
+queued job 1: reduce the default timeout (agent/faster-timeout)
+$ mergetrain enqueue --branch agent/health-check …
+queued job 2: add a timeout-aware health check (agent/health-check)
+$ mergetrain enqueue --branch agent/add-retries …
+queued job 3: add retry policy (agent/add-retries)
+$ mergetrain enqueue --branch agent/request-logging …
+queued job 4: add request logging (agent/request-logging)
+
+=== 4/9 Read the queue ===
+The queue is FIFO and the runner lock is still free.
+$ mergetrain status --limit 10
+health: healthy
+WAITING: 4 job(s) are waiting for validation
+
+=== 5/9 Validate the combined train ===
+Every request is green on its own, and Git merges all four cleanly. Only the combined tree is red, so the train bisects to find which pair actually disagrees.
+$ mergetrain validate
+#1 blocked: agent/faster-timeout
+#2 blocked: agent/health-check
+#3 validated: agent/add-retries
+#4 validated: agent/request-logging
+result: partial
+bisect result: #1 ↔ #2 blocked as the minimal failing set; #3 and #4 rejoined.
+result: partial — exit 1 means read the result, not that nothing ran.
+two compatible requests were validated together.
+
+=== 6/9 Inspect the blocked request ===
+Neither branch is at fault alone, so the note names the partner instead of blaming one side, and says what to do about it.
+$ mergetrain inspect 1 --event-limit 3 --json
+job: #1 blocked · agent/faster-timeout
+conflict_with: #2
+outcome: semantic_conflict
+
+=== 7/9 Dismiss the blocked request ===
+Blocked requests never self-clear. Dismissing the pair leaves the already validated two-request train ready for explicit approval.
+$ mergetrain dismiss --all --note 'demo: semantic conflict acknowledged; reconcile the pair and enqueue fresh commits'
+dismissed job 1: agent/faster-timeout
+dismissed job 2: agent/health-check
+next action: deploy_when_approved
+$ mergetrain status
+health: healthy
+READY: 2 job(s) are ready to deploy
+
+=== 8/9 Deploy the exact validated train ===
+One command shows the exact plan; approval then rechecks and pushes atomically.
+$ mergetrain deploy
+#3 deployed (push=succeeded, verify=succeeded): agent/add-retries
+#4 deployed (push=succeeded, verify=succeeded): agent/request-logging
+result: success — the atomic local-remote push and verify hook both completed.
+
+=== 9/9 Prove what landed ===
+Final state and the bare remote show exactly the two compatible requests, in FIFO order, on main.
+$ mergetrain status --limit 10
+health: healthy
+IDLE: No active work; enqueue a clean task branch when ready
+$ git log --oneline main
+bd08ec3 (HEAD -> main) Merge commit '<agent-commit>' into HEAD
+db13cfb agent/add-retries
+5b96d88 agent/request-logging
+87f4eef seed demo project

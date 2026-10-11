@@ -11,7 +11,7 @@
     <meta property="og:title" content="Local merge queue for parallel LLM agents">
     <meta property="og:description" content="A local merge queue for parallel LLM agents in Git worktrees. Test combined code changes, require approval for Git pushes, and recover interrupted pushes.">
     <meta property="og:url" content="https://yongjip.github.io/mergetrain/">
-    <meta property="og:image" content="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer-still.png">
+    <meta property="og:image" content="https://yongjip.github.io/mergetrain/media/mergetrain-explainer-still.png">
     <meta name="twitter:card" content="summary_large_image">
     <link rel="icon" href="./favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="./styles.css">
@@ -34,8 +34,7 @@
   <body>
     <header class="nav shell">
       <a class="brand" href="#top" aria-label="mergetrain home">
-        <span class="brand-mark" aria-hidden="true">mt</span>
-        <span>mergetrain</span>
+        <span>mergetrain<small class="brand-credit">by Oddfini</small></span>
       </a>
       <nav aria-label="Primary navigation">
         <a href="#how">How it works</a>
@@ -51,7 +50,7 @@
           <h1>Finish in parallel.<br><span>Integrate safely.</span></h1>
           <p class="lede">mergetrain is a local merge queue for parallel LLM agents. These coding agents use large language models and work in Git worktrees. One runner merges queued branches in order, tests them together, and pushes the approved plan.</p>
           <div class="actions">
-            <a class="button primary" href="#demo">Run the 60-second demo</a>
+            <a class="button primary" href="#demo">Watch the 50-second demo</a>
             <a class="button secondary" href="https://github.com/yongjip/mergetrain">View on GitHub</a>
           </div>
           <p class="fine-print">Open source · Runs locally · No account or hosted control plane</p>
@@ -97,16 +96,29 @@
       </section>
 
       <section id="demo" class="section demo-band">
-        <div class="shell demo-grid">
-          <div>
-            <p class="eyebrow">See the real workflow</p>
-            <h2>A disposable demo in one command.</h2>
-            <p>It creates a temporary repository and runs real branches through ordered merge, combined-only failure, conflict attribution, and deployment.</p>
+        <div class="shell">
+          <p class="eyebrow">Watch what happens when branches disagree</p>
+          <h2>Each branch passes.<br>The combination fails.</h2>
+          <p class="demo-intro">A 50-second walkthrough with real mergetrain 3.5.0 output. Git merges four branches cleanly. Combined tests expose a conflict. The operator excludes the pair, then approves the two compatible branches.</p>
+          <video class="demo-video" controls playsinline preload="none" poster="./media/mergetrain-demo-poster.png" aria-label="50-second mergetrain demo with actual CLI results">
+            <source src="./media/mergetrain-demo.mp4" type="video/mp4">
+            <track kind="captions" src="./media/mergetrain-demo.vtt" srclang="en" label="English" default>
+            <p><a href="./media/mergetrain-demo.mp4">Download the demo video.</a></p>
+          </video>
+          <p class="demo-context">Recorded in a disposable repository with a local bare remote. The default pre-push checks and verification are part of the run.</p>
+          <div class="demo-followup">
+            <div>
+              <h3>Reproduce it locally</h3>
+              <div class="command"><div><span>$</span> uvx mergetrain demo</div></div>
+              <p>Use <code>--brief --pause</code> to read each step before continuing.</p>
+            </div>
+            <div>
+              <h3>Read the result</h3>
+              <p>All four branches pass alone. The combined tests fail. Jobs 1 and 2 are blocked as a pair. The operator dismisses that pair for this demo. Jobs 3 and 4 pass the default recheck, then deploy and verify successfully.</p>
+              <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json">Inspect the captured commands and output →</a>
+            </div>
           </div>
-          <div class="command">
-            <div><span>$</span> uvx mergetrain demo</div>
-            <span class="copy-label">one command</span>
-          </div>
+          <img class="demo-explainer" src="./media/mergetrain-explainer-still.png" alt="Separate branches pass; combined tests fail; the operator excludes the conflicting pair; the surviving train is approved, rechecked, pushed, and verified." width="1280" height="720" loading="lazy">
         </div>
       </section>
 

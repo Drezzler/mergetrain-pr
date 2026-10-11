@@ -35,3 +35,7 @@ dashboard/
 
 # OS
 .DS_Store
+
+# Canonical documentation media is staged here for the Pages build.
+site/media/
+docs/media/node_modules/

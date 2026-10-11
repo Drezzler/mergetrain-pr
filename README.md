@@ -23,6 +23,21 @@ telemetry. Queue and runner state stay on your machine. Only your configured
 Git remote and trusted gate or verification commands may contact external
 services.
 
+## Watch the 50-second demo
+
+Each branch passes its tests. Git merges them cleanly. The combined tests fail.
+mergetrain identifies the conflicting pair, then the operator excludes that
+pair and approves the two compatible branches for deployment.
+
+[![Watch the 50-second demo with real CLI output](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-demo-poster.png)](https://yongjip.github.io/mergetrain/#demo)
+
+[Watch the video](https://yongjip.github.io/mergetrain/#demo) ·
+[Read the recorded evidence](https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json) ·
+[Reproduce it locally](#run-the-real-demo)
+
+The animation uses results from mergetrain 3.5.0 in a disposable local Git
+repository and bare remote. Default checks run again before the atomic push.
+
 ## The problem
 
 Worktrees let several agents edit one repository without sharing a checkout.
@@ -33,11 +48,7 @@ Without a shared integration workflow, the operator chooses branch order and
 resolves cross-branch failures. The operator also reruns tests and controls
 pushes. Repeating these actions can slow parallel work.
 
-<p align="center">
-  <img src="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer.gif"
-       alt="Three coding agents enqueue branches. One runner assembles and tests their combined train before one atomic push."
-       width="720">
-</p>
+![Individually passing branches fail together. The operator excludes the conflicting pair and deploys the rechecked compatible train.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer-still.png)
 
 mergetrain records this workflow in a durable local queue:
 
@@ -90,7 +101,7 @@ Without credential separation and remote protection, mergetrain still provides
 safe train assembly and recovery semantics, but it cannot prevent a participant
 from bypassing the queue. See the [security boundary](https://github.com/yongjip/mergetrain/blob/main/docs/security.md#runner-and-task-agent-credentials).
 
-## See it in 60 seconds
+## Run the real demo
 
 ```sh
 uvx mergetrain demo
@@ -99,13 +110,18 @@ uvx mergetrain demo
 The demo creates a disposable repository and local bare remote, then runs four
 real branches through merges in enqueue order, a combined-only gate failure,
 conflict attribution, and deployment of the compatible train. Use `--keep` to
-inspect the result afterward.
+inspect the result afterward. Add `--brief --pause` to read each step before
+continuing.
+
+<details>
+<summary>Full CLI recording</summary>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/demo.gif"
-       alt="mergetrain's disposable one-minute workflow demonstration"
+       alt="Real CLI walkthrough: combined failure, explicit exclusion, approval, recheck, atomic local-remote push, and verification"
        width="900">
 </p>
+</details>
 
 ## Install and first run
 

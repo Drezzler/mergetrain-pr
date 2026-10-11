@@ -76,6 +76,16 @@ approval, leases, and push recovery. Classification: internal optimization of
 existing failure isolation. The command, config, MCP, and state baselines stay
 unchanged, and the owner has no additional choice to make.
 
+Documentation media correction (2026-10-12): the published 23.28-second GIF
+still shows the removed `run-batch` interface, while the explainer says gates
+run once despite the default pre-push recheck. A new capture on 3.5.0 proves
+four individual passes, a combined-only failure, explicit pair dismissal, and
+a successful two-job deployment to a disposable local remote. The README and
+existing public page now present that evidence with current commands and
+matching source-driven media. Classification: correction and presentation of
+existing documentation. No command, runtime config, MCP tool, product listener,
+queue policy, approval boundary, or baseline changes.
+
 ### Core
 
 - exact-SHA enqueue from a clean task worktree;

@@ -278,6 +278,52 @@ one.
 Supported and tested Python: 3.10 through 3.14. See the
 [release checklist](release.md) for the full publish flow.
 
+## Documentation media
+
+The 50-second film and explainer use actual mergetrain 3.5.0 CLI results from
+`docs/media/demo-evidence.json`. Four agent branches passed their unit tests
+individually. Combined validation blocked the conflicting pair. The demo
+operator explicitly dismissed that pair, then approved the compatible train.
+Default pre-push checks reran, and the atomic push and verification succeeded
+against a disposable local bare remote.
+
+The walkthrough script performs the demo operator actions. Its exact-plan
+authorization applies only to the disposable Git destination.
+
+The graphics explain this recorded workflow. They are illustrations, not
+screenshots of a graphical mergetrain application. Receipts use recorded stdout.
+Sandbox and installed-tool paths are normalized. Command labels display the
+Python module invocation as the equivalent console command. The evidence also
+contains the normalized original argument vectors. Output and exit codes are
+otherwise preserved. The complete transcript and gate-failure log are included
+with the evidence. Timings describe this one run, not a performance benchmark.
+
+GPT-6 Astra generated the SVG scene code from that evidence and the published
+Oddfini page. `docs/media/demo-production.json` records the model and original
+output hash. Playback does not call a model. Both images and all video frames
+come from `docs/media/demo-scenes.mjs`.
+
+To recapture evidence, use the reviewed checkout's Python environment:
+
+```sh
+PYTHONPATH=src python scripts/capture_demo_media.py
+```
+
+Review the recorded results before updating media. Rendering requires Node,
+Sharp, and FFmpeg. Install the documentation-only dependency separately:
+
+```sh
+npm --prefix docs/media install
+node scripts/render_demo_media.mjs
+```
+
+`--stills` exports only the SVGs, PNGs, and standalone explainer HTML. The full
+render produces a silent H.264 MP4 at 1280×720, 24 fps, and exactly 50 seconds.
+A 10-second preview GIF is exported from the opening scene. English captions are in `docs/images/mergetrain-demo.vtt`. Refresh the full CLI
+recording with `vhs docs/demo.tape`; the tape uses the current public commands.
+The Pages workflow stages the canonical media from `docs/images/` into
+`site/media/` before publishing. Do not commit a duplicate copy there.
+
 ## Dogfooding: mergetrain deploys mergetrain
 
 The repository commits its own `.mergetrain.yaml`, so `status --diagnose` reports real
