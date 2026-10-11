@@ -93,7 +93,7 @@ a side effect of a routine `brew upgrade`. Pin the version where the runner
 gets it:
 
 ```sh
-uv tool install mergetrain==3.4.1    # or: pipx install mergetrain==3.4.1
+uv tool install mergetrain==3.5.0    # or: pipx install mergetrain==3.5.0
 brew pin mergetrain                  # Homebrew: keep `brew upgrade` from moving it
 ```
 
@@ -101,7 +101,7 @@ brew pin mergetrain                  # Homebrew: keep `brew upgrade` from moving
   `mergetrain==${MERGETRAIN_VERSION}`.
 - If the repository has a Python development environment that the runner's
   gates already use, pin mergetrain there too, so every worktree that syncs it
-  resolves the same release: for example `mergetrain==3.4.1` in its
+  resolves the same release: for example `mergetrain==3.5.0` in its
   `requirements.txt` or in the `dev` extra of its `pyproject.toml`. GitHub's
   dependency graph reads those files, so the repository also appears among
   mergetrain's dependents.

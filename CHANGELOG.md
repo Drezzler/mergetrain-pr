@@ -1,6 +1,18 @@
 # Changelog
 
-## Unreleased
+## 3.5.0 - 2026-10-11
+
+### Upgrade notes
+
+- Machine contract **5** and config schema **2** are unchanged. No consumer
+  adaptation is required when upgrading from 3.4.x. When upgrading from 3.3.x,
+  apply the 3.4.0 migration below before changing the installation pin.
+- Failure-isolation gate counts can change for trains of two or three jobs.
+  The default pre-push gate rerun and failure-attribution rules remain in force.
+- At an idle execution boundary, restart previously authorized daemon and Hub
+  processes after installing 3.5.0. Refresh installed plugins and reload their
+  MCP servers. Preserve queued work and destination/policy approvals. Follow
+  the [upgrade procedure](docs/upgrading.md).
 
 ### Changes
 

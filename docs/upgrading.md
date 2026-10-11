@@ -211,7 +211,7 @@ and ask it to reread the project's instructions. Existing branches and commits
 can continue; this is not a reason to discard the task or recreate its queue.
 For example:
 
-> Continue the existing task with mergetrain target 3.4.1. Read the project's
+> Continue the existing task with mergetrain target 3.5.0. Read the project's
 > current agent instructions and the upgrade guide. Check the CLI, running
 > daemon, and MCP versions separately; adapt affected consumers using the
 > documented contract 4-to-5 migration. Preserve existing branches, queued SHAs,
