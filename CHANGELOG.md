@@ -4,6 +4,12 @@
 
 ### Documentation
 
+- Show continuing work across three recorded local deployments in the demo.
+  Commit the next batch during repair validation, refresh it onto the latest
+  applied result, and start real following drafts. Keep a fixed visual circuit
+  and active agents across the replay boundary. Publish overlap and remote-test
+  evidence, and refresh cached media URLs when the assets change.
+
 - Extend the introductory GIF to show an actual repair and resubmission loop.
   Keep the blocked pair available while compatible work deploys; show agent
   revision, fresh queue jobs, combined checks, approval, and final application.

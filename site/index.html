@@ -50,7 +50,7 @@
           <h1>Finish in parallel.<br><span>Integrate safely.</span></h1>
           <p class="lede">mergetrain is a local merge queue for parallel LLM agents. These coding agents use large language models and work in Git worktrees. One runner merges queued branches in order, tests them together, and pushes the approved plan.</p>
           <div class="actions">
-            <a class="button primary" href="#demo">See the repair loop</a>
+            <a class="button primary" href="#demo">See the work keep moving</a>
             <a class="button secondary" href="https://github.com/yongjip/mergetrain">View on GitHub</a>
           </div>
           <p class="fine-print">Open source · Runs locally · No account or hosted control plane</p>
@@ -97,33 +97,33 @@
 
       <section id="demo" class="section demo-band">
         <div class="shell">
-          <p class="eyebrow">18 seconds · no sound needed</p>
-          <h2>Keep building.<br>Check work together.</h2>
-          <p class="demo-intro">Two changes conflict. The other two move ahead. The agents revise the pair and submit it again for checking and approval.</p>
+          <p class="eyebrow">24 seconds · no sound needed</p>
+          <h2>Agents keep building.<br>Work keeps moving.</h2>
+          <p class="demo-intro">A fix returns to its agents. Other work moves ahead. While the fix is checked, the agents build the next changes on the latest result.</p>
           <div class="demo-loop" data-demo-loop>
             <div class="demo-loop-media">
-              <img data-loop-poster src="./media/mergetrain-loop-poster.png" width="960" height="800" alt="The repair loop: two changes move ahead; the conflicting pair returns to the AI agents for revision and resubmission before being checked and applied.">
-              <video data-loop-src="./media/mergetrain-loop.mp4" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png" width="960" height="800" aria-label="18-second silent summary of the recorded repair loop" aria-describedby="demo-summary">
+              <img data-loop-poster src="./media/mergetrain-loop-poster.png?v=59754502d0de" width="960" height="800" alt="A continuous circuit: agents build during checks, repair and resubmit work, then build the next changes on the latest applied result.">
+              <video data-loop-src="./media/mergetrain-loop.mp4?v=83f01a343327" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png?v=59754502d0de" width="960" height="800" aria-label="24-second silent summary of the recorded continuous workflow" aria-describedby="demo-summary">
               </video>
             </div>
             <div class="demo-loop-controls">
               <button hidden type="button" data-loop-toggle data-play="Play loop" data-pause="Pause loop">Play loop</button>
-              <a href="./media/mergetrain-loop.gif">View GIF</a>
-              <a href="./media/mergetrain-loop-poster.png">Still image</a>
+              <a href="./media/mergetrain-loop.gif?v=e93ceec892d8">View GIF</a>
+              <a href="./media/mergetrain-loop-poster.png?v=59754502d0de">Still image</a>
             </div>
             <p data-loop-status role="status" data-unavailable="Video unavailable. View the GIF instead."></p>
           </div>
-          <p class="demo-context" id="demo-summary">An illustration of a recorded local run. The capture scripts the agent-authored fix and operator approvals. mergetrain checks the resubmitted work; your agent or operator handles the repair. Timing is condensed.</p>
+          <p class="demo-context" id="demo-summary">Illustrated from a recorded local run with scripted changes and approvals. The agents build during checks and continue on the latest result. Timing is condensed.</p>
           <div class="demo-followup">
             <div>
               <h3>Try the basic demo</h3>
               <div class="command"><div><span>$</span> uvx mergetrain demo</div></div>
-              <p>Use <code>--brief --pause</code> to read each step. <a href="https://github.com/yongjip/mergetrain/blob/main/docs/development.md#documentation-media">Reproduce the extended repair loop.</a></p>
+              <p>Use <code>--brief --pause</code> to read each step. <a href="https://github.com/yongjip/mergetrain/blob/main/docs/development.md#documentation-media">Reproduce the continuous workflow.</a></p>
             </div>
             <div>
               <h3>Read the result</h3>
-              <p>The first deployment applies two compatible changes. The conflicting pair remains available for repair. After revision and resubmission, the second deployment applies both. Each deployment preserves approval and the default recheck. All four tests pass in a fresh clone of the final local remote.</p>
-              <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/repair-evidence.json">Inspect the captured commands and output →</a>
+              <p>Two compatible changes move ahead. The pair is repaired and resubmitted. During its check, two more changes are committed in separate worktrees. They refresh onto the repaired main and form the third deployment. All deployments retain approval and the default recheck. A fresh clone passes six tests; four following drafts start on that result.</p>
+              <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/cycle-evidence.json">Inspect the captured commands and output →</a>
             </div>
           </div>
         </div>

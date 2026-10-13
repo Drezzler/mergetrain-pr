@@ -280,47 +280,53 @@ Supported and tested Python: 3.10 through 3.14. See the
 
 ## Documentation media
 
-The introduction is an 18-second silent repair loop. Four work items enter a
-combined check; two move ahead after approval and the default recheck. The
-conflicting pair returns to its agents, is revised and resubmitted, then passes
-combined validation, approval, and the default recheck before being applied.
-A short dissolve repeats the same recorded run without a blank frame.
+The introduction is a 24-second silent cycle. A fixed circuit connects agents,
+combined checks, and the latest project. The compatible pair moves ahead while
+the conflicting pair returns for repair. During validation of the repair, the
+next two changes are authored, tested, and committed in separate worktrees.
+They build on the first deployment, refresh onto the repaired main, and pass a
+third approved deployment with the default recheck. A fresh clone of the final
+local remote passes six tests.
 
-The capture preserves the blocked jobs while deploying the compatible pair.
-It rebases both owning branches onto the first deployment and fixes the health
-check to derive its budget from the configured timeout. `retry` replaces jobs
-1 and 2 with fresh jobs 5 and 6. The drawing keeps the **work-item numbers** 1–4
-so viewers can follow the same work through the loop. A fresh clone of the
-final local remote passes all four tests.
+The capture finishes by creating four real drafts on that latest applied base.
+Those drafts are not submitted or validated. They close the illustration at the
+same active-work pose as the start. There is no completion screen or full-scene
+reset. The GIF repeats this finite recorded window; it does not claim that the
+capture ran an infinite development session.
 
-The fix was authored by an agent; the capture scripts that fix and both operator
-approvals for reproduction. It does not launch an AI agent. The CLI command
-`mergetrain demo` remains the shorter original walkthrough; use this repository
-capture for the complete repair loop. The capture uses a POSIX terminal and
-only a disposable local repository and bare remote.
+The changes are agent-authored; the script repeats them and the three operator
+approvals. It does not launch an AI agent. A capture-only gate barrier holds the
+repair validation process open while the next commits are made. The evidence
+records gate readiness, command start/end times, and the still-running validator.
+This is a deterministic overlap demonstration, not a throughput benchmark. The
+fixture does not change Mergetrain's queue, gates, approval rules, or default
+recheck. The ordinary `mergetrain demo` remains the shorter original walkthrough.
 
 ```sh
-PYTHONPATH=src python scripts/capture_demo_repair.py
+PYTHONPATH=src python scripts/capture_demo_cycle.py
 npm --prefix docs/media install
 node scripts/render_demo_loop.mjs
 node --test scripts/test_demo_loop.mjs scripts/test_demo_story.mjs
 ```
 
-`docs/media/repair-evidence.json` records commands, outputs, return codes, revised
-commits, replacement jobs, and remote verification. `repair-transcript.txt`
-contains the readable run. The renderer rejects missing repair, retry, deployment,
-or final-test evidence. No product CLI, approval policy, or daemon behavior is
-changed by this documentation workflow.
+The capture requires a POSIX terminal and only uses a disposable local repository
+and bare remote. `docs/media/cycle-evidence.json` records commands, outputs,
+return codes, overlap intervals, original and refreshed commits, replacement
+jobs, three remote heads, and final drafts. `cycle-transcript.txt` is the readable
+run. The renderer rejects missing repair, overlap, next-batch, deployment, final
+test or draft evidence. The earlier repair-only recording remains in
+`repair-evidence.json`, `repair-transcript.txt`, and `capture_demo_repair.py`.
 
 The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 20 fps), a
 silent H.264 MP4 (960×800, 24 fps, baseline profile, fast-start metadata), and a
 readable PNG poster. `docs/media/loop-production.json` contains evidence mapping,
-asset hashes, and sizes. `--stills` renders just the poster. The README embeds the
-GIF. The landing page loads the MP4 when visible, unless reduced motion or data
-saving is enabled. Playback failure restores the poster and allows retry. GIF
-and still-image links remain usable without JavaScript. Test on a real phone
-before claiming iOS or Android playback has been verified; a narrow desktop
-viewport only verifies layout.
+asset hashes, and sizes. It also updates content-version query strings in the
+README and landing page so returning visitors request the new files. `--stills`
+renders just the poster. The README embeds the GIF. The landing page loads the
+MP4 when visible, unless reduced motion or data saving is enabled. Playback
+failure restores the poster and allows retry. GIF and still-image links remain
+usable without JavaScript. Test on a real phone before claiming iOS or Android
+playback has been verified; a narrow desktop viewport only verifies layout.
 
 The original, longer production remains archived below for provenance.
 

@@ -25,27 +25,32 @@ services.
 
 ## Keep building through the fix
 
-Four AI changes pass on their own. Two conflict when checked together.
-The other two move ahead after approval and recheck. The agents revise the
-conflicting work and submit it again. mergetrain checks it with the applied
-work, then rechecks and applies the approved result.
+Agents keep building while earlier work is checked. A conflicting pair returns
+for repair; compatible work moves ahead. During the repair check, the next two
+changes are committed. They build on the applied result, pass their checks, and
+move ahead too. The agents then start the following work.
 
-[![18-second loop: two changes move ahead while the conflicting pair returns to the AI agents, is revised and resubmitted, then is checked and applied after approval.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif)](https://yongjip.github.io/mergetrain/#demo)
+[![24-second cycle: agents keep working during checks, repair and resubmit a conflicting pair, then submit the next batch on the latest applied result.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=e93ceec892d8)](https://yongjip.github.io/mergetrain/#demo)
 
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
-[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png) ·
-[Reproduce the repair loop](docs/development.md#documentation-media)
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=59754502d0de) ·
+[Reproduce the continuous workflow](docs/development.md#documentation-media)
 
 <details>
 <summary>How this demo was made</summary>
 
-This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/repair-evidence.json),
-not a graphical product interface. The capture repeats an agent-authored repair
-and scripts the operator approvals in a disposable local repository and bare
-remote. mergetrain checks and integrates the submitted work; your agent or
-operator handles the fix and resubmission. Numbers 1–4 track work items; retry
-creates new queue jobs for the revised pair. The 18 seconds condense one recorded
-run, replayed with a short dissolve; they are not a speed claim.
+This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/cycle-evidence.json),
+not a graphical product interface. Agent-authored changes and operator approvals
+are scripted in a disposable local repository and bare remote. A fixture gate
+wait makes the overlap reproducible: two next-batch commits finish while the
+repair validation process is still running. All three deployments retain
+approval and the default recheck. The final remote passes six tests.
+
+The four drafts at the end are real edits on the latest applied base. They are
+not submitted or presented as validated. Your agents or operator create, fix,
+refresh and resubmit the work; mergetrain checks and integrates it. The 24-second
+animation repeats this recorded window. It is not a speed claim or an infinite
+unattended-run claim.
 
 </details>
 
@@ -120,8 +125,9 @@ The demo creates a disposable repository and local bare remote, then runs four
 real branches through merges in enqueue order, a combined-only gate failure,
 conflict attribution, and deployment of the compatible train. Use `--keep` to
 inspect the result afterward. Add `--brief --pause` to read each step before
-continuing. The [extended repair recording](docs/development.md#documentation-media)
-adds revision, resubmission, and a second verified deployment.
+continuing. The [extended workflow recording](docs/development.md#documentation-media)
+adds repair, work committed during validation, the next batch, and three verified
+local deployments.
 
 <details>
 <summary>Full CLI recording</summary>

@@ -10,7 +10,7 @@ import {DURATION, WIDTH, HEIGHT, readStory, frameSvg} from '../docs/media/loop-s
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(new URL('../docs/media/package.json', import.meta.url));
 const sharp = require('sharp');
-const evidenceBytes = await fs.readFile(path.join(root, 'docs/media/repair-evidence.json'));
+const evidenceBytes = await fs.readFile(path.join(root, 'docs/media/cycle-evidence.json'));
 const evidence = JSON.parse(evidenceBytes);
 const story = readStory(evidence);
 const images = path.join(root, 'docs/images');
@@ -46,10 +46,17 @@ await fs.writeFile(path.join(root, 'docs/media/loop-production.json'), JSON.stri
   duration_seconds: DURATION, width: WIDTH, height: HEIGHT, frames_per_second: fps,
   audio: false, gif: {width: 720, height: 600, frames_per_second: 20},
   method: 'Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.',
-  design: 'One continuous scene: four work items are checked together; two move ahead after approval and recheck. The conflicting pair returns to its AI agents, is revised and resubmitted, then joins the project after combined validation, approval and default recheck. The item numbers stay 1–4; replacement queue jobs are 5 and 6. No narration.',
+  design: 'A fixed circuit connects agents, combined checks and the latest project. The original pair is repaired while other work advances. Two following changes are committed during repair validation, refreshed onto the repaired main, and deployed as the third train. Four real unsubmitted drafts join the final and initial poses. Cards are anonymous; the evidence rows preserve work and job identities. No full-scene dissolve or completion screen.',
   source_commit: evidence.source_commit, runtime_version: evidence.version, scope: evidence.scope,
-  operator_actions: 'The capture scripts the agent-authored repair and operator approvals for two deployments to a disposable local bare remote. The original blocked pair remains available for retry; no dismissal is used. Mergetrain does not launch an AI agent or author the fix.',
+  operator_actions: 'The capture scripts agent-authored changes and operator approvals for three deployments to a disposable local bare remote. A fixture gate barrier proves next-batch work overlaps validation; elapsed time is not a speed claim. Four final drafts are neither submitted nor validated. Mergetrain does not launch an AI agent or author changes.',
   evidence_sha256: createHash('sha256').update(evidenceBytes).digest('hex'),
   rows: story, assets: hashes,
 }, null, 2) + '\n');
+// Returning visitors must not combine the new story with an older cached file.
+for (const relative of ['README.md', 'site/index.html']) {
+  const filename = path.join(root, relative);
+  const source = await fs.readFile(filename, 'utf8');
+  await fs.writeFile(filename, source.replace(/(mergetrain-loop(?:\.gif|\.mp4|-poster\.png))(?:\?v=[a-f0-9]+)?/g,
+    (_, name) => name + '?v=' + hashes[name].sha256.slice(0, 12)));
+}
 console.log(JSON.stringify(hashes, null, 2));
