@@ -19,17 +19,18 @@ export function attachDemoLoop(player, {
     clearTimeout(timer);
     video.pause();
     label(false);
-    if (failed) {
+    if (failed || video.currentTime === 0) {
       video.hidden = true;
       poster.hidden = false;
-      status.textContent = status.dataset.unavailable;
     }
+    if (failed) status.textContent = status.dataset.unavailable;
   };
   const start = async () => {
     observer?.disconnect();
     const token = ++attempt;
     pending = true;
     wantsPlayback = true;
+    label(true);
     video.muted = true;
     video.hidden = false;
     poster.hidden = true;

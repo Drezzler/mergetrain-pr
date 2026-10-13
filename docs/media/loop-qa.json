@@ -7,7 +7,7 @@
   },
   "media": {
     "duration_seconds": 12,
-    "gif_frames": 120,
+    "gif_frames": 240,
     "gif_dimensions": [
       720,
       600
@@ -17,7 +17,8 @@
       800
     ],
     "codec": "H.264 constrained baseline, yuv420p, BT.709, fast-start",
-    "audio_streams": 0
+    "audio_streams": 0,
+    "gif_frames_per_second": 20
   },
   "browser": {
     "engine": "Codex in-app desktop browser",
@@ -39,11 +40,64 @@
     "complete_loop_played": true,
     "pause_and_resume": true,
     "gif_decoded": true,
-    "missing_video_fallback": "Visible poster and GIF link confirmed with a deliberately missing MP4 URL"
+    "missing_video_fallback": "Visible poster and GIF link confirmed with a deliberately missing MP4 URL",
+    "current_revision_rechecked": [
+      "390px EN and KO: no horizontal overflow",
+      "320px KO: no horizontal overflow; controls visible",
+      "Oddfini and Mergetrain pages: complete 12-second loop played",
+      "Pause keeps the current frame; resume continues playback",
+      "GIF link decoded at 720x600",
+      "Deliberately missing MP4: poster and GIF link remain visible"
+    ]
   },
   "limitations": [
     "Physical iOS and Android devices were not available for verification.",
     "The cause of the user-reported mobile failure is not established.",
     "Mobile-sized desktop viewports verify layout, not mobile browser compatibility."
-  ]
+  ],
+  "visual_iterations": [
+    {
+      "pass": 1,
+      "finding": "The approval label overlapped the conflict label; the final check container was empty.",
+      "change": "Separated the phases and added a final checks-passed result."
+    },
+    {
+      "pass": 2,
+      "finding": "The incoming cards overlapped the check label at mobile size.",
+      "change": "Delayed that label until the cards had gathered; enlarged numbered work items and kept the opening outcome visible longer."
+    },
+    {
+      "pass": 3,
+      "finding": "Pausing pending playback could leave the empty first frame visible.",
+      "change": "Show the pause label while loading and restore the poster when canceled before time advances; preserve an actual paused frame."
+    },
+    {
+      "pass": 4,
+      "finding": "A moving held card crossed the operator label.",
+      "change": "Kept the choice in the main caption and reduced the central operator mark to an icon; checked intermediate motion frames."
+    }
+  ],
+  "visual_review": {
+    "rendered_mobile_width": 360,
+    "transition_frames_seconds": [
+      1.9,
+      2.4,
+      4.95,
+      5.45,
+      5.65,
+      6.9,
+      8.9,
+      11.85
+    ],
+    "milestone_frames_seconds": [
+      0.7,
+      2.8,
+      3.9,
+      4.8,
+      6.8,
+      8,
+      9.2,
+      10.8
+    ]
+  }
 }

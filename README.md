@@ -35,10 +35,15 @@ applying them.
 [View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png) ·
 [Reproduce it locally](#run-the-real-demo)
 
+<details>
+<summary>How this demo was made</summary>
+
 This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json),
 not a graphical product interface. The recorded walkthrough scripts the operator's
 exclusion and approval in a disposable local repository and bare remote.
 The 12 seconds condense the story; they are not a speed claim.
+
+</details>
 
 ## The problem
 

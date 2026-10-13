@@ -35,7 +35,7 @@ for (let frame = 0; frame < DURATION * fps; frame++) {
 }
 encoder.stdin.end();
 await completion;
-const gif = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', `${base}.mp4`, '-vf', 'fps=10,scale=720:600:flags=lanczos,split[a][b];[a]palettegen=max_colors=96[p];[b][p]paletteuse=dither=none', '-loop', '0', `${base}.gif`], {stdio: 'inherit'});
+const gif = spawnSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', `${base}.mp4`, '-vf', 'fps=20,scale=720:600:flags=lanczos,split[a][b];[a]palettegen=max_colors=128[p];[b][p]paletteuse=dither=none', '-loop', '0', `${base}.gif`], {stdio: 'inherit'});
 if (gif.error || gif.status !== 0) throw gif.error || new Error('GIF export failed.');
 const hashes = {};
 for (const ext of ['.mp4', '.gif', '-poster.png', '-poster.svg']) {
@@ -44,9 +44,9 @@ for (const ext of ['.mp4', '.gif', '-poster.png', '-poster.svg']) {
 }
 await fs.writeFile(path.join(root, 'docs/media/loop-production.json'), JSON.stringify({
   duration_seconds: DURATION, width: WIDTH, height: HEIGHT, frames_per_second: fps,
-  audio: false, gif: {width: 720, height: 600, frames_per_second: 10},
+  audio: false, gif: {width: 720, height: 600, frames_per_second: 20},
   method: 'Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.',
-  design: 'Selected cobalt direction, four fixed work items, short captions, no narration.',
+  design: 'One continuous scene on a warm neutral background. Four work items gather, the operator holds the conflicting pair, approves the remaining pair, then the default recheck precedes their movement into the project. Cobalt marks checks and approval; amber and green distinguish held and applied outcomes. No narration.',
   source_commit: evidence.source_commit, runtime_version: evidence.version, scope: evidence.scope,
   operator_actions: 'The recorded walkthrough scripts explicit pair dismissal and exact-plan approval before the default recheck and verified push to a disposable local bare remote.',
   evidence_sha256: createHash('sha256').update(evidenceBytes).digest('hex'),

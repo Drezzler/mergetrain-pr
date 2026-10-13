@@ -7,10 +7,10 @@
   "gif": {
     "width": 720,
     "height": 600,
-    "frames_per_second": 10
+    "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "Selected cobalt direction, four fixed work items, short captions, no narration.",
+  "design": "One continuous scene on a warm neutral background. Four work items gather, the operator holds the conflicting pair, approves the remaining pair, then the default recheck precedes their movement into the project. Cobalt marks checks and approval; amber and green distinguish held and applied outcomes. No narration.",
   "source_commit": "f09034ae77ed098156ba5bbed95557cad375cad1",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
@@ -52,20 +52,20 @@
   ],
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 242696,
-      "sha256": "a7441cb5a2120825ec337806f06222e2ebf3d4ff26339b09ff8cfb36ac02f4eb"
+      "bytes": 336800,
+      "sha256": "ec18df74594037a9ae7c3928b11587dc99f8ba15db833a1d8596caf9b6cebe6d"
     },
     "mergetrain-loop.gif": {
-      "bytes": 235730,
-      "sha256": "fcfbe621f24bddd75ab8b5890b02372659716a7de1aba384997c7e759f92d32b"
+      "bytes": 839811,
+      "sha256": "c5d001ba8eac89e154fdc3d4176595f823aa97efd7bbc29eef465c66c739f318"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 69860,
-      "sha256": "7025d363044b0ace47d0b4c66244a51662b6692bab4d5a93c0b220946af0a724"
+      "bytes": 68985,
+      "sha256": "5f8934304120ed9976ff1ec75e9ad138e5e5444679e50607be2be2af08c7adde"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 3118,
-      "sha256": "4427de0389526d65eeb4db3696700f0367fe236ef7a8e672d481f069ae4b6582"
+      "bytes": 4160,
+      "sha256": "9e9f71daae181845b79c381e9bd64452f0add14e19e5c56fdcf4122293b65064"
     }
   }
 }

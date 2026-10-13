@@ -14,7 +14,7 @@ function fixture({blocked = false, reduced = false, saveData = false, delayed = 
   const button = new Element({play: 'Play loop', pause: 'Pause loop'});
   const status = new Element({unavailable: 'View the GIF instead.'});
   const video = new Element({loopSrc: 'demo.mp4'});
-  video.paused = true; video.loads = 0; video.plays = 0;
+  video.paused = true; video.currentTime = 0; video.loads = 0; video.plays = 0;
   video.load = () => { video.loads++; video.error = null; };
   video.play = async () => {
     video.plays++;
@@ -35,8 +35,10 @@ test('muted playback starts, and the visible button pauses and resumes it', asyn
   assert.equal(f.video.muted, true);
   assert.equal(f.video.paused, false);
   assert.equal(f.button.textContent, 'Pause loop');
+  f.video.currentTime = 4;
   f.button.fire('click');
   assert.equal(f.video.paused, true);
+  assert.equal(f.poster.hidden, true);
   assert.equal(f.button.textContent, 'Play loop');
   f.button.fire('click'); await settle();
   assert.equal(f.video.paused, false);
@@ -81,7 +83,11 @@ test('changing the motion preference stops a playing loop', async () => {
 
 test('a late play result cannot restart playback after the visitor cancels', async () => {
   const f = fixture({delayed: true});
+  assert.equal(f.button.textContent, 'Pause loop');
   f.button.fire('click');
+  assert.equal(f.poster.hidden, false);
+  assert.equal(f.video.hidden, true);
+  assert.equal(f.status.textContent, '');
   f.release(); await settle();
   assert.equal(f.video.paused, true);
   assert.equal(f.button.textContent, 'Play loop');

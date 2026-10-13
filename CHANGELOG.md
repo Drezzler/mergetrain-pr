@@ -7,7 +7,9 @@
 - Replace the long introductory video with a 12-second silent loop and a small
   README GIF. Add visible GIF and still-image fallbacks, playback retry, pause,
   reduced-motion support, and mobile-friendly text. Preserve recorded outcomes
-  and explicit operator approval in the explanation.
+  and explicit operator approval in the explanation. Show gathering, conflict,
+  approval, recheck, and application in one continuous scene. Restore the
+  poster when playback is canceled before the first frame advances.
 - Add a 50-second demo and matching explainer built from recorded CLI results.
   Show the combined-only failure, explicit exclusion of the conflicting pair,
   and approval, default recheck, atomic local-remote push, and verification.

@@ -281,7 +281,9 @@ Supported and tested Python: 3.10 through 3.14. See the
 ## Documentation media
 
 The current introduction is a 12-second silent loop. `docs/media/loop-scenes.mjs`
-maps each of the four recorded branches to a short label. The renderer fails
+maps each recorded branch to the numbered work item with the same job ID.
+The items gather for a combined check, then move to held or applied destinations.
+Operator choice, approval, and the default recheck appear before application. The renderer fails
 unless the individual passes, paired failure, explicit dismissal, and approved
 deployment are present in `docs/media/demo-evidence.json`. It condenses time and
 summarizes outcomes; it is neither a benchmark nor a graphical application UI.
@@ -292,7 +294,7 @@ node scripts/render_demo_loop.mjs
 node --test scripts/test_demo_loop.mjs
 ```
 
-The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 10 fps), a
+The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 20 fps), a
 silent H.264 MP4 (960×800, 24 fps, baseline profile, fast-start metadata), and a
 readable PNG poster. `docs/media/loop-production.json` contains evidence mapping,
 asset hashes, and sizes. `--stills` renders just the poster. The README embeds the
