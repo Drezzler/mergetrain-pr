@@ -206,12 +206,13 @@ def main():
             "captured_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
             "method": "Agent-authored changes and operator approvals are scripted. A fixture gate barrier proves next-batch commits occur during validation. Mergetrain does not launch an AI agent. The final four drafts are not submitted or claimed as validated.",
-            "normalization": "Local paths become $DEMO, $PYTHON and $MERGETRAIN; PTY CRLF becomes LF. Output and measured timings are otherwise unchanged; fixture wait time is not a performance benchmark.",
+            "normalization": "Local paths become $DEMO, $PYTHON and $MERGETRAIN; PTY CRLF becomes LF. The readable transcript trims trailing whitespace; JSON output and measured timings are otherwise unchanged. Fixture wait time is not a performance benchmark.",
             "records": run.records, "proof": proof,
         }
         base = ROOT / "docs/media"
         (base / "cycle-evidence.json").write_text(json.dumps(evidence, indent=2) + "\n")
-        (base / "cycle-transcript.txt").write_text(run.normalize(stdout.getvalue() + stderr.getvalue()))
+        transcript = run.normalize(stdout.getvalue() + stderr.getvalue())
+        (base / "cycle-transcript.txt").write_text("\n".join(line.rstrip() for line in transcript.splitlines()) + "\n")
         print(json.dumps({"records": len(run.records), "overlap": proof["overlap"],
                           "next_batch": proof["next_batch"], "final_remote_tests": proof["final_remote_tests"]}, indent=2))
     except BaseException:

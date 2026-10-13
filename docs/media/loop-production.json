@@ -15,7 +15,7 @@
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
   "operator_actions": "The capture scripts agent-authored changes and operator approvals for three deployments to a disposable local bare remote. A fixture gate barrier proves next-batch work overlaps validation; elapsed time is not a speed claim. Four final drafts are neither submitted nor validated. Mergetrain does not launch an AI agent or author changes.",
-  "evidence_sha256": "7343ec3405b0854e2c781fd7b6984554e4e1cac539a88ca65a214b1464301183",
+  "evidence_sha256": "f49bbd8c7fe3c4bb510756d31c4ffa8916448a4109313531bbb95766221592b2",
   "rows": [
     {
       "id": 1,

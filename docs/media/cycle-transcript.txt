@@ -432,7 +432,7 @@ $ $PYTHON -B -m unittest discover -s tests
 $ $PYTHON -B -m unittest discover -s tests
 #5 validated: agent/faster-timeout
 #6 validated: agent/health-check
- 
+
 $ mergetrain --repo $DEMO/repo status --json
 {
   "attention_jobs": [],
@@ -895,7 +895,7 @@ index da26022..bfe32b9 100644
 +++ b/app/backoff.py
 @@ -1,4 +1,4 @@
  from app.retries import MAX_RETRIES
- 
+
 -def retry_delays():
 -    return [2 ** attempt for attempt in range(MAX_RETRIES)]
 +def retry_delays(cap=8):
@@ -907,7 +907,7 @@ index dde7212..91f4e64 100644
 +++ b/app/log_entry.py
 @@ -1,4 +1,4 @@
  from app.request_logging import LOG_REQUESTS
- 
+
 -def request_entry(method, path):
 -    return {'method': method, 'path': path} if LOG_REQUESTS else None
 +def request_entry(method, path, request_id=None):
@@ -919,7 +919,7 @@ index 066a291..89357d1 100644
 +++ b/app/health.py
 @@ -1,3 +1,6 @@
  from app.config import DEFAULT_TIMEOUT
- 
+
  TIMEOUT_BUDGET = DEFAULT_TIMEOUT
 +
 +def health_response():
