@@ -280,19 +280,37 @@ Supported and tested Python: 3.10 through 3.14. See the
 
 ## Documentation media
 
-The current introduction is a 12-second silent loop. `docs/media/loop-scenes.mjs`
-maps each recorded branch to the numbered work item with the same job ID.
-The items gather for a combined check, then move to held or applied destinations.
-Operator choice, approval, and the default recheck appear before application. The renderer fails
-unless the individual passes, paired failure, explicit dismissal, and approved
-deployment are present in `docs/media/demo-evidence.json`. It condenses time and
-summarizes outcomes; it is neither a benchmark nor a graphical application UI.
+The introduction is an 18-second silent repair loop. Four work items enter a
+combined check; two move ahead after approval and the default recheck. The
+conflicting pair returns to its agents, is revised and resubmitted, then passes
+combined validation, approval, and the default recheck before being applied.
+A short dissolve repeats the same recorded run without a blank frame.
+
+The capture preserves the blocked jobs while deploying the compatible pair.
+It rebases both owning branches onto the first deployment and fixes the health
+check to derive its budget from the configured timeout. `retry` replaces jobs
+1 and 2 with fresh jobs 5 and 6. The drawing keeps the **work-item numbers** 1–4
+so viewers can follow the same work through the loop. A fresh clone of the
+final local remote passes all four tests.
+
+The fix was authored by an agent; the capture scripts that fix and both operator
+approvals for reproduction. It does not launch an AI agent. The CLI command
+`mergetrain demo` remains the shorter original walkthrough; use this repository
+capture for the complete repair loop. The capture uses a POSIX terminal and
+only a disposable local repository and bare remote.
 
 ```sh
+PYTHONPATH=src python scripts/capture_demo_repair.py
 npm --prefix docs/media install
 node scripts/render_demo_loop.mjs
-node --test scripts/test_demo_loop.mjs
+node --test scripts/test_demo_loop.mjs scripts/test_demo_story.mjs
 ```
+
+`docs/media/repair-evidence.json` records commands, outputs, return codes, revised
+commits, replacement jobs, and remote verification. `repair-transcript.txt`
+contains the readable run. The renderer rejects missing repair, retry, deployment,
+or final-test evidence. No product CLI, approval policy, or daemon behavior is
+changed by this documentation workflow.
 
 The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 20 fps), a
 silent H.264 MP4 (960×800, 24 fps, baseline profile, fast-start metadata), and a

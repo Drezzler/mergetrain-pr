@@ -10,14 +10,14 @@ import {DURATION, WIDTH, HEIGHT, readStory, frameSvg} from '../docs/media/loop-s
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(new URL('../docs/media/package.json', import.meta.url));
 const sharp = require('sharp');
-const evidenceBytes = await fs.readFile(path.join(root, 'docs/media/demo-evidence.json'));
+const evidenceBytes = await fs.readFile(path.join(root, 'docs/media/repair-evidence.json'));
 const evidence = JSON.parse(evidenceBytes);
 const story = readStory(evidence);
 const images = path.join(root, 'docs/images');
 const base = path.join(images, 'mergetrain-loop');
 const fps = 24;
 await fs.mkdir(images, {recursive: true});
-const poster = frameSvg(10, story);
+const poster = frameSvg(10.3, story, {poster:true});
 await fs.writeFile(`${base}-poster.svg`, poster);
 await sharp(Buffer.from(poster)).png().toFile(`${base}-poster.png`);
 if (process.argv.includes('--stills')) process.exit(0);
@@ -46,9 +46,9 @@ await fs.writeFile(path.join(root, 'docs/media/loop-production.json'), JSON.stri
   duration_seconds: DURATION, width: WIDTH, height: HEIGHT, frames_per_second: fps,
   audio: false, gif: {width: 720, height: 600, frames_per_second: 20},
   method: 'Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.',
-  design: 'One continuous scene on a warm neutral background. Four work items gather, the operator holds the conflicting pair, approves the remaining pair, then the default recheck precedes their movement into the project. Cobalt marks checks and approval; amber and green distinguish held and applied outcomes. No narration.',
+  design: 'One continuous scene: four work items are checked together; two move ahead after approval and recheck. The conflicting pair returns to its AI agents, is revised and resubmitted, then joins the project after combined validation, approval and default recheck. The item numbers stay 1–4; replacement queue jobs are 5 and 6. No narration.',
   source_commit: evidence.source_commit, runtime_version: evidence.version, scope: evidence.scope,
-  operator_actions: 'The recorded walkthrough scripts explicit pair dismissal and exact-plan approval before the default recheck and verified push to a disposable local bare remote.',
+  operator_actions: 'The capture scripts the agent-authored repair and operator approvals for two deployments to a disposable local bare remote. The original blocked pair remains available for retry; no dismissal is used. Mergetrain does not launch an AI agent or author the fix.',
   evidence_sha256: createHash('sha256').update(evidenceBytes).digest('hex'),
   rows: story, assets: hashes,
 }, null, 2) + '\n');

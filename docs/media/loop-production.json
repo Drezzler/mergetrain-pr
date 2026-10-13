@@ -1,5 +1,5 @@
 {
-  "duration_seconds": 12,
+  "duration_seconds": 18,
   "width": 960,
   "height": 800,
   "frames_per_second": 24,
@@ -10,34 +10,41 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "One continuous scene on a warm neutral background. Four work items gather, the operator holds the conflicting pair, approves the remaining pair, then the default recheck precedes their movement into the project. Cobalt marks checks and approval; amber and green distinguish held and applied outcomes. No narration.",
-  "source_commit": "f09034ae77ed098156ba5bbed95557cad375cad1",
+  "design": "One continuous scene: four work items are checked together; two move ahead after approval and recheck. The conflicting pair returns to its AI agents, is revised and resubmitted, then joins the project after combined validation, approval and default recheck. The item numbers stay 1–4; replacement queue jobs are 5 and 6. No narration.",
+  "source_commit": "ca8e276fe07dfb21d063146f7f87e2f6cb620840",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
-  "operator_actions": "The recorded walkthrough scripts explicit pair dismissal and exact-plan approval before the default recheck and verified push to a disposable local bare remote.",
-  "evidence_sha256": "5c57187ada09211fae0635040acebeb8d5a5f6c488d63674e77361ed9199bfd8",
+  "operator_actions": "The capture scripts the agent-authored repair and operator approvals for two deployments to a disposable local bare remote. The original blocked pair remains available for retry; no dismissal is used. Mergetrain does not launch an AI agent or author the fix.",
+  "evidence_sha256": "8a40f4a92b2db4a9bae21c8eff79281d02ab0e726aa560bc4eb88c498e440b1d",
   "rows": [
     {
       "id": 1,
       "branch": "agent/faster-timeout",
       "label": "Faster timeout",
-      "held": true,
+      "needsRepair": true,
+      "deployedId": 5,
       "validationLine": "#1 blocked: agent/faster-timeout",
-      "outcomeLine": "dismissed job 1: agent/faster-timeout"
+      "outcomeLine": "#5 deployed (push=succeeded, verify=succeeded): agent/faster-timeout",
+      "before": "91f4d3a993b31d9e864f47c87650414735c906f0",
+      "after": "95c09fe827c4c53b4aca3b6417c9f931d1d98ee0"
     },
     {
       "id": 2,
       "branch": "agent/health-check",
       "label": "Health check",
-      "held": true,
+      "needsRepair": true,
+      "deployedId": 6,
       "validationLine": "#2 blocked: agent/health-check",
-      "outcomeLine": "dismissed job 2: agent/health-check"
+      "outcomeLine": "#6 deployed (push=succeeded, verify=succeeded): agent/health-check",
+      "before": "87011e2657492f6c9d1d1cb6d8a2aaaf1fc5cc53",
+      "after": "f1ebf577d393c94a655a600f20a3b8aab02d89f4"
     },
     {
       "id": 3,
       "branch": "agent/add-retries",
       "label": "Retries",
-      "held": false,
+      "needsRepair": false,
+      "deployedId": 3,
       "validationLine": "#3 validated: agent/add-retries",
       "outcomeLine": "#3 deployed (push=succeeded, verify=succeeded): agent/add-retries"
     },
@@ -45,27 +52,28 @@
       "id": 4,
       "branch": "agent/request-logging",
       "label": "Request logs",
-      "held": false,
+      "needsRepair": false,
+      "deployedId": 4,
       "validationLine": "#4 validated: agent/request-logging",
       "outcomeLine": "#4 deployed (push=succeeded, verify=succeeded): agent/request-logging"
     }
   ],
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 336800,
-      "sha256": "ec18df74594037a9ae7c3928b11587dc99f8ba15db833a1d8596caf9b6cebe6d"
+      "bytes": 497410,
+      "sha256": "5588230475ad31648343676e39213a6bcd37edc1d75bd993fd9969ac58e6951b"
     },
     "mergetrain-loop.gif": {
-      "bytes": 839811,
-      "sha256": "c5d001ba8eac89e154fdc3d4176595f823aa97efd7bbc29eef465c66c739f318"
+      "bytes": 1417047,
+      "sha256": "ab37c29b1154516d83d2fa97c2c3f7240aff7bc9ec92fb68901aa4dd3dc91c44"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 68985,
-      "sha256": "5f8934304120ed9976ff1ec75e9ad138e5e5444679e50607be2be2af08c7adde"
+      "bytes": 73238,
+      "sha256": "463b9608d0b9ff17d21d0ff8d54adfedc85e4eeacb1bd3e75c267cb2df4d9e53"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 4160,
-      "sha256": "9e9f71daae181845b79c381e9bd64452f0add14e19e5c56fdcf4122293b65064"
+      "bytes": 4542,
+      "sha256": "bb35e11e9aa0d03f83289c1230661b2d1253f40ebc8fd14e94c397060017f6b4"
     }
   }
 }

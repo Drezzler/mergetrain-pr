@@ -23,25 +23,29 @@ telemetry. Queue and runner state stay on your machine. Only your configured
 Git remote and trusted gate or verification commands may contact external
 services.
 
-## See it in 12 seconds
+## Keep building through the fix
 
 Four AI changes pass on their own. Two conflict when checked together.
-Hold that pair, approve the other two, and mergetrain checks them again before
-applying them.
+The other two move ahead after approval and recheck. The agents revise the
+conflicting work and submit it again. mergetrain checks it with the applied
+work, then rechecks and applies the approved result.
 
-[![12-second loop: four changes are checked together, two conflict, the operator holds that pair and approves the other two, which are rechecked and applied.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif)](https://yongjip.github.io/mergetrain/#demo)
+[![18-second loop: two changes move ahead while the conflicting pair returns to the AI agents, is revised and resubmitted, then is checked and applied after approval.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif)](https://yongjip.github.io/mergetrain/#demo)
 
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
 [View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png) ·
-[Reproduce it locally](#run-the-real-demo)
+[Reproduce the repair loop](docs/development.md#documentation-media)
 
 <details>
 <summary>How this demo was made</summary>
 
-This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json),
-not a graphical product interface. The recorded walkthrough scripts the operator's
-exclusion and approval in a disposable local repository and bare remote.
-The 12 seconds condense the story; they are not a speed claim.
+This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/repair-evidence.json),
+not a graphical product interface. The capture repeats an agent-authored repair
+and scripts the operator approvals in a disposable local repository and bare
+remote. mergetrain checks and integrates the submitted work; your agent or
+operator handles the fix and resubmission. Numbers 1–4 track work items; retry
+creates new queue jobs for the revised pair. The 18 seconds condense one recorded
+run, replayed with a short dissolve; they are not a speed claim.
 
 </details>
 
@@ -116,7 +120,8 @@ The demo creates a disposable repository and local bare remote, then runs four
 real branches through merges in enqueue order, a combined-only gate failure,
 conflict attribution, and deployment of the compatible train. Use `--keep` to
 inspect the result afterward. Add `--brief --pause` to read each step before
-continuing.
+continuing. The [extended repair recording](docs/development.md#documentation-media)
+adds revision, resubmission, and a second verified deployment.
 
 <details>
 <summary>Full CLI recording</summary>

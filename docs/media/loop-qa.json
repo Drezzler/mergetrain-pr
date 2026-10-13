@@ -1,24 +1,27 @@
 {
   "checked_on": "2026-10-13",
-  "status": "local implementation verified; not published",
+  "status": "local implementation verified; deployment verification follows",
+  "story": "Four individually passing work items; combined conflict; compatible pair deploys while blocked pair remains; agent-authored repair, fresh pinned retry jobs, combined validation, approval and default recheck, second verified local deployment.",
   "automated": {
     "playback_tests": 8,
+    "evidence_guard_tests": 8,
     "landing_page_tests": 3
   },
   "media": {
-    "duration_seconds": 12,
-    "gif_frames": 240,
+    "duration_seconds": 18,
+    "gif_frames": 360,
     "gif_dimensions": [
       720,
       600
     ],
+    "gif_frames_per_second": 20,
     "mp4_dimensions": [
       960,
       800
     ],
+    "mp4_frames": 432,
     "codec": "H.264 constrained baseline, yuv420p, BT.709, fast-start",
-    "audio_streams": 0,
-    "gif_frames_per_second": 20
+    "audio_streams": 0
   },
   "browser": {
     "engine": "Codex in-app desktop browser",
@@ -39,65 +42,64 @@
     ],
     "complete_loop_played": true,
     "pause_and_resume": true,
-    "gif_decoded": true,
-    "missing_video_fallback": "Visible poster and GIF link confirmed with a deliberately missing MP4 URL",
-    "current_revision_rechecked": [
-      "390px EN and KO: no horizontal overflow",
-      "320px KO: no horizontal overflow; controls visible",
-      "Oddfini and Mergetrain pages: complete 12-second loop played",
-      "Pause keeps the current frame; resume continues playback",
-      "GIF link decoded at 720x600",
-      "Deliberately missing MP4: poster and GIF link remain visible"
-    ]
+    "gif_decoded": true
   },
-  "limitations": [
-    "Physical iOS and Android devices were not available for verification.",
-    "The cause of the user-reported mobile failure is not established.",
-    "Mobile-sized desktop viewports verify layout, not mobile browser compatibility."
-  ],
   "visual_iterations": [
     {
       "pass": 1,
-      "finding": "The approval label overlapped the conflict label; the final check container was empty.",
-      "change": "Separated the phases and added a final checks-passed result."
+      "finding": "The old loop ended with held work.",
+      "change": "Keep work items 1 and 2 visible through agent revision, resubmission and second deployment. Applied work 3 and 4 remains visible."
     },
     {
       "pass": 2,
-      "finding": "The incoming cards overlapped the check label at mobile size.",
-      "change": "Delayed that label until the cards had gathered; enlarged numbered work items and kept the opening outcome visible longer."
+      "finding": "Four final cards touched each other.",
+      "change": "Scale arriving cards to fit a two-row project area, preserving their identity."
     },
     {
       "pass": 3,
-      "finding": "Pausing pending playback could leave the empty first frame visible.",
-      "change": "Show the pause label while loading and restore the poster when canceled before time advances; preserve an actual paused frame."
+      "finding": "Fading the whole scene produced a blank replay boundary.",
+      "change": "Keep the scene visible and dissolve only between the end and opening poses; preserve the headline and one readable caption."
     },
     {
       "pass": 4,
-      "finding": "A moving held card crossed the operator label.",
-      "change": "Kept the choice in the main caption and reduced the central operator mark to an icon; checked intermediate motion frames."
+      "finding": "The replay caption mask clipped the top of incoming cards.",
+      "change": "Increase the gap below the caption and verify that the final frame matches the opening pose."
     }
   ],
   "visual_review": {
-    "rendered_mobile_width": 360,
+    "rendered_mobile_widths": [
+      320,
+      360
+    ],
     "transition_frames_seconds": [
-      1.9,
-      2.4,
-      4.95,
-      5.45,
-      5.65,
-      6.9,
-      8.9,
-      11.85
+      5.4,
+      10.6,
+      11,
+      11.2,
+      11.7,
+      15.3,
+      15.4,
+      17.1,
+      17.55,
+      17.958333,
+      0
     ],
     "milestone_frames_seconds": [
-      0.7,
-      2.8,
-      3.9,
-      4.8,
-      6.8,
-      8,
-      9.2,
-      10.8
+      0.8,
+      3.8,
+      7.1,
+      9.3,
+      10.3,
+      12.2,
+      13.2,
+      14.2,
+      16.5
     ]
-  }
+  },
+  "limitations": [
+    "Physical iOS and Android devices were not tested.",
+    "Mobile-sized desktop viewports verify layout, not mobile browser compatibility.",
+    "The capture repeats an agent-authored repair and scripted operator approvals; it does not launch an AI agent.",
+    "The replay transition repeats one recorded run; it does not claim an additional batch was executed."
+  ]
 }

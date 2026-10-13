@@ -50,7 +50,7 @@
           <h1>Finish in parallel.<br><span>Integrate safely.</span></h1>
           <p class="lede">mergetrain is a local merge queue for parallel LLM agents. These coding agents use large language models and work in Git worktrees. One runner merges queued branches in order, tests them together, and pushes the approved plan.</p>
           <div class="actions">
-            <a class="button primary" href="#demo">See the 12-second demo</a>
+            <a class="button primary" href="#demo">See the repair loop</a>
             <a class="button secondary" href="https://github.com/yongjip/mergetrain">View on GitHub</a>
           </div>
           <p class="fine-print">Open source · Runs locally · No account or hosted control plane</p>
@@ -97,13 +97,13 @@
 
       <section id="demo" class="section demo-band">
         <div class="shell">
-          <p class="eyebrow">12 seconds · no sound needed</p>
-          <h2>AI works in parallel.<br>You choose what goes in.</h2>
-          <p class="demo-intro">Four changes pass on their own. Two conflict when checked together. Hold that pair and approve the other two.</p>
+          <p class="eyebrow">18 seconds · no sound needed</p>
+          <h2>Keep building.<br>Check work together.</h2>
+          <p class="demo-intro">Two changes conflict. The other two move ahead. The agents revise the pair and submit it again for checking and approval.</p>
           <div class="demo-loop" data-demo-loop>
             <div class="demo-loop-media">
-              <img data-loop-poster src="./media/mergetrain-loop-poster.png" width="960" height="800" alt="Final recorded result: faster timeout and health check held; retries and request logs applied after approval and recheck.">
-              <video data-loop-src="./media/mergetrain-loop.mp4" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png" width="960" height="800" aria-label="12-second silent summary of the recorded demo" aria-describedby="demo-summary">
+              <img data-loop-poster src="./media/mergetrain-loop-poster.png" width="960" height="800" alt="The repair loop: two changes move ahead; the conflicting pair returns to the AI agents for revision and resubmission before being checked and applied.">
+              <video data-loop-src="./media/mergetrain-loop.mp4" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png" width="960" height="800" aria-label="18-second silent summary of the recorded repair loop" aria-describedby="demo-summary">
               </video>
             </div>
             <div class="demo-loop-controls">
@@ -113,17 +113,17 @@
             </div>
             <p data-loop-status role="status" data-unavailable="Video unavailable. View the GIF instead."></p>
           </div>
-          <p class="demo-context" id="demo-summary">A short illustration of an actual local demo: two changes held, two rechecked and applied after approval. The demo scripts the operator actions and condenses the timing.</p>
+          <p class="demo-context" id="demo-summary">An illustration of a recorded local run. The capture scripts the agent-authored fix and operator approvals. mergetrain checks the resubmitted work; your agent or operator handles the repair. Timing is condensed.</p>
           <div class="demo-followup">
             <div>
-              <h3>Reproduce it locally</h3>
+              <h3>Try the basic demo</h3>
               <div class="command"><div><span>$</span> uvx mergetrain demo</div></div>
-              <p>Use <code>--brief --pause</code> to read each step before continuing.</p>
+              <p>Use <code>--brief --pause</code> to read each step. <a href="https://github.com/yongjip/mergetrain/blob/main/docs/development.md#documentation-media">Reproduce the extended repair loop.</a></p>
             </div>
             <div>
               <h3>Read the result</h3>
-              <p>All four branches pass alone. The combined tests fail. Jobs 1 and 2 are blocked as a pair. The operator dismisses that pair for this demo. Jobs 3 and 4 pass the default recheck, then deploy and verify successfully.</p>
-              <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json">Inspect the captured commands and output →</a>
+              <p>The first deployment applies two compatible changes. The conflicting pair remains available for repair. After revision and resubmission, the second deployment applies both. Each deployment preserves approval and the default recheck. All four tests pass in a fresh clone of the final local remote.</p>
+              <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/repair-evidence.json">Inspect the captured commands and output →</a>
             </div>
           </div>
         </div>

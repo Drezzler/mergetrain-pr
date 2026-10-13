@@ -1,0 +1,590 @@
+$ mergetrain --repo $DEMO/repo init --project demo --write
+{
+  "contract_version": 5,
+  "next_step": "link the generated sidecars from the repository's standard AGENTS.md and/or CLAUDE.md, then commit these files (git add . && git commit); mergetrain's own .mergetrain/ state directory is git-ignored automatically",
+  "ok": true,
+  "written": [
+    "$DEMO/repo/.mergetrain.yaml",
+    "$DEMO/repo/AGENTS.mergetrain.md",
+    "$DEMO/repo/CLAUDE.mergetrain.md"
+  ]
+}
+$ $PYTHON -B -m unittest discover -s tests
+$ $PYTHON -B -m unittest discover -s tests
+$ $PYTHON -B -m unittest discover -s tests
+$ $PYTHON -B -m unittest discover -s tests
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [],
+  "contract_version": 5,
+  "counts": {
+    "attention": 0,
+    "done": 0,
+    "ready": 0,
+    "running": 0,
+    "waiting": 0
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "enqueue_clean_branch",
+    "command": null,
+    "reason_code": null,
+    "requires_approval": "none",
+    "target_job_id": null
+  },
+  "ok": true,
+  "recent_jobs": [],
+  "state": "idle",
+  "summary": "No active work; enqueue a clean task branch when ready",
+  "warnings": []
+}
+$ mergetrain --repo $DEMO/repo enqueue --task 'reduce the default timeout' --branch agent/faster-timeout
+queued job 1: reduce the default timeout (agent/faster-timeout)
+$ mergetrain --repo $DEMO/repo enqueue --task 'add a timeout-aware health check' --branch agent/health-check
+queued job 2: add a timeout-aware health check (agent/health-check)
+$ mergetrain --repo $DEMO/repo enqueue --task 'add retry policy' --branch agent/add-retries
+queued job 3: add retry policy (agent/add-retries)
+$ mergetrain --repo $DEMO/repo enqueue --task 'add request logging' --branch agent/request-logging
+queued job 4: add request logging (agent/request-logging)
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [],
+  "contract_version": 5,
+  "counts": {
+    "attention": 0,
+    "done": 0,
+    "ready": 0,
+    "running": 0,
+    "waiting": 4
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "validate_queued_jobs",
+    "command": "mergetrain validate",
+    "reason_code": null,
+    "requires_approval": "runner",
+    "target_job_id": null
+  },
+  "ok": true,
+  "recent_jobs": [
+    {
+      "branch": "agent/request-logging",
+      "id": 4,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "add request logging",
+      "updated_at": "2026-10-13T05:38:52Z"
+    },
+    {
+      "branch": "agent/add-retries",
+      "id": 3,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "add retry policy",
+      "updated_at": "2026-10-13T05:38:52Z"
+    },
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:52Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:52Z"
+    }
+  ],
+  "state": "waiting",
+  "summary": "4 job(s) are waiting for validation",
+  "warnings": []
+}
+$ mergetrain --repo $DEMO/repo validate
+#1 blocked: agent/faster-timeout
+#2 blocked: agent/health-check
+#3 validated: agent/add-retries
+#4 validated: agent/request-logging
+result: partial
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f4d3a993b3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:54Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 87011e265749); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:54Z"
+    }
+  ],
+  "contract_version": 5,
+  "counts": {
+    "attention": 2,
+    "done": 0,
+    "ready": 2,
+    "running": 0,
+    "waiting": 0
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "fix_blocked_job",
+    "command": "mergetrain inspect 2",
+    "reason_code": "semantic_conflict",
+    "requires_approval": "none",
+    "target_job_id": 2
+  },
+  "ok": true,
+  "recent_jobs": [
+    {
+      "branch": "agent/request-logging",
+      "id": 4,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "ready",
+      "task": "add request logging",
+      "updated_at": "2026-10-13T05:38:52Z"
+    },
+    {
+      "branch": "agent/add-retries",
+      "id": 3,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "ready",
+      "task": "add retry policy",
+      "updated_at": "2026-10-13T05:38:52Z"
+    },
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f4d3a993b3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:54Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 87011e265749); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:54Z"
+    }
+  ],
+  "state": "attention",
+  "summary": "2 job(s) need attention",
+  "warnings": []
+}
+Ready to deploy 2 job(s):
+  #3 add retry policy (agent/add-retries)
+  #4 add request logging (agent/request-logging)
+Destination: $DEMO/remote.git (main)
+The exact train, destination, gates, reuse policy, and verify hooks will be checked again before push.
+Deploy this exact plan? [y/N] y
+#3 deployed (push=succeeded, verify=succeeded): agent/add-retries
+#4 deployed (push=succeeded, verify=succeeded): agent/request-logging
+
+$ git fetch origin
+$ git rebase origin/main
+$ $PYTHON -B -m unittest discover -s tests
+$ git fetch origin
+$ git rebase origin/main
+$ git diff -- app/health.py
+diff --git a/app/health.py b/app/health.py
+index 8a8ac62..066a291 100644
+--- a/app/health.py
++++ b/app/health.py
+@@ -1 +1,3 @@
+-TIMEOUT_BUDGET = 30
++from app.config import DEFAULT_TIMEOUT
++
++TIMEOUT_BUDGET = DEFAULT_TIMEOUT
+$ git commit -m 'fix: derive health budget from current timeout'
+[agent/health-check f1ebf57] fix: derive health budget from current timeout
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+$ $PYTHON -B -m unittest discover -s tests
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f4d3a993b3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:54Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 87011e265749); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:54Z"
+    }
+  ],
+  "contract_version": 5,
+  "counts": {
+    "attention": 2,
+    "done": 2,
+    "ready": 0,
+    "running": 0,
+    "waiting": 0
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "fix_blocked_job",
+    "command": "mergetrain inspect 2",
+    "reason_code": "semantic_conflict",
+    "requires_approval": "none",
+    "target_job_id": 2
+  },
+  "ok": true,
+  "recent_jobs": [
+    {
+      "branch": "agent/request-logging",
+      "id": 4,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add request logging",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/add-retries",
+      "id": 3,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add retry policy",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f4d3a993b3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:54Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": null,
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 87011e265749); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason_code": "semantic_conflict",
+      "reason_truncated": false,
+      "state": "attention",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:54Z"
+    }
+  ],
+  "state": "attention",
+  "summary": "2 job(s) need attention",
+  "warnings": []
+}
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [],
+  "contract_version": 5,
+  "counts": {
+    "attention": 0,
+    "done": 4,
+    "ready": 0,
+    "running": 0,
+    "waiting": 2
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "validate_queued_jobs",
+    "command": "mergetrain validate",
+    "reason_code": null,
+    "requires_approval": "runner",
+    "target_job_id": null
+  },
+  "ok": true,
+  "recent_jobs": [
+    {
+      "branch": "agent/health-check",
+      "id": 6,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 5,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "waiting",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/request-logging",
+      "id": 4,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add request logging",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/add-retries",
+      "id": 3,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add retry policy",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": "canceled",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": "canceled",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:57Z"
+    }
+  ],
+  "state": "waiting",
+  "summary": "2 job(s) are waiting for validation",
+  "warnings": []
+}
+$ mergetrain --repo $DEMO/repo validate
+#5 validated: agent/faster-timeout
+#6 validated: agent/health-check
+$ mergetrain --repo $DEMO/repo status --json
+{
+  "attention_jobs": [],
+  "contract_version": 5,
+  "counts": {
+    "attention": 0,
+    "done": 4,
+    "ready": 2,
+    "running": 0,
+    "waiting": 0
+  },
+  "health": "healthy",
+  "next_action": {
+    "code": "deploy_when_approved",
+    "command": "mergetrain deploy",
+    "reason_code": null,
+    "requires_approval": "deploy",
+    "target_job_id": null
+  },
+  "ok": true,
+  "recent_jobs": [
+    {
+      "branch": "agent/health-check",
+      "id": 6,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "ready",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 5,
+      "outcome": null,
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "ready",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/request-logging",
+      "id": 4,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add request logging",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/add-retries",
+      "id": 3,
+      "outcome": "deployed",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add retry policy",
+      "updated_at": "2026-10-13T05:38:56Z"
+    },
+    {
+      "branch": "agent/health-check",
+      "id": 2,
+      "outcome": "canceled",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "add a timeout-aware health check",
+      "updated_at": "2026-10-13T05:38:57Z"
+    },
+    {
+      "branch": "agent/faster-timeout",
+      "id": 1,
+      "outcome": "canceled",
+      "reason": null,
+      "reason_code": null,
+      "reason_truncated": false,
+      "state": "done",
+      "task": "reduce the default timeout",
+      "updated_at": "2026-10-13T05:38:57Z"
+    }
+  ],
+  "state": "ready",
+  "summary": "2 job(s) are ready to deploy",
+  "warnings": []
+}
+Ready to deploy 2 job(s):
+  #5 reduce the default timeout (agent/faster-timeout)
+  #6 add a timeout-aware health check (agent/health-check)
+Destination: $DEMO/remote.git (main)
+The exact train, destination, gates, reuse policy, and verify hooks will be checked again before push.
+Deploy this exact plan? [y/N] y
+#5 deployed (push=succeeded, verify=succeeded): agent/faster-timeout
+#6 deployed (push=succeeded, verify=succeeded): agent/health-check
+
+$ git --git-dir $DEMO/remote.git show main:app/config.py
+DEFAULT_TIMEOUT = 10
+$ git --git-dir $DEMO/remote.git show main:app/health.py
+from app.config import DEFAULT_TIMEOUT
+
+TIMEOUT_BUDGET = DEFAULT_TIMEOUT
+$ git --git-dir $DEMO/remote.git show main:app/retries.py
+MAX_RETRIES = 3
+$ git --git-dir $DEMO/remote.git show main:app/request_logging.py
+LOG_REQUESTS = True
+$ $PYTHON -B -m unittest discover -s tests
+$ mergetrain --repo $DEMO/repo status --limit 10
+health: healthy
+IDLE: No active work; enqueue a clean task branch when ready
+next: enqueue clean branch
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+OK
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.000s
+
+OK
+From $DEMO/remote
+   3a61a11..755fc14  main       -> origin/main
+Rebasing (1/1)
+Successfully rebased and updated refs/heads/agent/faster-timeout.
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+OK
+Rebasing (1/1)
+Successfully rebased and updated refs/heads/agent/health-check.
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.000s
+
+OK

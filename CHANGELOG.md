@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Extend the introductory GIF to show an actual repair and resubmission loop.
+  Keep the blocked pair available while compatible work deploys; show agent
+  revision, fresh queue jobs, combined checks, approval, and final application.
+  Publish reproducible command evidence and keep work-item identity visible.
+
 - Replace the long introductory video with a 12-second silent loop and a small
   README GIF. Add visible GIF and still-image fallbacks, playback retry, pause,
   reduced-motion support, and mobile-friendly text. Preserve recorded outcomes

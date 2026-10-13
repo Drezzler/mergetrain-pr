@@ -34,7 +34,7 @@ jobs:
           persist-credentials: false
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
       - name: Test demo playback fallback
-        run: node --test scripts/test_demo_loop.mjs
+        run: node --test scripts/test_demo_loop.mjs scripts/test_demo_story.mjs
       - name: Stage canonical demo media
         run: |
           mkdir -p site/media
