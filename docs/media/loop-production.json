@@ -1,0 +1,71 @@
+{
+  "duration_seconds": 12,
+  "width": 960,
+  "height": 800,
+  "frames_per_second": 24,
+  "audio": false,
+  "gif": {
+    "width": 720,
+    "height": 600,
+    "frames_per_second": 10
+  },
+  "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
+  "design": "Selected cobalt direction, four fixed work items, short captions, no narration.",
+  "source_commit": "f09034ae77ed098156ba5bbed95557cad375cad1",
+  "runtime_version": "3.5.0",
+  "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
+  "operator_actions": "The recorded walkthrough scripts explicit pair dismissal and exact-plan approval before the default recheck and verified push to a disposable local bare remote.",
+  "evidence_sha256": "5c57187ada09211fae0635040acebeb8d5a5f6c488d63674e77361ed9199bfd8",
+  "rows": [
+    {
+      "id": 1,
+      "branch": "agent/faster-timeout",
+      "label": "Faster timeout",
+      "held": true,
+      "validationLine": "#1 blocked: agent/faster-timeout",
+      "outcomeLine": "dismissed job 1: agent/faster-timeout"
+    },
+    {
+      "id": 2,
+      "branch": "agent/health-check",
+      "label": "Health check",
+      "held": true,
+      "validationLine": "#2 blocked: agent/health-check",
+      "outcomeLine": "dismissed job 2: agent/health-check"
+    },
+    {
+      "id": 3,
+      "branch": "agent/add-retries",
+      "label": "Retries",
+      "held": false,
+      "validationLine": "#3 validated: agent/add-retries",
+      "outcomeLine": "#3 deployed (push=succeeded, verify=succeeded): agent/add-retries"
+    },
+    {
+      "id": 4,
+      "branch": "agent/request-logging",
+      "label": "Request logs",
+      "held": false,
+      "validationLine": "#4 validated: agent/request-logging",
+      "outcomeLine": "#4 deployed (push=succeeded, verify=succeeded): agent/request-logging"
+    }
+  ],
+  "assets": {
+    "mergetrain-loop.mp4": {
+      "bytes": 242696,
+      "sha256": "a7441cb5a2120825ec337806f06222e2ebf3d4ff26339b09ff8cfb36ac02f4eb"
+    },
+    "mergetrain-loop.gif": {
+      "bytes": 235730,
+      "sha256": "fcfbe621f24bddd75ab8b5890b02372659716a7de1aba384997c7e759f92d32b"
+    },
+    "mergetrain-loop-poster.png": {
+      "bytes": 69860,
+      "sha256": "7025d363044b0ace47d0b4c66244a51662b6692bab4d5a93c0b220946af0a724"
+    },
+    "mergetrain-loop-poster.svg": {
+      "bytes": 3118,
+      "sha256": "4427de0389526d65eeb4db3696700f0367fe236ef7a8e672d481f069ae4b6582"
+    }
+  }
+}

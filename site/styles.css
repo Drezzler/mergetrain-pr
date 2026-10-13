@@ -122,3 +122,14 @@ footer { display: flex; justify-content: space-between; gap: 20px; padding-block
 a:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
 
 @media (max-width: 600px) { .push-line { grid-template-columns: 1fr; } .push-line i { display: none; } }
+
+/* A compact loop with an independent poster and GIF fallback. */
+.demo-loop { max-width: 720px; margin: 32px auto; }
+.demo-loop-media { display: grid; aspect-ratio: 6 / 5; background: #005de8; overflow: hidden; border-radius: 12px; }
+.demo-loop-media > img, .demo-loop-media > video { grid-area: 1 / 1; display: block; width: 100%; height: auto; aspect-ratio: 6 / 5; margin: 0; border: 0; }
+.demo-loop [hidden] { display: none; }
+.demo-loop-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 12px; }
+.demo-loop-controls button { min-height: 44px; padding: 8px 16px; border: 1px solid #005de8; border-radius: 6px; background: white; color: #005de8; font: inherit; cursor: pointer; }
+.demo-loop-controls a { color: #005de8; min-height: 44px; display: inline-flex; align-items: center; }
+.demo-loop-controls button:focus-visible { outline: 3px solid #005de8; outline-offset: 3px; }
+.demo-loop [data-loop-status]:empty { display: none; }

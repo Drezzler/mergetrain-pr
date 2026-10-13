@@ -6,6 +6,7 @@ on:
     paths:
       - "site/**"
       - "docs/images/mergetrain-demo*"
+      - "docs/images/mergetrain-loop*"
       - "docs/images/mergetrain-explainer-still.png"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -32,10 +33,12 @@ jobs:
         with:
           persist-credentials: false
       - uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d  # v6.0.0
+      - name: Test demo playback fallback
+        run: node --test scripts/test_demo_loop.mjs
       - name: Stage canonical demo media
         run: |
           mkdir -p site/media
-          cp docs/images/mergetrain-demo.mp4 docs/images/mergetrain-demo-poster.png docs/images/mergetrain-demo.vtt docs/images/mergetrain-explainer-still.png site/media/
+          cp docs/images/mergetrain-demo.mp4 docs/images/mergetrain-demo-poster.png docs/images/mergetrain-demo.vtt docs/images/mergetrain-explainer-still.png docs/images/mergetrain-loop.mp4 docs/images/mergetrain-loop.gif docs/images/mergetrain-loop-poster.png site/media/
       - uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9  # v5.0.0
         with:
           path: site

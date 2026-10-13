@@ -23,20 +23,22 @@ telemetry. Queue and runner state stay on your machine. Only your configured
 Git remote and trusted gate or verification commands may contact external
 services.
 
-## Watch the 50-second demo
+## See it in 12 seconds
 
-Each branch passes its tests. Git merges them cleanly. The combined tests fail.
-mergetrain identifies the conflicting pair, then the operator excludes that
-pair and approves the two compatible branches for deployment.
+Four AI changes pass on their own. Two conflict when checked together.
+Hold that pair, approve the other two, and mergetrain checks them again before
+applying them.
 
-[![Watch the 50-second demo with real CLI output](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-demo-poster.png)](https://yongjip.github.io/mergetrain/#demo)
+[![12-second loop: four changes are checked together, two conflict, the operator holds that pair and approves the other two, which are rechecked and applied.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif)](https://yongjip.github.io/mergetrain/#demo)
 
-[Watch the video](https://yongjip.github.io/mergetrain/#demo) ·
-[Read the recorded evidence](https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json) ·
+[Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png) ·
 [Reproduce it locally](#run-the-real-demo)
 
-The animation uses results from mergetrain 3.5.0 in a disposable local Git
-repository and bare remote. Default checks run again before the atomic push.
+This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json),
+not a graphical product interface. The recorded walkthrough scripts the operator's
+exclusion and approval in a disposable local repository and bare remote.
+The 12 seconds condense the story; they are not a speed claim.
 
 ## The problem
 
@@ -47,8 +49,6 @@ or tell you what happened if a laptop dies mid-push.
 Without a shared integration workflow, the operator chooses branch order and
 resolves cross-branch failures. The operator also reruns tests and controls
 pushes. Repeating these actions can slow parallel work.
-
-![Individually passing branches fail together. The operator excludes the conflicting pair and deploys the rechecked compatible train.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-explainer-still.png)
 
 mergetrain records this workflow in a durable local queue:
 

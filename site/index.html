@@ -50,7 +50,7 @@
           <h1>Finish in parallel.<br><span>Integrate safely.</span></h1>
           <p class="lede">mergetrain is a local merge queue for parallel LLM agents. These coding agents use large language models and work in Git worktrees. One runner merges queued branches in order, tests them together, and pushes the approved plan.</p>
           <div class="actions">
-            <a class="button primary" href="#demo">Watch the 50-second demo</a>
+            <a class="button primary" href="#demo">See the 12-second demo</a>
             <a class="button secondary" href="https://github.com/yongjip/mergetrain">View on GitHub</a>
           </div>
           <p class="fine-print">Open source · Runs locally · No account or hosted control plane</p>
@@ -97,15 +97,23 @@
 
       <section id="demo" class="section demo-band">
         <div class="shell">
-          <p class="eyebrow">Watch what happens when branches disagree</p>
-          <h2>Each branch passes.<br>The combination fails.</h2>
-          <p class="demo-intro">A 50-second walkthrough with recorded CLI output. Git merges four branches cleanly. Combined tests expose a conflict. The operator excludes the pair, then approves the two compatible branches.</p>
-          <video class="demo-video" controls playsinline preload="none" poster="./media/mergetrain-demo-poster.png" aria-label="50-second mergetrain demo with actual CLI results">
-            <source src="./media/mergetrain-demo.mp4" type="video/mp4">
-            <track kind="captions" src="./media/mergetrain-demo.vtt" srclang="en" label="English" default>
-            <p><a href="./media/mergetrain-demo.mp4">Download the demo video.</a></p>
-          </video>
-          <p class="demo-context">Recorded in a disposable repository with a local bare remote. The default pre-push checks and verification are part of the run.</p>
+          <p class="eyebrow">12 seconds · no sound needed</p>
+          <h2>AI works in parallel.<br>You choose what goes in.</h2>
+          <p class="demo-intro">Four changes pass on their own. Two conflict when checked together. Hold that pair and approve the other two.</p>
+          <div class="demo-loop" data-demo-loop>
+            <div class="demo-loop-media">
+              <img data-loop-poster src="./media/mergetrain-loop-poster.png" width="960" height="800" alt="Final recorded result: faster timeout and health check held; retries and request logs applied after approval and recheck.">
+              <video data-loop-src="./media/mergetrain-loop.mp4" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png" width="960" height="800" aria-label="12-second silent summary of the recorded demo" aria-describedby="demo-summary">
+              </video>
+            </div>
+            <div class="demo-loop-controls">
+              <button hidden type="button" data-loop-toggle data-play="Play loop" data-pause="Pause loop">Play loop</button>
+              <a href="./media/mergetrain-loop.gif">View GIF</a>
+              <a href="./media/mergetrain-loop-poster.png">Still image</a>
+            </div>
+            <p data-loop-status role="status" data-unavailable="Video unavailable. View the GIF instead."></p>
+          </div>
+          <p class="demo-context" id="demo-summary">Simplified graphics of recorded CLI results, not a product interface. The demo scripts the operator's exclusion and approval in a disposable repository and local bare remote. The two approved changes pass the default recheck, push, and verification. The timing is condensed.</p>
           <div class="demo-followup">
             <div>
               <h3>Reproduce it locally</h3>
@@ -118,7 +126,6 @@
               <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/demo-evidence.json">Inspect the captured commands and output →</a>
             </div>
           </div>
-          <img class="demo-explainer" src="./media/mergetrain-explainer-still.png" alt="Separate branches pass; combined tests fail; the operator excludes the conflicting pair; the surviving train is approved, rechecked, pushed, and verified." width="1280" height="720" loading="lazy">
         </div>
       </section>
 
@@ -160,5 +167,6 @@
       <span>Local queue state. No product telemetry.</span>
       <a href="https://github.com/yongjip/mergetrain/blob/main/docs/security.md">Security boundary</a>
     </footer>
+    <script type="module" src="./demo-loop.mjs"></script>
   </body>
 </html>

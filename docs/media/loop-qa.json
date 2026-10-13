@@ -1,0 +1,49 @@
+{
+  "checked_on": "2026-10-13",
+  "status": "local implementation verified; not published",
+  "automated": {
+    "playback_tests": 8,
+    "landing_page_tests": 3
+  },
+  "media": {
+    "duration_seconds": 12,
+    "gif_frames": 120,
+    "gif_dimensions": [
+      720,
+      600
+    ],
+    "mp4_dimensions": [
+      960,
+      800
+    ],
+    "codec": "H.264 constrained baseline, yuv420p, BT.709, fast-start",
+    "audio_streams": 0
+  },
+  "browser": {
+    "engine": "Codex in-app desktop browser",
+    "viewports_checked": [
+      {
+        "width": 390,
+        "height": 844
+      },
+      {
+        "width": 320,
+        "height": 740
+      }
+    ],
+    "horizontal_overflow": false,
+    "locales": [
+      "en",
+      "ko"
+    ],
+    "complete_loop_played": true,
+    "pause_and_resume": true,
+    "gif_decoded": true,
+    "missing_video_fallback": "Visible poster and GIF link confirmed with a deliberately missing MP4 URL"
+  },
+  "limitations": [
+    "Physical iOS and Android devices were not available for verification.",
+    "The cause of the user-reported mobile failure is not established.",
+    "Mobile-sized desktop viewports verify layout, not mobile browser compatibility."
+  ]
+}

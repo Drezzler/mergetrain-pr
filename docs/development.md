@@ -280,6 +280,30 @@ Supported and tested Python: 3.10 through 3.14. See the
 
 ## Documentation media
 
+The current introduction is a 12-second silent loop. `docs/media/loop-scenes.mjs`
+maps each of the four recorded branches to a short label. The renderer fails
+unless the individual passes, paired failure, explicit dismissal, and approved
+deployment are present in `docs/media/demo-evidence.json`. It condenses time and
+summarizes outcomes; it is neither a benchmark nor a graphical application UI.
+
+```sh
+npm --prefix docs/media install
+node scripts/render_demo_loop.mjs
+node --test scripts/test_demo_loop.mjs
+```
+
+The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 10 fps), a
+silent H.264 MP4 (960×800, 24 fps, baseline profile, fast-start metadata), and a
+readable PNG poster. `docs/media/loop-production.json` contains evidence mapping,
+asset hashes, and sizes. `--stills` renders just the poster. The README embeds the
+GIF. The landing page loads the MP4 when visible, unless reduced motion or data
+saving is enabled. Playback failure restores the poster and allows retry. GIF
+and still-image links remain usable without JavaScript. Test on a real phone
+before claiming iOS or Android playback has been verified; a narrow desktop
+viewport only verifies layout.
+
+The original, longer production remains archived below for provenance.
+
 The 50-second film and explainer use actual mergetrain 3.5.0 CLI results from
 `docs/media/demo-evidence.json`. Four agent branches passed their unit tests
 individually. Combined validation blocked the conflicting pair. The demo
