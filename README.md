@@ -25,32 +25,34 @@ services.
 
 ## Keep building through the fix
 
-Agents keep building while earlier work is checked. A conflicting pair returns
-for repair; compatible work moves ahead. During the repair check, the next two
-changes are committed. They build on the applied result, pass their checks, and
-move ahead too. The agents then start the following work.
+Four agents stay in view. By the first five seconds, mergetrain is checking
+work A and B while two agents build new work E and F. The letters follow each
+piece of work through fixes and checks. Applied changes stay in the project;
+the agents keep starting the next work.
 
-[![24-second cycle: agents keep working during checks, repair and resubmit a conflicting pair, then submit the next batch on the latest applied result.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=e93ceec892d8)](https://yongjip.github.io/mergetrain/#demo)
+[![Four visible agents: A and B are checked while E and F are built within five seconds. G and H start during the next check. Applied work stays in the project.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=2509de92da92)](https://yongjip.github.io/mergetrain/#demo)
 
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
-[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=59754502d0de) ·
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=fcd79330a80d) ·
 [Reproduce the continuous workflow](docs/development.md#documentation-media)
 
 <details>
 <summary>How this demo was made</summary>
 
-This is a simplified view of [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/cycle-evidence.json),
-not a graphical product interface. Agent-authored changes and operator approvals
-are scripted in a disposable local repository and bare remote. A fixture gate
-wait makes the overlap reproducible: two next-batch commits finish while the
-repair validation process is still running. All three deployments retain
-approval and the default recheck. The final remote passes six tests.
+This illustration follows [recorded CLI results](https://github.com/yongjip/mergetrain/blob/main/docs/media/cycle-evidence.json).
+The four lanes represent agent roles; letters identify work, not queue job IDs.
+The capture scripts agent-authored changes and operator approvals in a disposable
+local repository and bare remote. It does not launch an AI service.
 
-The four drafts at the end are real edits on the latest applied base. They are
-not submitted or presented as validated. Your agents or operator create, fix,
-refresh and resubmit the work; mergetrain checks and integrates it. The 24-second
-animation repeats this recorded window. It is not a speed claim or an infinite
-unattended-run claim.
+Two fixture gate waits make the overlaps reproducible: E and F are committed
+during A and B validation, then G and H drafts start during E and F validation.
+All three deployments retain approval and the default recheck. A fresh clone of
+the final remote passes six tests.
+
+G and H then refresh onto that result without losing their edits. I and J start
+there too. These four drafts remain unsubmitted. Your agents or operator create,
+fix, refresh and resubmit work; mergetrain checks and integrates it. The 24-second
+animation repeats this recorded window with condensed timing.
 
 </details>
 

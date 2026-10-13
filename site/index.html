@@ -99,21 +99,21 @@
         <div class="shell">
           <p class="eyebrow">24 seconds · no sound needed</p>
           <h2>Agents keep building.<br>Work keeps moving.</h2>
-          <p class="demo-intro">A fix returns to its agents. Other work moves ahead. While the fix is checked, the agents build the next changes on the latest result.</p>
+          <p class="demo-intro">Four agents stay in view. Within five seconds, A and B are being checked while E and F are being built. Each piece of work keeps its letter as the agents continue.</p>
           <div class="demo-loop" data-demo-loop>
             <div class="demo-loop-media">
-              <img data-loop-poster src="./media/mergetrain-loop-poster.png?v=59754502d0de" width="960" height="800" alt="A continuous circuit: agents build during checks, repair and resubmit work, then build the next changes on the latest applied result.">
-              <video data-loop-src="./media/mergetrain-loop.mp4?v=83f01a343327" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png?v=59754502d0de" width="960" height="800" aria-label="24-second silent summary of the recorded continuous workflow" aria-describedby="demo-summary">
+              <img data-loop-poster src="./media/mergetrain-loop-poster.png?v=fcd79330a80d" width="960" height="800" alt="Four agents stay visible. A and B are checked while E and F are built. Applied work stays in the project.">
+              <video data-loop-src="./media/mergetrain-loop.mp4?v=ca7de1da52a7" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png?v=fcd79330a80d" width="960" height="800" aria-label="24-second silent summary of the recorded continuous workflow" aria-describedby="demo-summary">
               </video>
             </div>
             <div class="demo-loop-controls">
               <button hidden type="button" data-loop-toggle data-play="Play loop" data-pause="Pause loop">Play loop</button>
-              <a href="./media/mergetrain-loop.gif?v=e93ceec892d8">View GIF</a>
-              <a href="./media/mergetrain-loop-poster.png?v=59754502d0de">Still image</a>
+              <a href="./media/mergetrain-loop.gif?v=2509de92da92">View GIF</a>
+              <a href="./media/mergetrain-loop-poster.png?v=fcd79330a80d">Still image</a>
             </div>
             <p data-loop-status role="status" data-unavailable="Video unavailable. View the GIF instead."></p>
           </div>
-          <p class="demo-context" id="demo-summary">Illustrated from a recorded local run with scripted changes and approvals. The agents build during checks and continue on the latest result. Timing is condensed.</p>
+          <p class="demo-context" id="demo-summary">Illustrated from recorded local commands, scripted changes and approvals. Agent lanes represent roles; letters track work. Timing is condensed.</p>
           <div class="demo-followup">
             <div>
               <h3>Try the basic demo</h3>
@@ -122,7 +122,7 @@
             </div>
             <div>
               <h3>Read the result</h3>
-              <p>Two compatible changes move ahead. The pair is repaired and resubmitted. During its check, two more changes are committed in separate worktrees. They refresh onto the repaired main and form the third deployment. All deployments retain approval and the default recheck. A fresh clone passes six tests; four following drafts start on that result.</p>
+              <p>C and D move ahead while A and B return for a fix. E and F are committed during the repair check. G and H drafts start during the next check. All three deployments retain approval and the default recheck. A fresh clone passes six tests. Four following drafts remain unsubmitted on the latest result.</p>
               <a href="https://github.com/yongjip/mergetrain/blob/main/docs/media/cycle-evidence.json">Inspect the captured commands and output →</a>
             </div>
           </div>

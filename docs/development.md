@@ -280,27 +280,34 @@ Supported and tested Python: 3.10 through 3.14. See the
 
 ## Documentation media
 
-The introduction is a 24-second silent cycle. A fixed circuit connects agents,
-combined checks, and the latest project. The compatible pair moves ahead while
-the conflicting pair returns for repair. During validation of the repair, the
-next two changes are authored, tested, and committed in separate worktrees.
-They build on the first deployment, refresh onto the repaired main, and pass a
-third approved deployment with the default recheck. A fresh clone of the final
-local remote passes six tests.
+The introduction is a 24-second silent cycle. Four agent identities remain in
+view after submitting their work. Letters identify work across fixes and queue
+replacement jobs. At 3.8 seconds, agents start E and F while mergetrain checks
+A and B. The project retains applied work so the result is visible.
 
-The capture finishes by creating four real drafts on that latest applied base.
-Those drafts are not submitted or validated. They close the illustration at the
-same active-work pose as the start. There is no completion screen or full-scene
-reset. The GIF repeats this finite recorded window; it does not claim that the
-capture ran an infinite development session.
+| Visual work | Recorded branches | Outcome in this window |
+| --- | --- | --- |
+| A, B | `agent/faster-timeout`, `agent/health-check` | Repaired, resubmitted and applied |
+| C, D | `agent/add-retries`, `agent/request-logging` | First compatible deployment |
+| E, F | `agent/retry-backoff`, `agent/structured-log` | Committed during repair validation, refreshed, then applied |
+| G, H | `agent/health-response`, `agent/retry-summary` | Drafts started during E/F validation, then refreshed without losing edits |
+| I, J | `agent/capped-backoff`, `agent/log-request-id` | Drafts started after the third deployment |
 
-The changes are agent-authored; the script repeats them and the three operator
-approvals. It does not launch an AI agent. A capture-only gate barrier holds the
-repair validation process open while the next commits are made. The evidence
-records gate readiness, command start/end times, and the still-running validator.
-This is a deterministic overlap demonstration, not a throughput benchmark. The
-fixture does not change Mergetrain's queue, gates, approval rules, or default
-recheck. The ordinary `mergetrain demo` remains the shorter original walkthrough.
+All three deployments retain approval and the default recheck. A fresh clone of
+the final local remote passes six tests. Four following drafts remain unsubmitted
+on that final base. Their dashed cards distinguish them from submitted work.
+At replay, work markers briefly fade and labels switch. The agent identities and
+paths stay visible. This repeats a finite recorded window, with no completion
+screen. It does not claim an infinite development session.
+
+The capture scripts agent-authored changes and three operator approvals. It does
+not launch an AI service. The four agent lanes represent roles, not recorded AI
+process identities. Two capture-only gate barriers hold validation open while
+E/F commits and G/H drafts are made. The evidence records both gate-ready times,
+command intervals and the still-running validators. This makes overlap
+reproducible; it is not a throughput benchmark. The fixture does not change
+Mergetrain's queue, gates, approval rules or default recheck. The ordinary
+`mergetrain demo` remains the shorter original walkthrough.
 
 ```sh
 PYTHONPATH=src python scripts/capture_demo_cycle.py

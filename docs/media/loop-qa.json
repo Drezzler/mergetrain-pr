@@ -1,11 +1,14 @@
 {
   "checked_on": "2026-10-13",
-  "status": "local implementation verified; deployment verification follows",
-  "story": "Compatible work deploys, the original pair is repaired, two next-batch changes commit during repair validation, refresh onto repaired main and form the third deployment. Four following drafts begin on the final remote.",
+  "status": "Local implementation verified; CI and production verification follow publication.",
+  "story": "Four persistent agent lanes and work A-J. E/F commits during A/B validation; G/H drafts start during E/F validation. All three deployments retain approval and the default recheck. Four final drafts remain unsubmitted.",
   "automated": {
     "playback_tests": 8,
-    "evidence_guard_tests": 19,
-    "landing_page_tests": 3
+    "evidence_guard_and_story_tests": 22,
+    "landing_page_tests": 3,
+    "recorded_commands": 147,
+    "final_remote_tests": 6,
+    "ruff": "passed"
   },
   "media": {
     "duration_seconds": 24,
@@ -47,31 +50,41 @@
   "visual_iterations": [
     {
       "pass": 1,
-      "finding": "The old scene completed one batch and dissolved to the start.",
-      "change": "Use a permanent work-check-project circuit and show new changes during repair validation."
+      "finding": "Anonymous agents disappeared when work left. The next batch looked like the old work. Overlap appeared too late.",
+      "change": "Keep four numbered agent lanes visible. Give work A-J stable letters. Start E/F at 3.8 seconds during A/B validation. Retain applied changes."
     },
     {
       "pass": 2,
-      "finding": "Moving pairs narrowed their spacing and crossed the project label.",
-      "change": "Preserve spacing along curves and move the application path below the label."
+      "finding": "A second idle interval weakened the continuing-work story.",
+      "change": "Capture real G/H edits during E/F validation and show those drafts while checks run."
     },
     {
       "pass": 3,
-      "finding": "The first four cards converged during submission.",
-      "change": "Move the first group with fixed relative spacing. Put check status above the check area."
+      "finding": "The replay crossfade double-exposed task labels. The repair path crowded the check heading.",
+      "change": "Switch labels once and fade work cards sequentially. Keep agent identities visible. Move the repair path into the gap."
     }
+  ],
+  "first_overlap_seconds": 3.8,
+  "encoded_frames_reviewed_seconds": [
+    0,
+    4.5,
+    14,
+    23.85,
+    23.9,
+    23.95
   ],
   "seam": {
     "full_scene_dissolve": false,
     "completion_screen": false,
     "exact_svg_start_end_match": true,
-    "final_pose": "Four real drafts, with the project and agent activity preserved"
+    "work_marker_transition_seconds": 0.2,
+    "labels_double_exposed": false,
+    "agent_identities_remain_visible": true
   },
   "limitations": [
-    "Physical iOS and Android devices were not tested.",
-    "Narrow desktop viewports verify layout, not mobile browser compatibility.",
-    "The capture scripts agent-authored changes and approvals; it does not launch an AI service.",
-    "A fixture gate barrier makes overlap deterministic; timings are not a throughput benchmark.",
-    "The loop repeats one recorded window. The four final drafts are not submitted or validated."
+    "Physical iOS and Android devices were not tested. Narrow desktop viewports verify layout only.",
+    "The capture scripts agent-authored changes and approvals; it does not launch an AI service. Four displayed agent roles are illustrative.",
+    "Two fixture gate barriers make overlap deterministic. Timing is condensed and is not a speed claim.",
+    "The animation repeats one recorded window. G-J are drafts, not submitted or validated work."
   ]
 }

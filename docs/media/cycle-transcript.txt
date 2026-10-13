@@ -76,7 +76,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:10Z"
+      "updated_at": "2026-10-13T08:17:13Z"
     },
     {
       "branch": "agent/add-retries",
@@ -87,7 +87,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:10Z"
+      "updated_at": "2026-10-13T08:17:13Z"
     },
     {
       "branch": "agent/health-check",
@@ -98,7 +98,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:10Z"
+      "updated_at": "2026-10-13T08:17:13Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -109,7 +109,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:10Z"
+      "updated_at": "2026-10-13T08:17:12Z"
     }
   ],
   "state": "waiting",
@@ -129,23 +129,23 @@ $ mergetrain --repo $DEMO/repo status --json
       "branch": "agent/health-check",
       "id": 2,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f426c21e03); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 5c29f3c527e3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     },
     {
       "branch": "agent/faster-timeout",
       "id": 1,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 6fc03a7eccec); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 17fcdf6efb88); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     }
   ],
   "contract_version": 5,
@@ -175,7 +175,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:11Z"
+      "updated_at": "2026-10-13T08:17:13Z"
     },
     {
       "branch": "agent/add-retries",
@@ -186,29 +186,29 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:11Z"
+      "updated_at": "2026-10-13T08:17:13Z"
     },
     {
       "branch": "agent/health-check",
       "id": 2,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f426c21e03); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 5c29f3c527e3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     },
     {
       "branch": "agent/faster-timeout",
       "id": 1,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 6fc03a7eccec); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 17fcdf6efb88); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     }
   ],
   "state": "attention",
@@ -240,7 +240,7 @@ index 8a8ac62..066a291 100644
 +
 +TIMEOUT_BUDGET = DEFAULT_TIMEOUT
 $ git commit -m 'fix: derive health budget from current timeout'
-[agent/health-check 7275a50] fix: derive health budget from current timeout
+[agent/health-check 3777a1f] fix: derive health budget from current timeout
  1 file changed, 3 insertions(+), 1 deletion(-)
 $ $PYTHON -B -m unittest discover -s tests
 $ mergetrain --repo $DEMO/repo status --json
@@ -250,23 +250,23 @@ $ mergetrain --repo $DEMO/repo status --json
       "branch": "agent/health-check",
       "id": 2,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f426c21e03); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 5c29f3c527e3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     },
     {
       "branch": "agent/faster-timeout",
       "id": 1,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 6fc03a7eccec); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 17fcdf6efb88); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     }
   ],
   "contract_version": 5,
@@ -296,7 +296,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -307,29 +307,29 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
       "id": 2,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 91f426c21e03); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 1 (agent/faster-timeout @ 5c29f3c527e3); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 2",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     },
     {
       "branch": "agent/faster-timeout",
       "id": 1,
       "outcome": null,
-      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 6fc03a7eccec); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
+      "reason": "semantic conflict: passes gates alone but fails combined with job 2 (agent/health-check @ 17fcdf6efb88); rebase onto the integration branch with the other side merged, fix the joint breakage, commit a clean result, then run mergetrain retry 1",
       "reason_code": "semantic_conflict",
       "reason_truncated": false,
       "state": "attention",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:12Z"
+      "updated_at": "2026-10-13T08:17:15Z"
     }
   ],
   "state": "attention",
@@ -366,7 +366,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -377,7 +377,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     },
     {
       "branch": "agent/request-logging",
@@ -388,7 +388,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -399,7 +399,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
@@ -410,7 +410,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -421,7 +421,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     }
   ],
   "state": "waiting",
@@ -463,7 +463,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -474,7 +474,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/request-logging",
@@ -485,7 +485,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -496,7 +496,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
@@ -507,7 +507,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -518,7 +518,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     }
   ],
   "state": "ready",
@@ -585,7 +585,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -596,7 +596,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/request-logging",
@@ -607,7 +607,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -618,7 +618,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
@@ -629,7 +629,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -640,7 +640,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     }
   ],
   "state": "idle",
@@ -677,7 +677,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "format entries using the applied logging setting",
-      "updated_at": "2026-10-13T07:13:18Z"
+      "updated_at": "2026-10-13T08:17:21Z"
     },
     {
       "branch": "agent/retry-backoff",
@@ -688,7 +688,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "waiting",
       "task": "build backoff from the applied retry policy",
-      "updated_at": "2026-10-13T07:13:18Z"
+      "updated_at": "2026-10-13T08:17:21Z"
     },
     {
       "branch": "agent/health-check",
@@ -699,7 +699,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -710,7 +710,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/request-logging",
@@ -721,7 +721,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -732,7 +732,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
@@ -743,7 +743,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -754,16 +754,38 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     }
   ],
   "state": "waiting",
   "summary": "2 job(s) are waiting for validation",
   "warnings": []
 }
-$ mergetrain --repo $DEMO/repo validate
+$ git diff -- app/health.py
+diff --git a/app/health.py b/app/health.py
+index 066a291..89357d1 100644
+--- a/app/health.py
++++ b/app/health.py
+@@ -1,3 +1,6 @@
+ from app.config import DEFAULT_TIMEOUT
+
+ TIMEOUT_BUDGET = DEFAULT_TIMEOUT
++
++def health_response():
++    return {'status': 'ok', 'timeout': TIMEOUT_BUDGET}
+$ git diff -- app/retries.py
+diff --git a/app/retries.py b/app/retries.py
+index 233d139..c5634cf 100644
+--- a/app/retries.py
++++ b/app/retries.py
+@@ -1 +1,4 @@
+ MAX_RETRIES = 3
++
++def retry_summary():
++    return f'Up to {MAX_RETRIES} retries'
 #7 validated: agent/retry-backoff
 #8 validated: agent/structured-log
+
 $ mergetrain --repo $DEMO/repo status --json
 {
   "attention_jobs": [],
@@ -794,7 +816,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "format entries using the applied logging setting",
-      "updated_at": "2026-10-13T07:13:18Z"
+      "updated_at": "2026-10-13T08:17:21Z"
     },
     {
       "branch": "agent/retry-backoff",
@@ -805,7 +827,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "ready",
       "task": "build backoff from the applied retry policy",
-      "updated_at": "2026-10-13T07:13:18Z"
+      "updated_at": "2026-10-13T08:17:21Z"
     },
     {
       "branch": "agent/health-check",
@@ -816,7 +838,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -827,7 +849,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:17Z"
+      "updated_at": "2026-10-13T08:17:20Z"
     },
     {
       "branch": "agent/request-logging",
@@ -838,7 +860,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add request logging",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/add-retries",
@@ -849,7 +871,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add retry policy",
-      "updated_at": "2026-10-13T07:13:14Z"
+      "updated_at": "2026-10-13T08:17:16Z"
     },
     {
       "branch": "agent/health-check",
@@ -860,7 +882,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "add a timeout-aware health check",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:18Z"
     },
     {
       "branch": "agent/faster-timeout",
@@ -871,7 +893,7 @@ $ mergetrain --repo $DEMO/repo status --json
       "reason_truncated": false,
       "state": "done",
       "task": "reduce the default timeout",
-      "updated_at": "2026-10-13T07:13:15Z"
+      "updated_at": "2026-10-13T08:17:17Z"
     }
   ],
   "state": "ready",
@@ -888,6 +910,28 @@ Deploy this exact plan? [y/N] y
 #8 deployed (push=succeeded, verify=succeeded): agent/structured-log
 
 $ $PYTHON -B -m unittest discover -s tests
+$ git diff -- app/health.py
+diff --git a/app/health.py b/app/health.py
+index 066a291..89357d1 100644
+--- a/app/health.py
++++ b/app/health.py
+@@ -1,3 +1,6 @@
+ from app.config import DEFAULT_TIMEOUT
+
+ TIMEOUT_BUDGET = DEFAULT_TIMEOUT
++
++def health_response():
++    return {'status': 'ok', 'timeout': TIMEOUT_BUDGET}
+$ git diff -- app/retries.py
+diff --git a/app/retries.py b/app/retries.py
+index 233d139..c5634cf 100644
+--- a/app/retries.py
++++ b/app/retries.py
+@@ -1 +1,4 @@
+ MAX_RETRIES = 3
++
++def retry_summary():
++    return f'Up to {MAX_RETRIES} retries'
 $ git diff -- app/backoff.py
 diff --git a/app/backoff.py b/app/backoff.py
 index da26022..bfe32b9 100644
@@ -912,28 +956,6 @@ index dde7212..91f4e64 100644
 -    return {'method': method, 'path': path} if LOG_REQUESTS else None
 +def request_entry(method, path, request_id=None):
 +    return {'method': method, 'path': path, 'request_id': request_id} if LOG_REQUESTS else None
-$ git diff -- app/health.py
-diff --git a/app/health.py b/app/health.py
-index 066a291..89357d1 100644
---- a/app/health.py
-+++ b/app/health.py
-@@ -1,3 +1,6 @@
- from app.config import DEFAULT_TIMEOUT
-
- TIMEOUT_BUDGET = DEFAULT_TIMEOUT
-+
-+def health_response():
-+    return {'status': 'ok', 'timeout': TIMEOUT_BUDGET}
-$ git diff -- app/retries.py
-diff --git a/app/retries.py b/app/retries.py
-index 233d139..c5634cf 100644
---- a/app/retries.py
-+++ b/app/retries.py
-@@ -1 +1,4 @@
- MAX_RETRIES = 3
-+
-+def retry_summary():
-+    return f'Up to {MAX_RETRIES} retries'
 .
 ----------------------------------------------------------------------
 Ran 1 test in 0.000s
@@ -955,7 +977,7 @@ Ran 2 tests in 0.000s
 
 OK
 From $DEMO/remote
-   37c5eea..94643d2  main       -> origin/main
+   7eabce3..904f708  main       -> origin/main
 Rebasing (1/1)
 Successfully rebased and updated refs/heads/agent/faster-timeout.
 ...
@@ -986,7 +1008,7 @@ Ran 4 tests in 0.000s
 
 OK
 From $DEMO/remote
-   94643d2..79ab6e0  main       -> origin/main
+   904f708..ad8fc2e  main       -> origin/main
 Rebasing (1/1)
 Successfully rebased and updated refs/heads/agent/retry-backoff.
 .....

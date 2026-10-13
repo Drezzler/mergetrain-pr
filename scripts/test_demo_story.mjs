@@ -1,12 +1,12 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {readStory, frameSvg, DURATION} from '../docs/media/loop-scenes.mjs';
+import {readStory, frameSvg, sceneAt, DURATION} from '../docs/media/loop-scenes.mjs';
 const original = JSON.parse(fs.readFileSync(new URL('../docs/media/cycle-evidence.json', import.meta.url)));
 test('the captured story preserves work-item identity across fresh queue jobs', () => {
   assert.deepEqual(readStory(original).map(r => [r.id,r.deployedId]), [[1,5],[2,6],[3,3],[4,4],[5,7],[6,8]]);
 });
-for (const phase of ['first_deploy', 'agent_repair', 'resubmit', 'repaired_validation', 'second_deploy', 'remote_proof', 'next_batch_work', 'next_batch_sync', 'next_batch_submit', 'next_batch_validation', 'third_deploy', 'cycle_remote_proof', 'following_work_started']) {
+for (const phase of ['first_deploy', 'agent_repair', 'resubmit', 'repaired_validation', 'second_deploy', 'remote_proof', 'next_batch_work', 'next_batch_sync', 'next_batch_submit', 'next_batch_validation', 'third_deploy', 'cycle_remote_proof', 'following_work_started', 'following_work_during_validation']) {
   test(`the renderer refuses a repair story without ${phase} evidence`, () => {
     const evidence=structuredClone(original);
     evidence.records=evidence.records.filter(r=>r.phase!==phase);
@@ -39,9 +39,25 @@ test('the next work must remain an unsubmitted draft on the final applied base',
   evidence.proof.following_drafts[0].state='deployed';
   assert.throws(()=>readStory(evidence), /following drafts/);
 });
-test('the loop joins equal active-work poses instead of clearing the scene', () => {
+test('the first five seconds show new work while earlier work is checked', () => {
+  readStory(original);
+  const opening=sceneAt(4.5);
+  assert.deepEqual(opening.checking,['A','B']);
+  assert.deepEqual(opening.rows.filter(r=>r.state==='Building').map(r=>r.work),['E','F']);
+});
+test('following drafts cannot be shown during checks without overlapping edit evidence', () => {
+  const evidence=structuredClone(original);
+  const edit=evidence.records.find(r=>r.phase==='following_work_during_validation' && r.branch);
+  edit.finished_seconds=evidence.proof.draft_overlap.validation_finished_seconds+1;
+  assert.throws(()=>readStory(evidence), /following-draft overlap/);
+  assert.deepEqual(sceneAt(14).checking,['E','F']);
+  assert.deepEqual(sceneAt(14).rows.filter(r=>r.state==='New draft').map(r=>r.work),['G','H']);
+});
+test('agent identities remain visible after their work leaves and through replay', () => {
   const story=readStory(original);
+  for(const time of [0,3,4.5,10,14,19,23.9]) {
+    const svg=frameSvg(time,story);
+    for(let id=1;id<=4;id++) assert.ok(svg.includes(`data-agent="${id}"`));
+  }
   assert.equal(frameSvg(0,story),frameSvg(DURATION,story));
-  assert.match(frameSvg(DURATION-.05,story), /Working/);
-  assert.doesNotMatch(frameSvg(DURATION-.05,story), /All.*applied/);
 });

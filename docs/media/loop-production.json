@@ -10,12 +10,12 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "A fixed circuit connects agents, combined checks and the latest project. The original pair is repaired while other work advances. Two following changes are committed during repair validation, refreshed onto the repaired main, and deployed as the third train. Four real unsubmitted drafts join the final and initial poses. Cards are anonymous; the evidence rows preserve work and job identities. No full-scene dissolve or completion screen.",
-  "source_commit": "418cca87cb445a68cf3575aa8a0c7848747f27ef",
+  "design": "Four agent identities stay visible. Work A-D returns or moves ahead; E-F appears at 3.8 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.",
+  "source_commit": "0be337d36305995865c150c1b3c475284ccc8cf8",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
-  "operator_actions": "The capture scripts agent-authored changes and operator approvals for three deployments to a disposable local bare remote. A fixture gate barrier proves next-batch work overlaps validation; elapsed time is not a speed claim. Four final drafts are neither submitted nor validated. Mergetrain does not launch an AI agent or author changes.",
-  "evidence_sha256": "f49bbd8c7fe3c4bb510756d31c4ffa8916448a4109313531bbb95766221592b2",
+  "operator_actions": "The capture scripts agent-authored changes and operator approvals for three deployments to a disposable local bare remote. Two fixture gate barriers prove next-batch commits and following drafts overlap validation; elapsed time is not a speed claim. The four agent lanes are illustrative roles, not recorded AI process identities. Four final drafts are neither submitted nor validated. Mergetrain does not launch an AI agent or author changes.",
+  "evidence_sha256": "e04fff96e92ddffc9f04ecd5a6590c2e28e8a7f8674109b57929647375e6e0dd",
   "rows": [
     {
       "id": 1,
@@ -25,8 +25,9 @@
       "deployedId": 5,
       "validationLine": "#1 blocked: agent/faster-timeout",
       "outcomeLine": "#5 deployed (push=succeeded, verify=succeeded): agent/faster-timeout",
-      "before": "91f426c21e03e1be6c9b3f40ef82ca2a8417670e",
-      "after": "052e3f3330804dad214791105a49e27c58226e61"
+      "before": "5c29f3c527e320b55455977352ff91e2712774d0",
+      "after": "b527bd77d618b209fef57145c49bcebce56d93f7",
+      "visualId": "A"
     },
     {
       "id": 2,
@@ -36,8 +37,9 @@
       "deployedId": 6,
       "validationLine": "#2 blocked: agent/health-check",
       "outcomeLine": "#6 deployed (push=succeeded, verify=succeeded): agent/health-check",
-      "before": "6fc03a7eccec2d38b5a4796db40bf783dfa2f597",
-      "after": "7275a501c71fe7a28b061ab42311f4d522f83dfd"
+      "before": "17fcdf6efb88f2f1c658e8f951112bc03c341e24",
+      "after": "3777a1f342caf167456f9da8684f8808bab13ede",
+      "visualId": "B"
     },
     {
       "id": 3,
@@ -46,7 +48,8 @@
       "needsRepair": false,
       "deployedId": 3,
       "validationLine": "#3 validated: agent/add-retries",
-      "outcomeLine": "#3 deployed (push=succeeded, verify=succeeded): agent/add-retries"
+      "outcomeLine": "#3 deployed (push=succeeded, verify=succeeded): agent/add-retries",
+      "visualId": "C"
     },
     {
       "id": 4,
@@ -55,7 +58,8 @@
       "needsRepair": false,
       "deployedId": 4,
       "validationLine": "#4 validated: agent/request-logging",
-      "outcomeLine": "#4 deployed (push=succeeded, verify=succeeded): agent/request-logging"
+      "outcomeLine": "#4 deployed (push=succeeded, verify=succeeded): agent/request-logging",
+      "visualId": "D"
     },
     {
       "id": 5,
@@ -63,9 +67,10 @@
       "deployedId": 7,
       "needsRepair": false,
       "nextBatch": true,
-      "base": "94643d2f5e50573392d893b86e4475a66c9528bc",
-      "duringValidation": "8a744a52c9be1a1716f23b755878e7a5e80ecb5c",
-      "submitted": "14065daeb18c4a029d787aa6b16a64fee0ea5deb"
+      "base": "904f708ceeef9eaaa3c11275e8aa81bde8cb003d",
+      "duringValidation": "36981d30505295804f06ef60cf1dad8c4459a7b0",
+      "submitted": "23bb9040785829350de3023a9a00691c1517de14",
+      "visualId": "E"
     },
     {
       "id": 6,
@@ -73,27 +78,67 @@
       "deployedId": 8,
       "needsRepair": false,
       "nextBatch": true,
-      "base": "94643d2f5e50573392d893b86e4475a66c9528bc",
-      "duringValidation": "2d44f03d16960c438d7d05d93ad5269c2441d05a",
-      "submitted": "034ca5c9ca9bc9c422f8672d5b146d34a00f05cc"
+      "base": "904f708ceeef9eaaa3c11275e8aa81bde8cb003d",
+      "duringValidation": "6bb72f4d6e135aa76a8a6b8387053ff26b676cb0",
+      "submitted": "0c30fb75296ac37efa03c887de2cb1040cdb4d65",
+      "visualId": "F"
     }
   ],
+  "drafts": [
+    {
+      "item": 7,
+      "branch": "agent/health-response",
+      "base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_base": "ad8fc2ef3aa6d2275bdbea04a87a8a123da6e445",
+      "started_during_validation": true,
+      "state": "draft; not submitted or validated",
+      "visualId": "G"
+    },
+    {
+      "item": 8,
+      "branch": "agent/retry-summary",
+      "base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_base": "ad8fc2ef3aa6d2275bdbea04a87a8a123da6e445",
+      "started_during_validation": true,
+      "state": "draft; not submitted or validated",
+      "visualId": "H"
+    },
+    {
+      "item": 9,
+      "branch": "agent/capped-backoff",
+      "base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_during_validation": false,
+      "state": "draft; not submitted or validated",
+      "visualId": "I"
+    },
+    {
+      "item": 10,
+      "branch": "agent/log-request-id",
+      "base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_base": "533a6d80e0ca646bbbf65646c7abb7452f20ecc7",
+      "started_during_validation": false,
+      "state": "draft; not submitted or validated",
+      "visualId": "J"
+    }
+  ],
+  "first_overlap_seconds": 3.8,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 664536,
-      "sha256": "83f01a343327b95f40dd15d5119422e313ed1a30705d85d3f456c4afc77abf90"
+      "bytes": 706393,
+      "sha256": "ca7de1da52a733d7c33f45bf36c41081798303b2736a5be21edcf08393761ba0"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1666921,
-      "sha256": "e93ceec892d82ccb345f21bb4e93cac32e3a10e1fc0da9cf91f828514d160c99"
+      "bytes": 1549207,
+      "sha256": "2509de92da924eb591e1e12b4b187204c2b957f57759347ab0e1048e2e5ea54d"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 84013,
-      "sha256": "59754502d0deb755f69ca35a386368315d974c0e7cec2cd344fb84476319e9ed"
+      "bytes": 100678,
+      "sha256": "fcd79330a80d7098ffe45b67f64f5bb05ceaa5667c476d6c605640d41c80ef9e"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 5300,
-      "sha256": "b6df287aacd36916e99ed1b4c059ca9f3651e396bb26904f0afa8178df67b937"
+      "bytes": 8429,
+      "sha256": "b5e3d9e7fc611efb4b1f8623dd7f5c9fe5c3853bb277c1dc19b42332e53d2ba0"
     }
   }
 }

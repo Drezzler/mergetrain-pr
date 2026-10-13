@@ -82,10 +82,25 @@ export function readStory(evidence) {
   if (drafts?.length !== 4 || drafts.some(d => d.base !== evidence.proof.final_main || d.state !== 'draft; not submitted or validated') ||
       records.filter(r => r.phase === 'following_work_started' && r.command.startsWith('git diff -- ') && r.returncode === 0 && r.stdout.includes('\n+')).length !== 4)
     throw new Error('Missing actual following drafts on the latest applied base.');
-  return story;
+  const draftOverlap=evidence.proof.draft_overlap;
+  const nextValidation=one('next_batch_validation', r=>r.command.endsWith(' validate'));
+  if(!draftOverlap?.validator_alive_after_edits || !nextValidation ||
+      !(nextValidation.started_seconds < draftOverlap.gate_active_seconds &&
+        draftOverlap.gate_active_seconds < draftOverlap.drafts_started_seconds &&
+        draftOverlap.drafts_started_seconds < nextValidation.finished_seconds) ||
+      drafts.map(d=>d.item).join(',')!=='7,8,9,10')
+    throw new Error('Missing following-draft overlap proof.');
+  for(const draft of drafts.slice(0,2)) {
+    const edit=one('following_work_during_validation', r=>r.branch===draft.branch && r.command.startsWith('git diff -- '));
+    if(!draft.started_during_validation || draft.started_base!==evidence.proof.repaired_main ||
+        !edit || edit.returncode!==0 || !edit.stdout.includes('\n+') ||
+        !(edit.started_seconds>draftOverlap.gate_active_seconds && edit.started_seconds<=edit.finished_seconds && edit.finished_seconds<nextValidation.finished_seconds))
+      throw new Error('Missing following-draft overlap proof.');
+  }
+  return story.map(item=>({...item,visualId:'ABCDEFGHIJ'[item.id-1]}));
 }
 
-const C = {paper:'#f7f7f5', ink:'#16191f', muted:'#65707c', line:'#d5d9de', blue:'#005de8', pale:'#edf3ff', amber:'#a84c24', amberBg:'#fff5ed', green:'#237457'};
+const C = {paper:'#f7f7f5', ink:'#16191f', muted:'#5a6572', line:'#d5d9de', blue:'#005de8', pale:'#edf3ff', amber:'#a84c24', amberBg:'#fff5ed', green:'#237457'};
 const clamp = x => Math.max(0, Math.min(1, x));
 const ease = x => { x=clamp(x); return x*x*x*(x*(x*6-15)+10); };
 const progress = (t,a,b) => ease((t-a)/(b-a));
@@ -93,100 +108,137 @@ const mix = (a,b,p) => a+(b-a)*p;
 const bezier = (a,b,c,d,p) => (1-p)**3*a+3*(1-p)**2*p*b+3*(1-p)*p*p*c+p**3*d;
 const curve = (a,b,c,d,p) => [bezier(a[0],b[0],c[0],d[0],p),bezier(a[1],b[1],c[1],d[1],p)];
 const escape = value => String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;');
-const text = (x,y,value,size=32,color=C.ink,weight=500,extra='') => `<text x="${x}" y="${y}" fill="${color}" font-family="Arial, sans-serif" font-size="${size}" font-weight="${weight}" ${extra}>${escape(value)}</text>`;
-const centered = (x,y,value,size=32,color=C.ink,weight=500) => text(x,y,value,size,color,weight,'text-anchor="middle"');
-const check = (x,y,color=C.blue,s=1) => `<path d="M-8 0 L-2 6 L10 -8" transform="translate(${x} ${y}) scale(${s})" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
-const agent = [[165,588],[265,588],[165,652],[265,652]];
-const queue = [[447,370],[553,370],[447,448],[553,448]];
-function card(pos, {color=C.blue, fill='#fff', state='work', opacity=1, scale=1}={}) {
-  const [x,y]=pos;
-  return `<g opacity="${opacity}" transform="translate(${x} ${y}) scale(${scale})"><rect x="-43" y="-28" width="86" height="56" rx="11" fill="${fill}" stroke="${color}" stroke-width="2.2"/>`+
-    (state==='conflict' ? centered(0,10,'!',29,color,600) : state==='pass' ? check(0,1,color,1.05) :
-      `<path d="M-22-8H18M-22 1H7M-22 10H14" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" opacity=".65"/>`)+'</g>';
+const text = (x,y,value,size=28,color=C.ink,weight=500,extra='') => `<text x="${x}" y="${y}" fill="${color}" font-family="Arial, sans-serif" font-size="${size}" font-weight="${weight}" ${extra}>${escape(value)}</text>`;
+const centered = (x,y,value,size=28,color=C.ink,weight=500) => text(x,y,value,size,color,weight,'text-anchor="middle"');
+const letters = 'ABCDEFGHIJ';
+const agents = [[369,310],[369,420],[369,530],[369,640]];
+const queue = [[649,357],[817,357],[649,444],[817,444]];
+const project = [733,666];
+const check = (x,y,color=C.blue) => `<path d="M-8 0L-2 6L10-8" transform="translate(${x} ${y})" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
+
+// Display letters identify recorded work items, not queue replacement-job IDs.
+export function sceneAt(t) {
+  t=((Math.max(0,t)%DURATION)+DURATION)%DURATION;
+  const rows=[{state:'Needs fix',work:'A'},{state:'Needs fix',work:'B'},{state:'Submitted',work:'C'},{state:'Submitted',work:'D'}];
+  if(t>=2.2) for(let i=0;i<2;i++) rows[i]={state:t<2.9?'Fixing':t<3.6?'Submitting':'Submitted',work:letters[i]};
+  if(t>=2.2) for(let i=2;i<4;i++) rows[i]={state:'Ready',work:null};
+  if(t>=3.8) for(let i=2;i<4;i++) rows[i]={state:t<10.4?'Building':t<11.2?'Updating':t<12.4?'Submitting':'Submitted',work:letters[i+2]};
+  if(t>=12.7) for(let i=0;i<2;i++) rows[i]={state:'New draft',work:letters[i+6]};
+  if(t>=18.7) for(let i=2;i<4;i++) rows[i]={state:'New draft',work:letters[i+6]};
+  const checking=t>=3.6&&t<7.1?['A','B']:t>=12.4&&t<15.3?['E','F']:[];
+  const approval=(t>=.9&&t<1.4)||(t>=7.1&&t<8.6)||(t>=15.3&&t<17.1);
+  const added=t>=18.4?['C','D','A','B','E','F']:t>=10?['C','D','A','B']:t>=2.2?['C','D']:[];
+  const caption=t<2.2?'C + D move ahead. A + B return.':t<3.8?'A + B get a fix and return.':t<7.1?'Checking A + B. Building E + F.':t<10.4?'A + B move ahead. E + F keep building.':t<12.7?'Next work E + F goes in.':t<17.1?'Checking E + F. Starting G + H.':t<18.7?'E + F move ahead. G + H keep building.':'G + H + I + J keep the work moving.';
+  return {t,rows,checking,approval,added,caption};
 }
-function applied(t,a,b,from,index) {
-  const p=progress(t,a,b), offset=index-.5;
-  const pos=curve([from[0]-offset*106,from[1]],[600,510],[520,675],[775,635],p);
-  pos[0]+=offset*mix(106,93,p);
-  return card(pos,{color:p>.75?C.green:C.blue,state:'pass',opacity:1-progress(t,b,b+.8)});
+
+function card(pos,id,{state='work',opacity=1,writing=1,draft=false}={}) {
+  const color=state==='fix'?C.amber:state==='pass'?C.green:C.blue;
+  let svg=`<g data-work="${id}" opacity="${opacity}" transform="translate(${pos[0]} ${pos[1]})"><rect x="-55" y="-31" width="110" height="62" rx="12" fill="${state==='fix'?C.amberBg:'#fff'}" stroke="${color}" stroke-width="2.5" ${draft?'stroke-dasharray="7 4"':''}/>`;
+  svg+=centered(-29,11,id,32,color,600);
+  svg+=`<path d="M-7-19V19" stroke="${color}" opacity=".22"/>`;
+  if(state==='pass') svg+=check(24,2,color);
+  else if(state==='fix') svg+=centered(25,11,'!',31,color,600);
+  else for(let i=0;i<3;i++) svg+=`<path d="M6 ${-13+i*13}H${6+(i%2?22:36)*clamp(writing*3-i)}" stroke="${color}" stroke-width="3" stroke-linecap="round" opacity=".65"/>`;
+  return svg+'</g>';
+}
+
+function travel(from,to,p,bend=0) {
+  const direction=Math.sign(to[0]-from[0])||1;
+  return curve(from,[from[0]+direction*100,from[1]+bend],[to[0]-direction*100,to[1]+bend],to,p);
+}
+
+function dynamic(t, {labels=true, cards=true}={}) {
+  const s=sceneAt(t);
+  let svg='';
+  if(labels) {
+  svg+=text(40,205,s.caption,30,C.muted,400);
+  for(let i=0;i<4;i++) {
+    const row=s.rows[i], y=agents[i][1];
+    const active=['Fixing','Building','New draft'].includes(row.state);
+    const color=row.state==='Needs fix'||row.state==='Fixing'?C.amber:active?C.blue:C.muted;
+    svg+=text(117,y+20,row.state+(row.work?' '+row.work:''),32,color,500);
+    if(active) {
+      const p=(t/1.8+i*.23)%1;
+      svg+=`<path d="M119 ${y+32}H${137+117*p}" stroke="${color}" stroke-width="3" stroke-linecap="round" opacity=".45"/>`;
+    }
+  }
+  const status=s.checking.length?'Checking '+s.checking.join(' + '):s.approval?'Approve · recheck':t<.9?'Return A + B':t>=18.4?'Ready for work':'Moving work';
+  svg+=centered(733,305,status,28,s.approval?C.blue:C.ink,500);
+  if(s.checking.length||s.approval) {
+    const p=(t%1.4)/1.4;
+    svg+=`<path d="M${576+p*313} 327V482" stroke="${C.blue}" stroke-width="3" opacity=".17"/>`;
+  }
+  svg+=text(578,628,`${s.added.length} changes added`,27,C.green,500);
+  s.added.forEach((id,i)=>{
+    const x=599+i*53;
+    svg+=`<rect x="${x-21}" y="649" width="42" height="42" rx="10" fill="#fff" stroke="${C.green}" stroke-width="2"/>`+centered(x,679,id,27,C.green,600);
+  });
+  }
+  if(!cards) return svg;
+  // The recorded conflicting pair returns before the first approved deployment.
+  for(let i=0;i<2;i++) {
+    if(t<.9) svg+=card(travel(queue[i],agents[i],progress(t,0,.9),-90),letters[i],{state:'fix'});
+    else if(t<2.2) svg+=card(agents[i],letters[i],{state:'fix'});
+    else if(t<2.9) svg+=card(agents[i],letters[i],{writing:progress(t,2.2,2.9)});
+    else if(t<3.6) svg+=card(travel(agents[i],queue[i],progress(t,2.9,3.6)),letters[i]);
+    else if(t<8.6) svg+=card(queue[i],letters[i],{state:t>=7.1?'pass':'work'});
+    else if(t<10) svg+=card(travel(queue[i],[project[0]+(i-.5)*126,project[1]],progress(t,8.6,10),35),letters[i],{state:'pass',opacity:1-progress(t,9.6,10)});
+  }
+  for(let i=2;i<4;i++) {
+    if(t<1.4) svg+=card(queue[i],letters[i],{state:'pass'});
+    else if(t<2.2) svg+=card(travel(queue[i],[project[0]+(i-2.5)*126,project[1]],progress(t,1.4,2.2),35),letters[i],{state:'pass',opacity:1-progress(t,1.95,2.2)});
+  }
+  // These two commits are captured while A+B validation is running.
+  for(let i=0;i<2;i++) {
+    const id=letters[i+4];
+    if(t>=3.8&&t<11.2) svg+=card(agents[i+2],id,{opacity:progress(t,3.8,4.1),writing:progress(t,3.8,6.4)});
+    else if(t>=11.2&&t<12.4) svg+=card(travel(agents[i+2],queue[i],progress(t,11.2,12.4)),id);
+    else if(t>=12.4&&t<17.1) svg+=card(queue[i],id,{state:t>=15.3?'pass':'work'});
+    else if(t>=17.1&&t<18.4) svg+=card(travel(queue[i],[project[0]+(i-.5)*126,project[1]],progress(t,17.1,18.4),35),id,{state:'pass',opacity:1-progress(t,18.1,18.4)});
+  }
+  // G/H are real dirty drafts started during the next validation; I/J follow.
+  for(let i=0;i<4;i++) {
+    const start=i<2?12.7:18.7;
+    if(t>=start) svg+=card(agents[i],letters[i+6],{draft:true,opacity:progress(t,start,start+.35),writing:progress(t,start,start+3)});
+  }
+  return svg;
 }
 
 export function frameSvg(t,story,{poster=false}={}) {
   if(story.length!==6) throw new Error('The scene requires the recorded following batch.');
-  // The seam joins equal work-in-progress poses. It repeats this recorded window;
-  // it does not count the unfinished drafts as additional completed changes.
-  t=poster?11:((Math.max(0,t)%DURATION)+DURATION)%DURATION;
-  const caption=t<2.5||t>=21.5?'Agents work in parallel.':t<8?'One pair returns. Other work moves ahead.':t<15.4?'Check the fix. Build the next changes.':'New work follows the latest changes.';
-  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800"><defs><marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.blue}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker><marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.amber}" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker></defs><rect width="960" height="800" fill="${C.paper}"/>`;
-  svg+=text(48,52,'mergetrain',29,C.blue,600);
-  svg+=text(48,123,'Agents keep building.',60,C.ink,600,'letter-spacing="-1.5"');
-  svg+=text(48,190,'Work keeps moving.',60,C.ink,600,'letter-spacing="-1.5"');
-  svg+=text(48,250,caption,32,C.muted,400);
-  // A permanent circuit connects work, checking and the latest project state.
-  svg+=`<path d="M295 527C310 472 341 450 371 435" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow-blue)" opacity=".6"/>`;
-  svg+=`<path d="M640 420C690 480 590 580 650 618" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow-blue)" opacity=".6"/>`;
-  svg+=`<path d="M691 704C590 763 403 763 302 704" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow-blue)" opacity=".55"/>`;
-  svg+=centered(497,784,'Build on the latest changes',25,C.muted,400);
-  svg+=`<path d="M374 318C247 308 115 405 115 527" fill="none" stroke="${C.amber}" stroke-width="2.5" marker-end="url(#arrow-amber)" opacity="${t>=3.7&&t<8.2?.85:.2}"/>`;
-  svg+=text(119,389,'Fix',24,C.amber,500);
+  t=poster?5:((Math.max(0,t)%DURATION)+DURATION)%DURATION;
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.blue}" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="fix-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.amber}" stroke-width="1.5" stroke-linecap="round"/></marker></defs><rect width="960" height="800" fill="${C.paper}"/>`;
+  svg+=text(40,46,'mergetrain',29,C.blue,600);
+  svg+=text(40,111,'Agents keep building.',58,C.ink,600,'letter-spacing="-1.5"');
+  svg+=text(40,164,'Checks run. New work starts.',36,C.ink,400);
+  svg+=text(52,256,'AI agents',31,C.ink,600)+text(577,256,'mergetrain',31,C.blue,600);
+  svg+=`<path d="M453 470C505 470 500 410 554 410" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
+  svg+=`<path d="M877 532V577" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
+  svg+=`<path d="M554 365C500 336 513 309 451 309" fill="none" stroke="${C.amber}" stroke-width="3" marker-end="url(#fix-arrow)" opacity=".55"/>`;
+  svg+=text(483,351,'Fix',25,C.amber,500);
+  svg+=`<path d="M690 727C600 771 169 781 139 698" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
   for(let i=0;i<3;i++) {
-    const p=((t/8+i/3)%1);
-    const pos=curve([691,704],[590,763],[403,763],[302,704],p);
-    svg+=`<circle cx="${pos[0]}" cy="${pos[1]}" r="4" fill="${C.blue}" opacity=".45"/>`;
+    const p=(t/8+i/3)%1;
+    const pos=curve([690,727],[600,771],[169,781],[139,698],p);
+    svg+=`<circle cx="${pos[0]}" cy="${pos[1]}" r="4" fill="${C.blue}" opacity=".5"/>`;
   }
-  svg+=centered(215,506,'AI agents',33,C.ink,600)+centered(500,294,'Check together',33,C.ink,600)+centered(779,506,'Your project',33,C.ink,600);
-  svg+=`<rect x="70" y="527" width="290" height="177" rx="22" fill="${C.pale}" stroke="${C.blue}" stroke-width="2"/>`;
-  for(let i=0;i<3;i++) svg+=`<circle cx="${111+i*19}" cy="548" r="4" fill="${C.blue}" opacity="${.35+.65*(.5+.5*Math.sin((t/2-i/3)*Math.PI*2))}"/>`;
-  svg+=text(173,554,'Working',19,C.blue,500);
-  svg+=`<rect x="360" y="326" width="280" height="179" rx="22" fill="#f0f1f2" stroke="${C.line}" stroke-width="2"/>`;
-  svg+=`<rect x="650" y="527" width="260" height="177" rx="22" fill="#edf6f1" stroke="${C.green}" stroke-width="2"/>`;
-  svg+=centered(780,556,'Latest version',23,C.green,500);
-  for(let i=0;i<4;i++) svg+=`<path d="M682 ${582+i*25}H${i%2?836:876}" stroke="${C.green}" stroke-width="${i===0?5:3}" opacity="${i===0?.42:.18}" stroke-linecap="round"/>`;
-  const approving=(t>=5.4&&t<6.7)||(t>=12.2&&t<14.2)||(t>=18.5&&t<20.5);
-  const checking=(t>=2.5&&t<3.7)||(t>=10&&t<12.2)||(t>=17.2&&t<18.5);
-  const status=approving?'Approve · check again':checking?'Checking':t>=3.7&&t<5.4?'Fix the pair':'Ready for work';
-  svg+=centered(500,317,status,21,approving?C.blue:C.muted,500);
-  // Original four changes, including the exact pair that is repaired and retried.
+  svg+=centered(484,788,'Build on the latest result',28,C.muted,400);
+  // Agent identities do not leave with their submitted work cards.
   for(let i=0;i<4;i++) {
-    let pos=agent[i];
-    if(t<2.5) {
-      const p=progress(t,1,2.3);
-      pos=curve([215,620],[415,620],[400,490],[500,409],p);
-      pos[0]+=(i%2-.5)*mix(100,106,p);
-      pos[1]+=(Math.floor(i/2)-.5)*mix(64,78,p);
-    }
-    else pos=queue[i];
-    if(i<2) {
-      if(t>=3.7&&t<5.6) {
-        const p=progress(t,4.05,5.6);
-        pos=curve([500,370],[270,310],[85,510],[215,588],p);
-        pos[0]+=(i-.5)*mix(106,100,p);
-      }
-      if(t>=5.6&&t<8.2) pos=agent[i];
-      if(t>=8.2&&t<10) pos=curve(agent[i],[agent[i][0]+200,588],[queue[i][0]-100,410],queue[i],progress(t,8.2,10));
-      if(t>=14.2) { if(t<16.2) svg+=applied(t,14.2,15.4,queue[i],i); continue; }
-      svg+=card(pos,{state:t>=3.7&&t<7.7?'conflict':t>=12.2?'pass':'work',color:t>=3.7&&t<7.7?C.amber:C.blue,fill:t>=3.7&&t<7.7?C.amberBg:'#fff'});
-    } else {
-      if(t>=6.7) { if(t<8.8) svg+=applied(t,6.7,8,queue[i],i-2); continue; }
-      svg+=card(pos,{state:t>=3.7?'pass':'work'});
-    }
+    const y=agents[i][1];
+    svg+=`<g data-agent="${i+1}"><rect x="40" y="${y-41}" width="413" height="89" rx="17" fill="${C.pale}" stroke="#b5c9ec" stroke-width="1.5"/><circle cx="78" cy="${y}" r="25" fill="${C.blue}"/>`+centered(78,y+9,String(i+1),27,'#fff',600)+text(117,y-13,`Agent ${i+1}`,26,C.ink,600)+'</g>';
   }
-  // These next changes are actually committed while the repair gate is active.
-  for(let i=0;i<2;i++) {
-    if(t<10.2||t>=22.1) continue;
-    if(t>=20.5) {svg+=applied(t,20.5,21.3,queue[i],i);continue;}
-    const growth=progress(t,10.2+i*.25,11.2+i*.25);
-    const pos=curve(agent[i+2],[agent[i+2][0]+200,588],[queue[i][0]-100,410],queue[i],progress(t,16.2,17.2));
-    svg+=card(pos,{opacity:growth,scale:.85+.15*growth,state:t>=18.5?'pass':'work'});
-  }
-  // Four real, unsubmitted drafts close the loop without clearing the project.
-  for(let i=0;i<4;i++) if(t>=21.5) {
-    const growth=progress(t,21.5+i*.15,22.6+i*.15);
-    svg+=card(agent[i],{opacity:growth,scale:.85+.15*growth});
-  }
-  if(checking||approving) {
-    const p=(t%1.2)/1.2;
-    svg+=`<path d="M${378+p*244} 337V495" stroke="${C.blue}" stroke-width="2.5" opacity=".18"/>`;
-  }
+  svg+=`<rect x="555" y="271" width="355" height="263" rx="20" fill="#f0f1f2" stroke="${C.line}" stroke-width="2"/>`;
+  svg+=text(577,572,'Your project',31,C.ink,600);
+  svg+=`<rect x="555" y="591" width="355" height="136" rx="20" fill="#edf6f1" stroke="${C.green}" stroke-width="2"/>`;
+  // Only work markers transition at the replay boundary. Agents and paths stay.
+  const replay=t>=23.8;
+  const labelTime=t>=23.9?0:t;
+  svg+=dynamic(labelTime,{cards:false});
+  // Fade out before fading in: task labels and cards never double-expose.
+  const cardTime=t>=23.9?0:t;
+  const opacity=!replay?1:t<23.9?1-progress(t,23.8,23.9):progress(t,23.9,24);
+  svg+=`<g opacity="${opacity}">${dynamic(cardTime,{labels:false})}</g>`;
   return svg+'</svg>';
 }

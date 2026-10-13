@@ -26,6 +26,8 @@ class ContinuousRecording(Recording):
         self.epoch = time.monotonic()
         self.following = []
         self.overlap = {}
+        self.draft_overlap = {}
+        self.early_drafts = {}
 
     def record(self, argv, result, start, **extra):
         super().record(argv, result, start, **extra)
@@ -59,6 +61,8 @@ class ContinuousRecording(Recording):
     def _cli(self, *args, expected=None):
         if args == ("validate",) and self.phase == "repaired_validation":
             return self.validate_while_work_continues()
+        if args == ("validate",) and self.phase == "next_batch_validation":
+            return self.validate_while_drafts_start()
         return super()._cli(*args, expected=expected)
 
     def make_next_branch(self, branch, files, base):
@@ -127,6 +131,60 @@ class ContinuousRecording(Recording):
         assert result.returncode == 0, out + err
         return result
 
+    def validate_while_drafts_start(self):
+        ready = self.sandbox.root / "draft-gate-ready"
+        release = self.sandbox.root / "draft-gate-release"
+        argv = [sys.executable, "-m", "mergetrain", "--repo", str(self.repo), "validate"]
+        env = {**self.env, "MT_DEMO_GATE_READY": str(ready), "MT_DEMO_GATE_RELEASE": str(release)}
+        start = time.monotonic()
+        proc = subprocess.Popen(argv, cwd=self.repo, env=env, text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            while not ready.exists():
+                if proc.poll() is not None or time.monotonic() - start > 40:
+                    out, err = proc.communicate(timeout=10)
+                    raise RuntimeError(f"Validation did not reach the draft barrier: {out}\n{err}")
+                time.sleep(0.02)
+            gate_active = time.monotonic() - self.epoch
+            self.phase = "following_work_during_validation"
+            base = self._git("--git-dir", str(self.remote), "rev-parse", "main").stdout.strip()
+            for item, branch, filename, content in self.draft_plans()[:2]:
+                path = self.agent_root / branch.removeprefix("agent/")
+                self._git("worktree", "add", "-b", branch, str(path), base, cwd=self.repo)
+                (path / filename).write_text(content, encoding="utf-8")
+                diff = self._git("diff", "--", filename, cwd=path, show=True)
+                self.records[-1]["branch"] = branch
+                assert "\n+" in diff.stdout
+                self.early_drafts[branch] = {"item": item, "started_base": base}
+                assert proc.poll() is None
+            self.draft_overlap = {"fixture_barrier": True, "gate_active_seconds": gate_active,
+                                  "drafts_started_seconds": time.monotonic() - self.epoch,
+                                  "validator_alive_after_edits": proc.poll() is None}
+        finally:
+            release.write_text("following drafts have started", encoding="utf-8")
+            self.phase = "next_batch_validation"
+            try:
+                out, err = proc.communicate(timeout=60)
+            finally:
+                if proc.poll() is None:
+                    proc.kill()
+                    proc.wait()
+        result = CommandResult(proc.returncode, out, err)
+        self.record(argv, result, start, fixture_barrier="Gate waits while following drafts start")
+        self.draft_overlap["validation_finished_seconds"] = self.records[-1]["finished_seconds"]
+        print(out, err)
+        assert result.returncode == 0, out + err
+        return result
+
+    @staticmethod
+    def draft_plans():
+        return [
+            (7, "agent/health-response", "app/health.py", "from app.config import DEFAULT_TIMEOUT\n\nTIMEOUT_BUDGET = DEFAULT_TIMEOUT\n\ndef health_response():\n    return {'status': 'ok', 'timeout': TIMEOUT_BUDGET}\n"),
+            (8, "agent/retry-summary", "app/retries.py", "MAX_RETRIES = 3\n\ndef retry_summary():\n    return f'Up to {MAX_RETRIES} retries'\n"),
+            (9, "agent/capped-backoff", "app/backoff.py", "from app.retries import MAX_RETRIES\n\ndef retry_delays(cap=8):\n    return [min(2 ** attempt, cap) for attempt in range(MAX_RETRIES)]\n"),
+            (10, "agent/log-request-id", "app/log_entry.py", "from app.request_logging import LOG_REQUESTS\n\ndef request_entry(method, path, request_id=None):\n    return {'method': method, 'path': path, 'request_id': request_id} if LOG_REQUESTS else None\n"),
+        ]
+
     def capture(self):
         proof = super().capture()
         proof["repaired_main"] = proof.pop("final_main")
@@ -171,24 +229,30 @@ class ContinuousRecording(Recording):
         # These drafts are not enqueued or presented as deployed outcomes.
         self.phase = "following_work_started"
         drafts = []
-        for item, branch, filename, content in [
-            (7, "agent/capped-backoff", "app/backoff.py", "from app.retries import MAX_RETRIES\n\ndef retry_delays(cap=8):\n    return [min(2 ** attempt, cap) for attempt in range(MAX_RETRIES)]\n"),
-            (8, "agent/log-request-id", "app/log_entry.py", "from app.request_logging import LOG_REQUESTS\n\ndef request_entry(method, path, request_id=None):\n    return {'method': method, 'path': path, 'request_id': request_id} if LOG_REQUESTS else None\n"),
-            (9, "agent/health-response", "app/health.py", "from app.config import DEFAULT_TIMEOUT\n\nTIMEOUT_BUDGET = DEFAULT_TIMEOUT\n\ndef health_response():\n    return {'status': 'ok', 'timeout': TIMEOUT_BUDGET}\n"),
-            (10, "agent/retry-summary", "app/retries.py", "MAX_RETRIES = 3\n\ndef retry_summary():\n    return f'Up to {MAX_RETRIES} retries'\n"),
-        ]:
+        for item, branch, filename, content in self.draft_plans():
             path = self.agent_root / branch.removeprefix("agent/")
-            self._git("worktree", "add", "-b", branch, str(path), final_main, cwd=self.repo)
+            early = self.early_drafts.get(branch)
+            if early:
+                # Preserve the actual dirty draft while refreshing its base.
+                self._git("stash", "push", "-m", "preserve demo draft", cwd=path)
+                self._git("fetch", "origin", cwd=path)
+                self._git("rebase", "origin/main", cwd=path)
+                self._git("stash", "pop", cwd=path)
+            else:
+                self._git("worktree", "add", "-b", branch, str(path), final_main, cwd=self.repo)
+                (path / filename).write_text(content, encoding="utf-8")
             self._git("merge-base", "--is-ancestor", final_main, "HEAD", cwd=path)
-            (path / filename).write_text(content, encoding="utf-8")
+            assert (path / filename).read_text(encoding="utf-8") == content
             diff = self._git("diff", "--", filename, cwd=path, show=True)
             assert diff.stdout
             drafts.append({"item": item, "branch": branch, "base": final_main,
+                           "started_base": early["started_base"] if early else final_main,
+                           "started_during_validation": bool(early),
                            "state": "draft; not submitted or validated"})
         status = self._cli_json("status", "--json")
         assert status["health"] == "healthy" and status["state"] == "idle"
         proof.update(final_main=final_main, final_remote_tests="6 passed", final_state=status,
-                     overlap=self.overlap, following_drafts=drafts,
+                     overlap=self.overlap, draft_overlap=self.draft_overlap, following_drafts=drafts,
                      next_batch=[{k: v for k, v in w.items() if k != "worktree"} for w in self.following])
         return proof
 
@@ -205,7 +269,7 @@ def main():
             "source_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
             "captured_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
             "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
-            "method": "Agent-authored changes and operator approvals are scripted. A fixture gate barrier proves next-batch commits occur during validation. Mergetrain does not launch an AI agent. The final four drafts are not submitted or claimed as validated.",
+            "method": "Agent-authored changes and operator approvals are scripted. Fixture gate barriers prove next-batch commits and subsequent draft edits occur during their preceding validations. Mergetrain does not launch an AI agent. The final four drafts are not submitted or claimed as validated.",
             "normalization": "Local paths become $DEMO, $PYTHON and $MERGETRAIN; PTY CRLF becomes LF. The readable transcript trims trailing whitespace; JSON output and measured timings are otherwise unchanged. Fixture wait time is not a performance benchmark.",
             "records": run.records, "proof": proof,
         }
@@ -214,7 +278,7 @@ def main():
         transcript = run.normalize(stdout.getvalue() + stderr.getvalue())
         (base / "cycle-transcript.txt").write_text("\n".join(line.rstrip() for line in transcript.splitlines()) + "\n")
         print(json.dumps({"records": len(run.records), "overlap": proof["overlap"],
-                          "next_batch": proof["next_batch"], "final_remote_tests": proof["final_remote_tests"]}, indent=2))
+                          "draft_overlap": proof["draft_overlap"], "next_batch": proof["next_batch"], "final_remote_tests": proof["final_remote_tests"]}, indent=2))
     except BaseException:
         print(run.normalize(stdout.getvalue() + stderr.getvalue()), file=sys.stderr)
         raise

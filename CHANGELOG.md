@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Keep four agent identities visible in the demo and label each piece of work.
+  Show new work during checks within the first five seconds. Record another
+  overlap as following drafts start during the next batch's validation. Retain
+  applied changes and distinguish unsubmitted drafts in the illustration.
+
 - Show continuing work across three recorded local deployments in the demo.
   Commit the next batch during repair validation, refresh it onto the latest
   applied result, and start real following drafts. Keep a fixed visual circuit
