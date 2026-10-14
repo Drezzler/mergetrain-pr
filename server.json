@@ -18,6 +18,11 @@
       "runtimeArguments": [
         {
           "type": "named",
+          "name": "--python",
+          "value": ">=3.10"
+        },
+        {
+          "type": "named",
           "name": "--from",
           "value": "mergetrain[mcp]==3.5.0"
         }

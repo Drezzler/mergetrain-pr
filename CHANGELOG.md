@@ -2,7 +2,18 @@
 
 ## Unreleased
 
+### Fixed
+
+- Select Python 3.10 or newer in the Codex, Claude, agy, and Registry MCP
+  launchers. This prevents startup from choosing macOS Python 3.9 when a
+  client drops the shell's interpreter environment. Keep the released package
+  pin and the five-tool contract unchanged.
+
 ### Documentation
+
+- Record real Codex, Claude, and agy editing, personal Git commits, MCP handoff,
+  and Orca UI validation of three branches. Document cold startup preparation,
+  the explicit Agy server registration, and its individual permission prompts.
 
 - Add tested Codex, Claude Code, and agy plugin workflows for Orca terminals.
   Document supported Python selection for pinned MCP startup, shared queue

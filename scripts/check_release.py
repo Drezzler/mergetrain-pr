@@ -230,13 +230,17 @@ def check_release(*, tag: str = "") -> list[str]:
             errors.append("server.json PyPI package runtimeHint must be 'uvx'")
         expected_runtime_arguments = [{
             "type": "named",
+            "name": "--python",
+            "value": ">=3.10",
+        }, {
+            "type": "named",
             "name": "--from",
             "value": expected_from,
         }]
         if package.get("runtimeArguments") != expected_runtime_arguments:
             errors.append(
                 "server.json must install the MCP extra with "
-                f"uvx --from {expected_from}"
+                f'uvx --python ">=3.10" --from {expected_from}'
             )
         if package.get("packageArguments") != [
             {"type": "positional", "value": "mcp"}
@@ -268,6 +272,8 @@ def check_release(*, tag: str = "") -> list[str]:
         expected_agy_server = {
             "command": "uvx",
             "args": [
+                "--python",
+                ">=3.10",
                 "--from",
                 f"mergetrain[mcp]=={project_version}",
                 "mergetrain",
@@ -277,7 +283,7 @@ def check_release(*, tag: str = "") -> list[str]:
         if agy_servers["mergetrain"] != expected_agy_server:
             errors.append(
                 "mcp_config.json must launch the exact release with "
-                f"uvx --from mergetrain[mcp]=={project_version} mergetrain mcp"
+                f'uvx --python ">=3.10" --from mergetrain[mcp]=={project_version} mergetrain mcp'
             )
 
     codex_root = ROOT / "plugins/mergetrain"
@@ -300,6 +306,8 @@ def check_release(*, tag: str = "") -> list[str]:
     else:
         codex_server = codex_servers["mergetrain"]
         if codex_server.get("command") != "uvx" or codex_server.get("args") != [
+            "--python",
+            ">=3.10",
             "--from",
             f"mergetrain[mcp]=={project_version}",
             "mergetrain",
@@ -307,7 +315,7 @@ def check_release(*, tag: str = "") -> list[str]:
         ]:
             errors.append(
                 "Codex .mcp.json must launch the exact release with "
-                f"uvx --from mergetrain[mcp]=={project_version} mergetrain mcp"
+                f'uvx --python ">=3.10" --from mergetrain[mcp]=={project_version} mergetrain mcp'
             )
 
     claude_root = ROOT / "integrations/claude/plugin"
@@ -332,6 +340,8 @@ def check_release(*, tag: str = "") -> list[str]:
     else:
         claude_server = claude_servers["mergetrain"]
         if claude_server.get("command") != "uvx" or claude_server.get("args") != [
+            "--python",
+            ">=3.10",
             "--from",
             f"mergetrain[mcp]=={project_version}",
             "mergetrain",
@@ -339,7 +349,7 @@ def check_release(*, tag: str = "") -> list[str]:
         ]:
             errors.append(
                 "Claude .mcp.json must launch the exact release with "
-                f"uvx --from mergetrain[mcp]=={project_version} mergetrain mcp"
+                f'uvx --python ">=3.10" --from mergetrain[mcp]=={project_version} mergetrain mcp'
             )
 
     return errors

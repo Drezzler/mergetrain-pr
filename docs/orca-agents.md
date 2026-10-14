@@ -15,26 +15,29 @@ The native plugins use `uvx`, independently of a Homebrew or globally installed
 mergetrain CLI. Before starting the client, verify their pinned runtime:
 
 ```sh
-uvx --from "mergetrain[mcp]==3.5.0" mergetrain --version
+uvx --python ">=3.10" --from "mergetrain[mcp]==3.5.0" mergetrain --version
 ```
 
-The first run may download the package. Mergetrain requires Python 3.10 or
-newer. In the tested isolated Orca login shell, `uvx` selected macOS Python
-3.9.6 and failed dependency resolution; plugin installation alone still
-succeeded. Selecting an installed Python 3.12 fixed startup:
+The current plugin and Registry launchers select Python **3.10 or newer**
+with `--python ">=3.10"`, matching the package requirement. Codex 0.133.0 did
+not forward the shell's `UV_PYTHON` to its MCP child in the real model test.
+An older launcher then selected macOS Python 3.9.6 and closed before the MCP
+handshake. An exported shell variable alone does not fix that Codex case;
+refresh the plugin to use the corrected launcher.
+
+The first run may download an interpreter and dependencies. Prepare the exact
+pinned runtime in the task terminal before starting a fresh agent session:
 
 ```sh
-export UV_PYTHON="$(uv python find 3.12)"
-uvx --from "mergetrain[mcp]==3.5.0" mergetrain --version
+uvx --python ">=3.10" --from "mergetrain[mcp]==3.5.0" mergetrain --version
 ```
 
-If `uv python find 3.12` reports no interpreter, install one with
-`uv python install 3.12` first. Keep this selection in the shell that launches
-the agent so its MCP child inherits it. An absolute interpreter path is also
-accepted. On PowerShell, the equivalent selection is
-`$env:UV_PYTHON = (uv python find 3.12)`; the local tests below ran on macOS.
-See [installation](install.md) for `uv` and version upgrade guidance. The
-MCP package version remains 3.5.0; choosing Python is not a version downgrade.
+Cold dependency installation exceeded the tested clients' 30-second MCP startup
+limit. Preparing the runtime before model startup avoids that work during the
+handshake. Claude also cached a failed connection for about 15 minutes in one
+attempt; use a fresh session after preparing the runtime and check its actual
+connection before assigning edits. The package stays pinned to **3.5.0**.
+See [installation](install.md) for `uv` and version upgrade guidance.
 
 ## Codex CLI
 
@@ -91,14 +94,31 @@ agy plugin list --json
 
 Check `name: mergetrain`, `enabled: true`, a `mergetrain` entry in `skills`, and
 a `mergetrain` entry in `mcpServers`. Its `mcp_config.json` supplies the pinned
-stdio server. A separate `agy mcp add` registration is not needed.
+stdio server. In the tested **agy 1.3.5 interactive model session**, that plugin
+inventory did not make the MCP tools available. Explicitly registering the same
+pinned stdio runtime before starting a fresh session exposed the tools:
+
+```sh
+agy mcp add mergetrain-orca -- uvx --python ">=3.10" \
+  --from "mergetrain[mcp]==3.5.0" mergetrain --repo /absolute/path/to/control-checkout mcp
+agy mcp list
+```
+
+Replace the path with the control checkout on the execution host. Linked task
+worktrees share that repository's queue; enqueue resolves the named branch's
+live owning worktree. Give different repositories different server names and
+start a fresh session after changing the entry. This configuration is bound to
+one repository; tool calls do not accept a repository override.
 
 Start `agy` from the task worktree's terminal. `/plugin` or `/plugins` opens
-its plugin manager. In tested **agy 1.3.5**, standalone `agy mcp list` printed
+its plugin manager. In the earlier plugin-only **agy 1.3.5** check, standalone
+`agy mcp list` printed
 `No MCP servers configured` even though the native plugin inventory included
 its MCP server. Use the plugin inventory and the session's actual tool
 availability to check this plugin; that standalone message alone did not
-establish a missing plugin. See [Antigravity's native plugin guide](https://www.agy.dev/docs/plugins?tab=cli).
+establish a missing plugin. The later real session showed why actual tool
+availability must also be checked. The tested account did not support `--mode auto`; its task used `accept-edits` with individual approvals for MCP and shell
+commands. Do not assume plugin installation grants those permissions. See [Antigravity's native plugin guide](https://www.agy.dev/docs/plugins?tab=cli).
 
 ## Give the task agent a bounded handoff
 
@@ -158,8 +178,34 @@ job with exact commit pins. `auto_deploy` remained false, `push_status` stayed
 runtime-flow Electron test, 12 manifest/registry tests, and the published-package
 Registry probe passed. See the [verification summary](evidence/orca-agents-2026-10-14.json).
 
-This tested installation, discovery, native Claude connection, and the declared
-MCP processes. It did not run LLM-driven editing or tool selection inside a
-Codex, Claude, or agy conversation. Orca structured chats and Windows/WSL/SSH
-client combinations were not exercised. The preceding [worktree guide](orca-worktrees.md#verification-and-host-limits)
+The preceding installation and stdio probe did not run model-driven editing.
+A follow-up acceptance run on **2026-10-15 KST** used real **Codex 0.162.1**, **Claude Code 2.1.287**,
+and **agy 1.3.5** sessions in Orca-created worktrees and PTYs. The native
+plugins were installed from the local checkout with the Python-selection fix;
+the MCP package came from the published **3.5.0** pin. Agy used an explicit
+stdio registration and individual approvals, as described above.
+
+| Client | Actual work | Commit | Queue job |
+| --- | --- | --- | --- |
+| codex | slug, 7 tests | `a68c76c0f07d` | #2 |
+| claude | chunks, 9 tests | `85ead898285d` | #1 |
+| agy | retry, 4 tests | `4c3751d5e15a` | #3 |
+
+Each model read MCP status before editing, changed only its assigned module
+and test file, committed with Yongjip's personal Git identity, and enqueued
+through MCP. After all three handoffs, the operator clicked **Validate queue**
+in the [draft Orca panel](https://github.com/yongjip/orca/pull/1) at
+`b6ab6b700233`. The combined gate passed all **20 tests** and the UI reported
+**Ready 3, Attention 0**. Every job retained its exact commit pin,
+`auto_deploy: false`, and `push_status: not_run`; local and remote main stayed
+at the original commit. The hidden Electron acceptance test passed in
+12.2 minutes. The manifest, Registry, release, and discovery checks passed
+29 tests plus two subtests, and the real published-package Registry startup
+check passed with the system's older Python as the ambient selection.
+
+See the [real model verification summary](evidence/orca-real-agents-2026-10-14.json).
+Temporary profiles, credential copies, the Agy plugin, and its test MCP entry
+were removed. The result covers CLI sessions on macOS, with additional Agy
+setup and approvals. Orca structured chats and Windows/WSL/SSH combinations
+remain untested. The [worktree guide](orca-worktrees.md#verification-and-host-limits)
 records the separate terminal/UI queue and failure-repair tests.

@@ -60,7 +60,7 @@ class CodexPluginTests(unittest.TestCase):
             interface["defaultPrompt"], self.canonical["codex_default_prompts"]
         )
 
-    def test_mcp_server_is_release_pinned_and_unchanged(self) -> None:
+    def test_mcp_server_selects_supported_python_and_pins_release(self) -> None:
         config = json.loads((PLUGIN / ".mcp.json").read_text(encoding="utf-8"))
         project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
         version = project["project"]["version"]
@@ -69,6 +69,8 @@ class CodexPluginTests(unittest.TestCase):
         self.assertEqual(
             server["args"],
             [
+                "--python",
+                ">=3.10",
                 "--from",
                 f"mergetrain[mcp]=={version}",
                 "mergetrain",

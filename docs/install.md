@@ -207,9 +207,16 @@ agy plugin install https://github.com/yongjip/mergetrain
 ```
 
 The root `plugin.json` supplies the problem-first skill and `mcp_config.json`
-launches the release-pinned `mergetrain[mcp]` package through `uvx`. The first
-tool use may download that wheel. No hosted service or provider credential is
-introduced.
+launches the release-pinned `mergetrain[mcp]` package through `uvx`. The launcher
+selects Python 3.10 or newer with `--python ">=3.10"`. The first
+tool use may download that wheel and its runtime dependencies. Prepare it before
+starting a fresh agent session to avoid a cold MCP startup timeout:
+
+```sh
+uvx --python ">=3.10" --from "mergetrain[mcp]==3.5.0" mergetrain --version
+```
+
+No hosted service or provider credential is introduced.
 
 The agent's normal path remains `status → enqueue → stop`. The plugin does not
 grant deploy, unattended, recovery, force-unlock, or cleanup authority; if the

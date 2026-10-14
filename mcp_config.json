@@ -3,6 +3,8 @@
     "mergetrain": {
       "command": "uvx",
       "args": [
+        "--python",
+        ">=3.10",
         "--from",
         "mergetrain[mcp]==3.5.0",
         "mergetrain",
