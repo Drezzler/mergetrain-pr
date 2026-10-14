@@ -220,6 +220,8 @@ separately authorized runner tests the combined branches and handles the push.
 
 For Orca-managed worktrees, see the [Orca setup and queue guide](docs/orca-worktrees.md)
 for tested terminal commands, shared queue behavior, validation, and repair.
+The [Orca agent guide](docs/orca-agents.md) adds native Codex, Claude Code, and
+agy plugin setup and bounded task/validation prompts.
 
 ## Why not just worktrees and `git merge`?
 

@@ -177,6 +177,12 @@ is authorized, follow the new status recommendation with `validate --json`.
 Successful repair produces Ready with the repaired head, while local and
 remote integration refs remain unchanged.
 
+## Codex, Claude Code, and agy
+
+See the [Orca agent guide](orca-agents.md) for native plugin installation,
+client-specific checks, and task/validation prompt examples tested from real
+Orca terminals.
+
 ## Optional Orca Source Control panel
 
 An experimental queue panel is available in
