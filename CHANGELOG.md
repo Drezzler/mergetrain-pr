@@ -15,6 +15,10 @@
 - Tell `init --write` users to add a meaningful project gate and land the setup
   files before creating task worktrees. Clarify that a service restart policy
   must be paused during an upgrade so an old daemon is not immediately relaunched.
+- Add an Orca worktree setup and queue guide after real terminal and hidden
+  Electron tests of initialization, shared queues, registration refusals,
+  partial validation, and freshly pinned repair. Distinguish the existing CLI
+  workflow from the draft Orca panel and state the local host test limits.
 
 - Keep four agent identities visible in the demo and label each piece of work.
   Show new work during checks within the first five seconds. Record another

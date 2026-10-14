@@ -56,6 +56,9 @@ mergetrain init --refresh-instructions
 
 ## 2. Commit and enqueue a task branch
 
+If Orca manages your task worktrees, follow the [Orca worktree guide](orca-worktrees.md)
+for its checkout paths and the same registration/validation workflow.
+
 From the operator checkout, create a separate task worktree. Use your configured
 integration branch if it differs from `main`:
 
