@@ -53,6 +53,10 @@ since a clean CI runner cannot exercise every local Git configuration.
 python -m pip install -e .
 ```
 
+For tested Codex, Claude Code, and agy sessions inside Orca, see the
+[Orca agent guide](orca-agents.md), including the pinned MCP runtime and Python
+selection check.
+
 ## Codex native plugin
 
 With Codex CLI and `uv` installed, add the repository's Git marketplace and
@@ -158,11 +162,12 @@ and inspect the installed version:
 ```sh
 codex plugin marketplace upgrade mergetrain
 codex plugin add mergetrain@mergetrain
-codex plugin list --marketplace mergetrain --json
+codex plugin list --marketplace mergetrain
 ```
 
-Check the `installed` entry for `mergetrain@mergetrain`: `version` should match
-the release you intend to use, and `enabled` should be `true` to use its tools.
+Check the `mergetrain@mergetrain` row for `installed, enabled` and the release
+version you intend to use. Codex 0.133.0 does not accept `--json` on
+`plugin list`; `codex mcp list --json` can inspect the MCP configuration.
 Start a new Codex session after updating; restart the desktop app if it still
 loads the previous plugin. Marketplace refresh can update configured plugin
 files, but publishing a release does not establish when every user's client

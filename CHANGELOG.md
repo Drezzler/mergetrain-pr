@@ -15,6 +15,11 @@
 - Tell `init --write` users to add a meaningful project gate and land the setup
   files before creating task worktrees. Clarify that a service restart policy
   must be paused during an upgrade so an old daemon is not immediately relaunched.
+- Add tested Codex, Claude Code, and agy plugin workflows for Orca terminals.
+  Document supported Python selection for pinned MCP startup, shared queue
+  handoff and validation prompts, and the tested client limits. Correct the
+  unsupported Codex 0.133.0 `plugin list --json` example.
+
 - Add an Orca worktree setup and queue guide after real terminal and hidden
   Electron tests of initialization, shared queues, registration refusals,
   partial validation, and freshly pinned repair. Distinguish the existing CLI
