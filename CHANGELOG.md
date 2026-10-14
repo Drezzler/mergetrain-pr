@@ -2,12 +2,38 @@
 
 ## Unreleased
 
-### Fixed
+## 3.5.1 - 2026-10-15
+
+### Upgrade notes
+
+- Machine contract **5** and config schema **2** are unchanged. No consumer
+  adaptation is required when upgrading from 3.5.0.
+- Refresh Codex, Claude Code, and agy plugins and start fresh MCP sessions.
+  The launchers pin **3.5.1** and select Python 3.10 or newer explicitly;
+  an exported `UV_PYTHON` alone is insufficient for the tested Codex client.
+  Prepare the pinned runtime before startup, and retain Agy's explicit MCP
+  registration and individual approvals where required. See the
+  [Orca agent guide](docs/orca-agents.md).
+- Malformed `--json` and `--jsonl` command arguments now produce the existing
+  versioned failure envelope or error stream instead of only human usage.
+  Exit code **2** and refusal before command dispatch remain unchanged.
+- At an idle execution boundary, restart previously authorized daemon and Hub
+  processes after installing 3.5.1. Preserve queued work and destination/policy
+  approval; installation does not replace loaded processes. Follow the
+  [upgrade procedure](docs/upgrading.md).
+
+### Changes
 
 - Select Python 3.10 or newer in the Codex, Claude, agy, and Registry MCP
   launchers. This prevents startup from choosing macOS Python 3.9 when a
-  client drops the shell's interpreter environment. Keep the released package
-  pin and the five-tool contract unchanged.
+  client drops the shell's interpreter environment. Keep exact package pins
+  and the five-tool contract.
+
+- Return the existing versioned failure envelope for malformed CLI arguments
+  when `--json` is requested. For `--jsonl`, emit a contract-bearing stream
+  header and an error end frame. Preserve exit 2, human usage output, and
+  refusal before dispatch; keep hidden commands out of discovery errors and
+  redact credentials in the new machine error path.
 
 ### Documentation
 
@@ -24,15 +50,6 @@
   Electron tests of initialization, shared queues, registration refusals,
   partial validation, and freshly pinned repair. Distinguish the existing CLI
   workflow from the draft Orca panel and state the local host test limits.
-### Fixes
-
-- Return the existing versioned failure envelope for malformed CLI arguments
-  when `--json` is requested. For `--jsonl`, emit a contract-bearing stream
-  header and an error end frame. Preserve exit 2, human usage output, and
-  refusal before dispatch; keep hidden commands out of discovery errors and
-  redact credentials in the new machine error path.
-
-### Documentation
 
 - Tell `init --write` users to add a meaningful project gate and land the setup
   files before creating task worktrees. Clarify that a service restart policy
@@ -65,7 +82,6 @@
   and approval, default recheck, atomic local-remote push, and verification.
 - Bring the demo forward in the README and embed a captioned video on the
   public page. Refresh the full CLI recording to use the current commands.
-
 
 ## 3.5.0 - 2026-10-11
 
