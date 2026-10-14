@@ -4,6 +4,11 @@
 
 ### Documentation
 
+- Add an Orca worktree setup and queue guide after real terminal and hidden
+  Electron tests of initialization, shared queues, registration refusals,
+  partial validation, and freshly pinned repair. Distinguish the existing CLI
+  workflow from the draft Orca panel and state the local host test limits.
+
 - Keep four agent identities visible in the demo and label each piece of work.
   Show new work during checks within the first five seconds. Record another
   overlap as following drafts start during the next batch's validation. Retain

@@ -1,0 +1,98 @@
+{
+  "verified_on": "2026-10-14",
+  "platform": "macOS local",
+  "mergetrain_release": "3.5.0",
+  "contract_version": 5,
+  "config_version": 2,
+  "orca": {
+    "version": "1.4.214",
+    "commit": "b6ab6b700233abca5a867f7b3cfe4f8320b78fd7",
+    "panel": "draft PR yongjip/orca#1"
+  },
+  "method": "Hidden Electron renderers, isolated profiles, actual Orca CLI and PTYs, installed mergetrain, disposable Git repositories with local bare remotes",
+  "end_to_end_tests_passed": 3,
+  "cases": [
+    {
+      "name": "Orca-created worktree and terminal workflow",
+      "checks": {
+        "initialized_in_orca_terminal": true,
+        "space_in_paths": true,
+        "dirty_registration_refused": true,
+        "duplicate_registration_refused": true,
+        "shared_queue": true
+      },
+      "counts": {
+        "attention": 0,
+        "done": 0,
+        "ready": 1,
+        "running": 0,
+        "waiting": 0
+      },
+      "base_sha": "7d1fb4d04e5192ac7ced4db24ae362d9d4690f66",
+      "head_sha": "42194d1b7bfea5477e801ddbedd45046b1faee66",
+      "validated_head_sha": "42194d1b7bfea5477e801ddbedd45046b1faee66",
+      "local_main": "7d1fb4d04e5192ac7ced4db24ae362d9d4690f66",
+      "remote_main": "7d1fb4d04e5192ac7ced4db24ae362d9d4690f66",
+      "auto_deploy": false,
+      "push_status": "not_run"
+    },
+    {
+      "name": "UI failure and terminal repair",
+      "failed_head_sha": "61f4e9de5409f42ca38398f17ed84494a0e97b58",
+      "retry_head_sha": "929949f04448ca74187fc661f45fec9f77a05d62",
+      "validated_head_sha": "929949f04448ca74187fc661f45fec9f77a05d62",
+      "repair_in_orca_terminal": true,
+      "counts": {
+        "attention": 0,
+        "done": 1,
+        "ready": 1,
+        "running": 0,
+        "waiting": 0
+      },
+      "local_main": "138e02f5135c31cd178011fde55c6dbbc39fd070",
+      "remote_main": "138e02f5135c31cd178011fde55c6dbbc39fd070",
+      "auto_deploy": false,
+      "push_status": "not_run"
+    },
+    {
+      "name": "UI combined partial validation and worktree switch",
+      "counts": {
+        "attention": 1,
+        "done": 0,
+        "ready": 1,
+        "running": 0,
+        "waiting": 0
+      },
+      "pinned_commits": {
+        "base": "7a6d54a2da4edf1c867e933355a4fd1abf6f44df",
+        "heads": {
+          "task/good": "d4b611681ebd7f97f76497d750ebb813cbcde424",
+          "task/broken": "fb3ac5fb55ea518a074f1e9e6f7adfaddf98c0a4"
+        }
+      },
+      "local_main": "7a6d54a2da4edf1c867e933355a4fd1abf6f44df",
+      "remote_main": "7a6d54a2da4edf1c867e933355a4fd1abf6f44df",
+      "manual_queue": true,
+      "push_status": "not_run"
+    }
+  ],
+  "preceding_checks": {
+    "cli_contract_and_worktree_tests_passed": 114,
+    "subtests_passed": 35,
+    "published_orca_pr_branch_ready": true,
+    "published_branch_gates": [
+      "desktop-types",
+      "e2e-types",
+      "mergetrain-unit (18 tests)",
+      "changed-quality"
+    ]
+  },
+  "test_setup_correction": "Use the exact worktree ID returned by Orca instead of a macOS /var alias path selector",
+  "not_exercised": [
+    "Orca with Windows",
+    "Orca with WSL",
+    "Orca with SSH",
+    "deployment"
+  ],
+  "product_code_changed": false
+}

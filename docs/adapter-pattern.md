@@ -26,3 +26,6 @@ machine status `deployed` as proof that an App Store, cluster, or other provider
 release completed.
 
 See `integrations/generic/scripts/local_ci.py` for a minimal wrapper shape.
+
+The [Orca worktree guide](orca-worktrees.md) applies this pattern using the
+existing CLI, with tested setup, queue registration, validation, and retry examples.

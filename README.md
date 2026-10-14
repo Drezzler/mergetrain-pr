@@ -218,6 +218,9 @@ Codex worktrees produce committed branches in the same repository. The
 connects either client to the queue. Task agents commit, enqueue, and stop. A
 separately authorized runner tests the combined branches and handles the push.
 
+For Orca-managed worktrees, see the [Orca setup and queue guide](docs/orca-worktrees.md)
+for tested terminal commands, shared queue behavior, validation, and repair.
+
 ## Why not just worktrees and `git merge`?
 
 Worktrees solve **parallel editing**. mergetrain solves **serialized
