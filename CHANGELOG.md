@@ -24,6 +24,19 @@
   Electron tests of initialization, shared queues, registration refusals,
   partial validation, and freshly pinned repair. Distinguish the existing CLI
   workflow from the draft Orca panel and state the local host test limits.
+### Fixes
+
+- Return the existing versioned failure envelope for malformed CLI arguments
+  when `--json` is requested. For `--jsonl`, emit a contract-bearing stream
+  header and an error end frame. Preserve exit 2, human usage output, and
+  refusal before dispatch; keep hidden commands out of discovery errors and
+  redact credentials in the new machine error path.
+
+### Documentation
+
+- Tell `init --write` users to add a meaningful project gate and land the setup
+  files before creating task worktrees. Clarify that a service restart policy
+  must be paused during an upgrade so an old daemon is not immediately relaunched.
 
 - Keep four agent identities visible in the demo and label each piece of work.
   Show new work during checks within the first five seconds. Record another

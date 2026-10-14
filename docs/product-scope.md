@@ -96,6 +96,31 @@ No mergetrain command, config field, MCP input, approval path, or state is added
 the surface baseline is unchanged. Cold-runtime preparation and client
 connection-cache limits remain documented operator setup.
 
+CLI input feedback correction (2026-10-14): local use of the installed 3.5.0
+reproduced `status --limit invalid --json` returning only argparse usage on
+stderr. A machine caller cannot read the documented error envelope. The same
+parse boundary omits the stream header for malformed `events --jsonl` input.
+Existing `queue_error`, serializers, and the stream start/end shapes fit these
+failures; no command, flag, field, error code, or operator choice is added.
+Argument errors still exit 2 and refuse before command dispatch, with no queue
+or Git mutation. Regression checks require parseable output for invalid values,
+missing inputs, unknown options, and nested commands, while preserving human
+usage, bounded discovery, secret redaction, and the option terminator. Remove
+this adaptation only if the existing machine-error contract is retired.
+
+Onboarding and upgrade guidance correction (2026-10-14): `init --write`'s next
+step omitted project gates and landing setup before task worktrees, although
+the scaffold has an empty gate list and status already warns about it. A live
+service also immediately restarted the old daemon during a Homebrew upgrade,
+so its wrapper's "already running" message did not establish the loaded
+version. Clarify those existing instructions; add no gate, policy, service
+control, automatic action, or product surface. The local exercise completed
+two approved pushes to a temporary bare remote, repaired the blocked pair via
+fresh pinned jobs, passed the final remote tests, and read the same queue from
+the control checkout, a task worktree, and a nested directory whose path
+contained a space. This evidence supports the current composition rather than
+a new integration engine.
+
 ### Core
 
 - exact-SHA enqueue from a clean task worktree;

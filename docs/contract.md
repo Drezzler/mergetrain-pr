@@ -59,6 +59,10 @@ All failures use one shape:
 `next_action` may accompany the envelope. Branch on `error.code`, not message
 text.
 
+Malformed command arguments requested with `--json` use this envelope with
+`error.code: "queue_error"` and exit 2, before any command is dispatched.
+Without machine output, argument errors retain the ordinary usage message.
+
 ## Stable state projection
 
 `status --json` is the one state entry point. Its stable top-level concepts are:
@@ -138,7 +142,7 @@ Dispatch every record by `type`; persist only event IDs as resume cursors.
 | `mergetrain_error` | no | an expected failure has no more specific code, or an operating-system or SQLite error other than contention stopped the command |
 | `push_rejected` | no | remote policy or permissions rejected the push |
 | `queue_busy` | yes | SQLite could not complete a write before its timeout; reread state because a push may already have happened |
-| `queue_error` | no | a queue, job, or runner precondition failed |
+| `queue_error` | no | command input is invalid or a queue, job, or runner precondition failed |
 | `reconcile_pending_deploy` | no | deployment is blocked until pending remote truth is reconciled |
 | `remote_unreachable` | yes | recovery cannot yet inspect the pinned remote endpoint |
 | `removed_interface` | no | a v2 command or option was used; the message gives the v3 replacement |

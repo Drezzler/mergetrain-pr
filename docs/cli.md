@@ -17,6 +17,11 @@ mergetrain status --json --repo /path/to/repo
 Use `mergetrain --version` for the installed release. Add `--json` where
 available for the versioned machine contract.
 
+Invalid arguments with `--json` return that contract's `queue_error` envelope
+and exit 2 without executing the command. With `--jsonl`, an argument error
+starts the versioned stream and ends it with the error. Human calls retain the
+ordinary usage message and exit 2.
+
 ## `init`
 
 ```sh

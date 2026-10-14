@@ -133,8 +133,9 @@ def cmd_init(args: argparse.Namespace) -> int:
     # The scaffold is meant to be committed; the .mergetrain/ runtime dir
     # self-ignores. Say so, or the first enqueue trips the clean-worktree check.
     next_step = (
+        "add a meaningful project gate to the generated configuration; "
         "link the generated sidecars from the repository's standard AGENTS.md "
-        "and/or CLAUDE.md, then commit these files (git add . && git commit); "
+        "and/or CLAUDE.md, then commit and land these files before creating task worktrees; "
         "mergetrain's own .mergetrain/ state directory is git-ignored automatically"
     )
     dump_json({"ok": True, "written": written, "next_step": next_step})
