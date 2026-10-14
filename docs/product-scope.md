@@ -86,6 +86,16 @@ matching source-driven media. Classification: correction and presentation of
 existing documentation. No command, runtime config, MCP tool, product listener,
 queue policy, approval boundary, or baseline changes.
 
+MCP runtime correction (2026-10-14): a real Codex 0.133.0 session in an
+Orca worktree stripped `UV_PYTHON` before spawning the pinned plugin server.
+The old launcher selected Python 3.9.6 and closed before initialization, so the
+agent could not read status or hand off its task. The existing plugin and
+Registry commands now pass uvx's `--python ">=3.10"`, matching the package's
+existing requirement. Classification: correction of adapter runtime selection.
+No mergetrain command, config field, MCP input, approval path, or state is added;
+the surface baseline is unchanged. Cold-runtime preparation and client
+connection-cache limits remain documented operator setup.
+
 CLI input feedback correction (2026-10-14): local use of the installed 3.5.0
 reproduced `status --limit invalid --json` returning only argparse usage on
 stderr. A machine caller cannot read the documented error envelope. The same

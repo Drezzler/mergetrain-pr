@@ -5,6 +5,8 @@
       "description": "Queue parallel-agent worktree branches, test together, serialize and recover Git pushes.",
       "command": "uvx",
       "args": [
+        "--python",
+        ">=3.10",
         "--from",
         "mergetrain[mcp]==3.5.0",
         "mergetrain",

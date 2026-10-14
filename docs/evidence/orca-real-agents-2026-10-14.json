@@ -1,0 +1,162 @@
+{
+  "date": "2026-10-14",
+  "evidence_type": "One owner-authorized local acceptance run; not an adoption-rate benchmark",
+  "platform": "macOS arm64",
+  "orca": {
+    "version": "1.4.214",
+    "commit": "b6ab6b700233abca5a867f7b3cfe4f8320b78fd7",
+    "launch": "Hidden Electron renderer; ORCA_BACKGROUND_LAUNCH=1; Playwright CDP",
+    "worktrees": "Created through Orca CLI",
+    "terminals": "Real Orca PTYs",
+    "panel_source": "Draft https://github.com/yongjip/orca/pull/1 at b6ab6b700233; not a claim about the released Orca UI"
+  },
+  "mergetrain": {
+    "package": "Published mergetrain[mcp]==3.5.0",
+    "contract": 5,
+    "config": 2,
+    "plugin_source": "Local codex/orca-real-agents checkout, based on aa43b778a565c5380cf198a0c1cfc559516b761e",
+    "tested_launcher_args": [
+      "--python",
+      ">=3.10",
+      "--from",
+      "mergetrain[mcp]==3.5.0",
+      "mergetrain",
+      "mcp"
+    ]
+  },
+  "model_turns_executed": true,
+  "clients": [
+    {
+      "client": "codex",
+      "version": "codex-cli 0.162.1",
+      "model": "gpt-6.1-sol (high)",
+      "task": "Orca real codex: slug",
+      "branch": "codex-real-codex",
+      "job_id": 2,
+      "commit": "a68c76c0f07df4de25c7a792dc92b7a25e9f2495",
+      "validated_head": "a68c76c0f07df4de25c7a792dc92b7a25e9f2495",
+      "base": "2a504c6ce14a3eebfcffddcb6a008af1b646c0cb",
+      "author": "Yongjip Kim <13984989+yongjip@users.noreply.github.com>",
+      "changed_files": [
+        "tests/test_slug.py",
+        "text_tools/slug.py"
+      ],
+      "unit_tests": 7,
+      "clean_before_enqueue": true,
+      "auto_deploy": false,
+      "push_status": "not_run",
+      "mcp_calls": [
+        "mergetrain_status",
+        "mergetrain_enqueue"
+      ]
+    },
+    {
+      "client": "claude",
+      "version": "2.1.287 (Claude Code)",
+      "model": "claude-sonnet-5-5 (client default)",
+      "task": "Orca real claude: chunks",
+      "branch": "codex-real-claude",
+      "job_id": 1,
+      "commit": "85ead898285db9549fb37f376e0209b63860931a",
+      "validated_head": "85ead898285db9549fb37f376e0209b63860931a",
+      "base": "2a504c6ce14a3eebfcffddcb6a008af1b646c0cb",
+      "author": "Yongjip Kim <13984989+yongjip@users.noreply.github.com>",
+      "changed_files": [
+        "tests/test_chunks.py",
+        "text_tools/chunks.py"
+      ],
+      "unit_tests": 9,
+      "clean_before_enqueue": true,
+      "auto_deploy": false,
+      "push_status": "not_run",
+      "mcp_calls": [
+        "mergetrain_status",
+        "mergetrain_enqueue"
+      ]
+    },
+    {
+      "client": "agy",
+      "version": "1.3.5",
+      "model": "Gemini 3.8 Flash (High; client default)",
+      "task": "Orca real agy: retry",
+      "branch": "codex-real-agy",
+      "job_id": 3,
+      "commit": "4c3751d5e15a8cc0f7166d67fc5265c887b10f8a",
+      "validated_head": "4c3751d5e15a8cc0f7166d67fc5265c887b10f8a",
+      "base": "2a504c6ce14a3eebfcffddcb6a008af1b646c0cb",
+      "author": "Yongjip Kim <13984989+yongjip@users.noreply.github.com>",
+      "changed_files": [
+        "tests/test_retry.py",
+        "text_tools/retry.py"
+      ],
+      "unit_tests": 4,
+      "clean_before_enqueue": true,
+      "auto_deploy": false,
+      "push_status": "not_run",
+      "mcp_calls": [
+        "mergetrain_status",
+        "mergetrain_enqueue"
+      ]
+    }
+  ],
+  "workflow": [
+    "Committed control configuration and gates before task worktrees",
+    "Each model read actual MCP status, implemented its own feature and edge-case tests, committed a clean branch, enqueued through MCP, then stopped",
+    "Operator clicked Validate queue in Orca after all three jobs were waiting",
+    "Combined all-agent-tests gate passed"
+  ],
+  "result": {
+    "playwright": "1 passed (12.2 minutes)",
+    "counts": {
+      "attention": 0,
+      "done": 0,
+      "ready": 3,
+      "running": 0,
+      "waiting": 0
+    },
+    "unit_tests_in_combined_gate": 20,
+    "manual_queue": true,
+    "local_main": "2a504c6ce14a3eebfcffddcb6a008af1b646c0cb",
+    "remote_main": "2a504c6ce14a3eebfcffddcb6a008af1b646c0cb",
+    "main_unchanged": true,
+    "all_jobs_ready": true,
+    "all_pins_exact": true
+  },
+  "findings": {
+    "python_selection": "Codex 0.133.0 diagnostic did not forward UV_PYTHON to MCP. Explicit uvx --python >=3.10 matches the package requirement and avoids default Python 3.9.6. The final successful run used Codex 0.162.1.",
+    "cold_start": "Cold dependencies exceeded a 30-second MCP startup limit. Warmed the exact pinned runtime before the successful fresh sessions.",
+    "claude_connection_cache": "A failed connection was cached for about 15 minutes during a preliminary attempt.",
+    "agy_plugin_only": "Plugin inventory showed a skill and MCP component, but the interactive session did not expose the tools until explicit agy mcp add registration before startup.",
+    "agy_permissions": "This account did not support mode auto. The real task used accept-edits and individual approvals; no bypass flag or persistent approval rule.",
+    "authentication": "Existing logins reused with owner permission. Temporary Codex auth and Claude OAuth copies excluded from evidence and deleted; Agy native profile reused without publishing credentials."
+  },
+  "cleanup": {
+    "temporary_orca_profile_and_repo_removed": true,
+    "temporary_agy_plugin_and_mcp_registration_removed": true
+  },
+  "other_checks": {
+    "manifest_registry_release_discovery": "29 tests and 2 subtests passed",
+    "published_registry_startup": "initialize, five tools, empty deploy approval inputs; passed with UV_PYTHON set to system Python 3.9",
+    "agent_protocol": "passed",
+    "discovery_metadata": "passed",
+    "architecture": "passed",
+    "ruff": "passed"
+  },
+  "limits": [
+    "CLI sessions in Orca terminals; structured chat clients were not tested",
+    "macOS only; Windows, WSL and SSH were not tested",
+    "Agy required explicit server registration and task-scoped interactive approvals",
+    "Default plugin-only Agy MCP loading is not claimed as working",
+    "No deployment or GitHub push was performed",
+    "Queue UI validation used the draft Orca integration build"
+  ],
+  "raw_evidence_committed": false,
+  "local_artifact_sha256": {
+    "proof.json": "9502d9e73b609b8e37a7c196467e1417c9c5a27d723fe5486291ae6587f4e860",
+    "task-commits.bundle": "09569818dd9748566e596505d98009ce43ad85ce5a47e90a80623b3121b95e4b",
+    "three-model-jobs-ready.png": "7654f35d5ed2274a4c544e2200c3b29a08bedc84977527f598517ca59af8a766"
+  },
+  "timezone": "UTC",
+  "local_date": "2026-10-15",
+  "local_timezone": "Asia/Seoul"
+}

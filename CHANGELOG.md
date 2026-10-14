@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+### Fixed
+
+- Select Python 3.10 or newer in the Codex, Claude, agy, and Registry MCP
+  launchers. This prevents startup from choosing macOS Python 3.9 when a
+  client drops the shell's interpreter environment. Keep the released package
+  pin and the five-tool contract unchanged.
+
+### Documentation
+
+- Record real Codex, Claude, and agy editing, personal Git commits, MCP handoff,
+  and Orca UI validation of three branches. Document cold startup preparation,
+  the explicit Agy server registration, and its individual permission prompts.
+
+- Add tested Codex, Claude Code, and agy plugin workflows for Orca terminals.
+  Document supported Python selection for pinned MCP startup, shared queue
+  handoff and validation prompts, and the tested client limits. Correct the
+  unsupported Codex 0.133.0 `plugin list --json` example.
+
+- Add an Orca worktree setup and queue guide after real terminal and hidden
+  Electron tests of initialization, shared queues, registration refusals,
+  partial validation, and freshly pinned repair. Distinguish the existing CLI
+  workflow from the draft Orca panel and state the local host test limits.
 ### Fixes
 
 - Return the existing versioned failure envelope for malformed CLI arguments
@@ -15,15 +37,6 @@
 - Tell `init --write` users to add a meaningful project gate and land the setup
   files before creating task worktrees. Clarify that a service restart policy
   must be paused during an upgrade so an old daemon is not immediately relaunched.
-- Add tested Codex, Claude Code, and agy plugin workflows for Orca terminals.
-  Document supported Python selection for pinned MCP startup, shared queue
-  handoff and validation prompts, and the tested client limits. Correct the
-  unsupported Codex 0.133.0 `plugin list --json` example.
-
-- Add an Orca worktree setup and queue guide after real terminal and hidden
-  Electron tests of initialization, shared queues, registration refusals,
-  partial validation, and freshly pinned repair. Distinguish the existing CLI
-  workflow from the draft Orca panel and state the local host test limits.
 
 - Keep four agent identities visible in the demo and label each piece of work.
   Show new work during checks within the first five seconds. Record another

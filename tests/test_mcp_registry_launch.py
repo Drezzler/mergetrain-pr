@@ -18,6 +18,8 @@ class MCPRegistryLaunchTests(unittest.TestCase):
             registry_command(root / "server.json"),
             [
                 "uvx",
+                "--python",
+                ">=3.10",
                 "--from",
                 "mergetrain[mcp]==3.5.0",
                 "mergetrain",

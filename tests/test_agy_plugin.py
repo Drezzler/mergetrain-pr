@@ -44,6 +44,8 @@ class AgyPluginTests(unittest.TestCase):
                     "mergetrain": {
                         "command": "uvx",
                         "args": [
+                            "--python",
+                            ">=3.10",
                             "--from",
                             f"mergetrain[mcp]=={version}",
                             "mergetrain",
