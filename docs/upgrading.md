@@ -169,6 +169,12 @@ procedure and wait for the
 process to exit. A service manager's forced-stop timeout is not evidence that
 the tick finished. Do not force-kill a push to speed up an upgrade.
 
+If the service restarts on exit, pause that restart policy before gracefully
+stopping the runner. Otherwise it can relaunch the old environment during the
+installation, and an idempotent wrapper can later report "already running"
+without loading the upgrade. Restore the same service policy after installation
+and verify a new process started from the target environment.
+
 Reread status after the stop. Resolve stranded claims or ambiguous pushes only
 through the stated recovery action and its existing authority. Keep queued jobs,
 exact SHAs, Ready trains, the database, and permanent deploy audit refs. There is

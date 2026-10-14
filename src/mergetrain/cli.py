@@ -47,26 +47,50 @@ from .commands.queue import (
 )
 from .commands.recovery import cmd_gc, cmd_reconcile, cmd_unlock, cmd_verify
 from .commands.setup import cmd_demo, cmd_init, cmd_mcp
-from .errors import CommandFailed, ConfigError, MergetrainError, QueueBusy, QueueError
+from .contract import CONTRACT_VERSION
+from .errors import (
+    CommandFailed,
+    ConfigError,
+    MergetrainError,
+    QueueBusy,
+    QueueError,
+    redact_secrets,
+)
 from .persistence.transactions import is_busy
 
 PUBLIC_COMMANDS = ("init", "status", "enqueue", "validate", "deploy", "inspect")
 
 
+def _public_command_error(message: str) -> str:
+    if message.startswith(
+        (
+            "argument command: invalid choice:",
+            f"argument {{{','.join(PUBLIC_COMMANDS)}}}: invalid choice:",
+        )
+    ):
+        match = re.search(r"invalid choice: ([^ ]+)", message)
+        invalid = match.group(1) if match else "unknown"
+        choices = ", ".join(repr(command) for command in PUBLIC_COMMANDS)
+        return f"argument command: invalid choice: {invalid} (choose from {choices})"
+    return message
+
+
 class _PublicArgumentParser(argparse.ArgumentParser):
-    """Keep hidden operator commands out of root command-discovery errors."""
+    """Keep command discovery bounded and machine parse failures catchable."""
 
     def error(self, message: str) -> NoReturn:
-        if self.prog == "mergetrain" and "invalid choice:" in message:
-            match = re.search(r"invalid choice: ([^ ]+)", message)
-            invalid = match.group(1) if match else "unknown"
-            choices = ", ".join(repr(command) for command in PUBLIC_COMMANDS)
-            message = f"argument command: invalid choice: {invalid} (choose from {choices})"
+        message = _public_command_error(message)
         super().error(message)
 
 
-def build_parser() -> argparse.ArgumentParser:
-    parser = _PublicArgumentParser(prog="mergetrain")
+class _StructuredArgumentParser(_PublicArgumentParser):
+    def error(self, message: str) -> NoReturn:
+        raise argparse.ArgumentError(None, _public_command_error(message))
+
+
+def build_parser(*, structured_errors: bool = False) -> argparse.ArgumentParser:
+    parser_class = _StructuredArgumentParser if structured_errors else _PublicArgumentParser
+    parser = parser_class(prog="mergetrain")
     parser.add_argument("--version", action="version", version=f"mergetrain {__version__}")
     parser.add_argument("--config", help="Path to .mergetrain.yaml")
     parser.add_argument("--repo", default=str(Path.cwd()), help="Repository root or worktree path")
@@ -75,6 +99,7 @@ def build_parser() -> argparse.ArgumentParser:
         dest="command",
         metavar="{init,status,enqueue,validate,deploy,inspect}",
         title="core commands",
+        parser_class=parser_class,
     )
 
     # Register the durable product grammar first and in lifecycle order. Hidden
@@ -283,7 +308,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_verify.set_defaults(func=cmd_verify)
 
     p_hub = subparsers.add_parser("hub")
-    hub_sub = p_hub.add_subparsers(dest="hub_command")
+    hub_sub = p_hub.add_subparsers(dest="hub_command", parser_class=parser_class)
     p_hub_add = hub_sub.add_parser("add", help="Register a repo with the hub")
     p_hub_add.add_argument("path", nargs="?", default=".")
     p_hub_add.add_argument(
@@ -455,16 +480,38 @@ def _escape_what_the_console_cannot_show() -> None:
 def main(argv: Sequence[str] | None = None) -> int:
     _escape_what_the_console_cannot_show()
     raw = list(sys.argv[1:] if argv is None else argv)
+    options = raw[: raw.index("--")] if "--" in raw else raw
+    json_output = "--json" in options
+    jsonl_output = "--jsonl" in options
     normalized = normalize_global_options(raw)
     migration_error = _migration_error(raw, normalized)
     if migration_error:
-        if "--json" in raw:
+        if json_output:
             dump_json(_error_payload("removed_interface", migration_error))
         else:
             print(f"mergetrain: {migration_error}", file=sys.stderr)
         return 2
-    parser = build_parser()
-    args = parser.parse_args(normalized)
+    parser = build_parser(structured_errors=json_output or jsonl_output)
+    try:
+        args = parser.parse_args(normalized)
+    except argparse.ArgumentError as exc:
+        payload = _error_payload("queue_error", redact_secrets(_public_command_error(str(exc))))
+        if json_output:
+            dump_json(payload)
+        else:
+            _dump_jsonl(
+                {"type": "stream_start", "contract_version": CONTRACT_VERSION, "after_event_id": 0}
+            )
+            _dump_jsonl(
+                {
+                    "type": "stream_end",
+                    "reason": "error",
+                    "exit_code": 2,
+                    "ok": False,
+                    "error": payload["error"],
+                }
+            )
+        return 2
     if not hasattr(args, "func"):
         parser.print_help(sys.stderr)
         return 2

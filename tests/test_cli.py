@@ -2614,10 +2614,12 @@ class CliTests(unittest.TestCase):
                 self.assertIn(option.split("=", 1)[0], payload["error"]["message"])
 
     def test_removed_hub_list_command_is_rejected(self) -> None:
-        with redirect_stderr(io.StringIO()):
-            with self.assertRaises(SystemExit) as raised:
-                main(["hub", "list", "--json"])
-        self.assertEqual(raised.exception.code, 2)
+        out = io.StringIO()
+        with redirect_stdout(out):
+            self.assertEqual(main(["hub", "list", "--json"]), 2)
+        payload = json.loads(out.getvalue())
+        self.assertEqual(payload["error"]["code"], "queue_error")
+        self.assertIn("invalid choice", payload["error"]["message"])
 
     def test_removed_web_ui_points_to_the_json_read_commands(self) -> None:
         cases = (
@@ -2683,6 +2685,8 @@ class CliTests(unittest.TestCase):
             )
             payload = json.loads(out.getvalue())
             self.assertIn("standard AGENTS.md and/or CLAUDE.md", payload["next_step"])
+            self.assertIn("meaningful project gate", payload["next_step"])
+            self.assertIn("before creating task worktrees", payload["next_step"])
 
     def test_init_write_writes_the_file_a_global_config_names(self) -> None:
         # init wrote <repo>/.mergetrain.yaml whatever --config said, so status
