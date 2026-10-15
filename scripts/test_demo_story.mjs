@@ -65,10 +65,10 @@ test('agent identities remain visible after their work leaves and through replay
 });
 test('the faster batch story preserves passing work, repair and both overlaps', () => {
   assert.equal(DURATION,14);
-  assert.deepEqual(sceneAt(1.8).added,['C','D']);
-  assert.deepEqual(sceneAt(1.8).rows.slice(0,2).map(r=>r.state),['Fixing','Fixing']);
-  assert.deepEqual(sceneAt(3.2).checking,['A','B']);
-  assert.deepEqual(sceneAt(3.2).rows.slice(2).map(r=>r.work),['E','F']);
+  assert.deepEqual(sceneAt(2.4).added,['C','D']);
+  assert.deepEqual(sceneAt(2.4).rows.slice(0,2).map(r=>r.state),['Fixing','Fixing']);
+  assert.deepEqual(sceneAt(4.5).checking,['A','B']);
+  assert.deepEqual(sceneAt(4.5).rows.slice(2).map(r=>r.work),['E','F']);
   assert.deepEqual(sceneAt(12.5).added,['C','D','A','B','E','F']);
   assert.deepEqual(sceneAt(12.5).rows.map(r=>r.work),['G','H','I','J']);
   for(let i=1;i<TIMELINE.length;i++) {
@@ -80,4 +80,34 @@ test('the faster batch story preserves passing work, repair and both overlaps', 
   // The two logical replay phases still have time for at least one 20fps frame.
   assert.ok(storyTime(13.9)<23.9);
   assert.ok(storyTime(13.95)>=23.9);
+});
+test('two stable messages are supported by applied work, repair and ongoing next tasks', () => {
+  const story=readStory(original);
+  for(const seconds of [2,2.5]) {
+    const state=sceneAt(seconds);
+    assert.equal(state.message.id,'passing-first');
+    assert.deepEqual(state.added,['C','D']);
+    assert.ok(state.rows.slice(0,2).every(row=>row.state==='Fixing'));
+  }
+  for(const seconds of [4.5,9.5]) {
+    const state=sceneAt(seconds);
+    assert.equal(state.message.id,'keep-building');
+    assert.equal(state.checking.length,2);
+    assert.equal(state.rows.filter(row=>row.activity==='Next task').length,2);
+  }
+  assert.ok(sceneAt(13).rows.every(row=>row.activity==='Next task'));
+  const messages=new Set();
+  for(let frame=0;frame<DURATION*20;frame++) {
+    const svg=frameSvg(frame/20,story);
+    messages.add(svg.match(/data-message="([^"]+)"/)[1]);
+    assert.ok(!svg.includes('Submitted'));
+    assert.ok(!svg.includes('Checking A + B. Building E + F.'));
+  }
+  assert.deepEqual([...messages],['passing-first','keep-building']);
+  const passing=frameSvg(2.5,story);
+  assert.ok(passing.includes('data-applied-batch="CD"'));
+  assert.ok(!passing.includes('data-applied-batch="AB"'));
+  const poster=frameSvg(0,story,{poster:true});
+  assert.ok(poster.includes('lands first.'));
+  assert.ok(poster.includes('Keep building during checks.'));
 });

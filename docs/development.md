@@ -283,10 +283,15 @@ Supported and tested Python: 3.10 through 3.14. See the
 The introduction is a 14-second silent cycle of the default **batch** mode.
 Passing C/D deploy while A/B return for repair. Ordered processing would hold
 later landings behind an unresolved earlier submission; this is not an ordered
-demo. The preserved recording ran version 3.5.0, before ordered was added. Four agent identities remain in
-view after submitting their work. Letters identify work across fixes and queue
-replacement jobs. At 3 seconds, agents start E and F while mergetrain checks
-A and B. The project retains applied work so the result is visible.
+demo. The preserved recording ran version 3.5.0, before ordered was added.
+
+Two large messages carry the story: **Passing work lands first**, then
+**Keep building during checks**. The first stays visible for 3.5 seconds; C/D
+remain applied while A/B are visibly repaired. At 3.5 seconds, agents start E/F
+while mergetrain checks A/B. New work is labeled `Next task` in the same four
+agent lanes. Applied receipts are grouped by batch. Letters retain recorded
+work identity without a changing letter-by-letter narration. The still poster
+contains both messages. Building during checks is possible in either mode.
 
 | Visual work | Recorded branches | Outcome in this window |
 | --- | --- | --- |
@@ -333,8 +338,9 @@ readable PNG poster. `docs/media/loop-production.json` contains evidence mapping
 asset hashes, sizes, mode, and the playback-to-story timing map. The 14-second
 export shortens holds on the original story timeline while retaining repair,
 both overlaps, all approvals and the default rechecks. It does not change the
-recorded commands or imply that the commands finish in 14 seconds. It also updates content-version query strings in the
-README and landing page so returning visitors request the new files. `--stills`
+recorded commands or imply that the commands finish in 14 seconds. It also
+updates content-version query strings in the README and landing page so returning
+visitors request the new files. `--stills`
 renders just the poster. The README embeds the GIF. The landing page loads the
 MP4 when visible, unless reduced motion or data saving is enabled. Playback
 failure restores the poster and allows retry. GIF and still-image links remain

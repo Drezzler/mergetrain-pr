@@ -33,10 +33,13 @@
 
 ### Documentation
 
-- Label the introductory animation as default batch processing and connect its
-  passing-work-first example to the batch/ordered guide. Shorten the loop from
-  24 to 14 seconds while preserving recorded repair, overlapping development,
-  approval, default rechecks, persistent agents and replay continuity.
+- Simplify the 14-second default batch animation around two messages: passing
+  work lands first, and agents keep building during checks. Hold the first
+  message through visible repair, label new work in the same agent lanes,
+  group applied work by batch, and give the still poster both messages.
+  Keep the recorded repairs, both overlaps, approvals, default rechecks and
+  replay continuity. Align README and landing copy with the two messages and
+  distinguish the landing policy from development shared by both modes.
 - Recommend default `batch` processing for independent parallel agent work.
   Compare it with `ordered` using web-feature and compiler-optimization
   examples, including failure isolation, retry position, continued agent

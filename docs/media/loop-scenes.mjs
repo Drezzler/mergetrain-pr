@@ -5,8 +5,12 @@ export const DURATION = 14;
 export const PROCESSING_MODE = 'batch';
 // Playback seconds -> the existing recorded-story timeline. Shorten holds more
 // than handoffs, and retain both overlaps, three approvals and the replay seam.
-export const TIMELINE = [[0,0],[1.7,2.2],[3,3.8],[5.2,7.1],[7.1,10.4],
+export const TIMELINE = [[0,0],[1.8,2.2],[2.8,2.8],[3.5,3.8],[5.7,7.1],[7.2,10.4],
   [8.4,12.7],[10.5,15.3],[12.4,18.7],[13.85,23.8],[14,24]];
+export const PRIMARY_MESSAGES = [
+  {id:'passing-first',lines:['Passing work','lands first.']},
+  {id:'keep-building',lines:['Keep building','during checks.']},
+];
 export function storyTime(seconds) {
   const t=((Math.max(0,seconds)%DURATION)+DURATION)%DURATION;
   const end=TIMELINE.findIndex(([playback])=>playback>t);
@@ -141,8 +145,18 @@ function stateAt(t) {
   const checking=t>=3.6&&t<7.1?['A','B']:t>=12.4&&t<15.3?['E','F']:[];
   const approval=(t>=.9&&t<1.4)||(t>=7.1&&t<8.6)||(t>=15.3&&t<17.1);
   const added=t>=18.4?['C','D','A','B','E','F']:t>=10?['C','D','A','B']:t>=2.2?['C','D']:[];
-  const caption=t<2.2?'C + D move ahead. A + B return.':t<3.8?'A + B get a fix and return.':t<7.1?'Checking A + B. Building E + F.':t<10.4?'A + B move ahead. E + F keep building.':t<12.7?'Next work E + F goes in.':t<17.1?'Checking E + F. Starting G + H.':t<18.7?'E + F move ahead. G + H keep building.':'G + H + I + J keep the work moving.';
-  return {t,rows,checking,approval,added,caption};
+  for(const row of rows) {
+    row.activity=['Building','New draft'].includes(row.state)?'Next task':
+      row.state==='Submitting'?'Sending':row.state;
+    if(row.state==='Submitted') {
+      if(['C','D'].includes(row.work)) row.activity=t<1.4?'Passed':'Applying';
+      else {
+        const [apply,land]=['A','B'].includes(row.work)?[8.6,10]:[17.1,18.4];
+        row.activity=t<apply?'In checks':t<land?'Applying':'Ready';
+      }
+    }
+  }
+  return {t,rows,checking,approval,added,message:PRIMARY_MESSAGES[t<3.8?0:1]};
 }
 
 function card(pos,id,{state='work',opacity=1,writing=1,draft=false}={}) {
@@ -165,27 +179,26 @@ function dynamic(t, {labels=true, cards=true}={}) {
   const s=stateAt(t);
   let svg='';
   if(labels) {
-  svg+=text(40,205,s.caption,30,C.muted,400);
   for(let i=0;i<4;i++) {
     const row=s.rows[i], y=agents[i][1];
     const active=['Fixing','Building','New draft'].includes(row.state);
-    const color=row.state==='Needs fix'||row.state==='Fixing'?C.amber:active?C.blue:C.muted;
-    svg+=text(117,y+20,row.state+(row.work?' '+row.work:''),32,color,500);
+    const color=row.state==='Needs fix'||row.state==='Fixing'?C.amber:row.activity==='Passed'?C.green:active?C.blue:C.muted;
+    svg+=text(117,y+20,row.activity,36,color,500);
     if(active) {
       const p=(t/1.8+i*.23)%1;
       svg+=`<path d="M119 ${y+32}H${137+117*p}" stroke="${color}" stroke-width="3" stroke-linecap="round" opacity=".45"/>`;
     }
   }
-  const status=s.checking.length?'Checking '+s.checking.join(' + '):s.approval?'Approve · recheck':t<.9?'Return A + B':t>=18.4?'Ready for work':'Moving work';
-  svg+=centered(733,305,status,28,s.approval?C.blue:C.ink,500);
+  const status=s.checking.length?'Checking together':s.approval?'Approve · recheck':t<.9?'Return for fix':t>=18.4?'Work continues':'Apply passing work';
+  svg+=centered(733,305,status,30,s.approval?C.blue:C.ink,500);
   if(s.checking.length||s.approval) {
     const p=(t%1.4)/1.4;
     svg+=`<path d="M${576+p*313} 327V482" stroke="${C.blue}" stroke-width="3" opacity=".17"/>`;
   }
-  svg+=text(578,628,`${s.added.length} changes added`,27,C.green,500);
-  s.added.forEach((id,i)=>{
-    const x=599+i*53;
-    svg+=`<rect x="${x-21}" y="649" width="42" height="42" rx="10" fill="#fff" stroke="${C.green}" stroke-width="2"/>`+centered(x,679,id,27,C.green,600);
+  svg+=text(578,628,`${s.added.length} changes added`,30,C.green,500);
+  [['C','D'],['A','B'],['E','F']].filter(pair=>pair.every(id=>s.added.includes(id))).forEach((pair,i)=>{
+    const x=626+i*105;
+    svg+=`<g data-applied-batch="${pair.join('')}"><rect x="${x-48}" y="649" width="96" height="42" rx="10" fill="#fff" stroke="${C.green}" stroke-width="2"/>`+centered(x,679,pair.join(' + '),27,C.green,600)+'</g>';
   });
   }
   if(!cards) return svg;
@@ -221,23 +234,25 @@ function dynamic(t, {labels=true, cards=true}={}) {
 export function frameSvg(t,story,{poster=false}={}) {
   if(story.length!==6) throw new Error('The scene requires the recorded following batch.');
   t=poster?5:storyTime(t);
+  const labelTime=t>=23.9?0:t;
+  const message=poster?PRIMARY_MESSAGES[0]:stateAt(labelTime).message;
   let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.blue}" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="fix-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.amber}" stroke-width="1.5" stroke-linecap="round"/></marker></defs><rect width="960" height="800" fill="${C.paper}"/>`;
   svg+=text(40,46,'mergetrain',29,C.blue,600);
   svg+=`<g data-processing="${PROCESSING_MODE}">`+text(920,46,'Batch · default',26,C.muted,500,'text-anchor="end"')+'</g>';
-  svg+=text(40,111,'Agents keep building.',58,C.ink,600,'letter-spacing="-1.5"');
-  svg+=text(40,164,'Checks run. New work starts.',36,C.ink,400);
+  svg+=`<g data-message="${message.id}">`;
+  if(poster) svg+=text(40,111,'Passing work lands first.',52,C.green,600,'letter-spacing="-1.5"')+
+    text(40,180,'Keep building during checks.',52,C.blue,600,'letter-spacing="-1.5"');
+  else svg+=text(40,111,message.lines[0],64,C.ink,600,'letter-spacing="-1.5"')+
+    text(40,180,message.lines[1],64,message.id==='passing-first'?C.green:C.blue,600,'letter-spacing="-1.5"');
+  svg+='</g>';
   svg+=text(52,256,'AI agents',31,C.ink,600)+text(577,256,'mergetrain',31,C.blue,600);
   svg+=`<path d="M453 470C505 470 500 410 554 410" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
   svg+=`<path d="M877 532V577" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
   svg+=`<path d="M554 365C500 336 513 309 451 309" fill="none" stroke="${C.amber}" stroke-width="3" marker-end="url(#fix-arrow)" opacity=".55"/>`;
   svg+=text(483,351,'Fix',25,C.amber,500);
   svg+=`<path d="M690 727C600 771 169 781 139 698" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;
-  for(let i=0;i<3;i++) {
-    const p=(t/8+i/3)%1;
-    const pos=curve([690,727],[600,771],[169,781],[139,698],p);
-    svg+=`<circle cx="${pos[0]}" cy="${pos[1]}" r="4" fill="${C.blue}" opacity=".5"/>`;
-  }
-  svg+=centered(484,788,'Build on the latest result',28,C.muted,400);
+  const pos=curve([690,727],[600,771],[169,781],[139,698],(t/8)%1);
+  svg+=`<circle cx="${pos[0]}" cy="${pos[1]}" r="4" fill="${C.blue}" opacity=".5"/>`;
   // Agent identities do not leave with their submitted work cards.
   for(let i=0;i<4;i++) {
     const y=agents[i][1];
@@ -248,7 +263,6 @@ export function frameSvg(t,story,{poster=false}={}) {
   svg+=`<rect x="555" y="591" width="355" height="136" rx="20" fill="#edf6f1" stroke="${C.green}" stroke-width="2"/>`;
   // Only work markers transition at the replay boundary. Agents and paths stay.
   const replay=t>=23.8;
-  const labelTime=t>=23.9?0:t;
   svg+=dynamic(labelTime,{cards:false});
   // Fade out before fading in: task labels and cards never double-expose.
   const cardTime=t>=23.9?0:t;

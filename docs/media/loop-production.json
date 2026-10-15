@@ -6,19 +6,23 @@
       0
     ],
     [
-      1.7,
+      1.8,
       2.2
     ],
     [
-      3,
+      2.8,
+      2.8
+    ],
+    [
+      3.5,
       3.8
     ],
     [
-      5.2,
+      5.7,
       7.1
     ],
     [
-      7.1,
+      7.2,
       10.4
     ],
     [
@@ -42,6 +46,22 @@
       24
     ]
   ],
+  "primary_messages": [
+    {
+      "id": "passing-first",
+      "lines": [
+        "Passing work",
+        "lands first."
+      ]
+    },
+    {
+      "id": "keep-building",
+      "lines": [
+        "Keep building",
+        "during checks."
+      ]
+    }
+  ],
   "duration_seconds": 14,
   "width": 960,
   "height": 800,
@@ -53,7 +73,7 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "Four agent identities stay visible. A persistent Batch · default label identifies the mode. Work A-D returns or moves ahead; E-F appears at 3 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.",
+  "design": "Two large messages carry the story: Passing work lands first, then Keep building during checks. Passing C-D is retained while A-B is visibly repaired. Four agent identities stay visible; new work is labeled Next task in the same lanes, beginning at 3.5 seconds during checks. Letters remain evidence identifiers without a letter-by-letter narration. Applied receipts are grouped by batch. G-H starts during E-F validation; I-J follows deployment. Dashed cards remain unsubmitted drafts. The poster contains both messages. Agents and paths stay visible through replay.",
   "source_commit": "0be337d36305995865c150c1b3c475284ccc8cf8",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
@@ -165,23 +185,23 @@
       "visualId": "J"
     }
   ],
-  "first_overlap_seconds": 3,
+  "first_overlap_seconds": 3.5,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 515190,
-      "sha256": "65b1ffef471d3c856b15bcc602b479da4a0659aa07e6ef88513a8a6203f2b600"
+      "bytes": 474047,
+      "sha256": "354cd512323762bd394d5a16e2254df59b694f273011ef06cc51b81c614e4d51"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1101103,
-      "sha256": "aa2541ac67aff9dfc89b5ac4403a0ea3979483c9dc60d5cc8afe41b759d9ee24"
+      "bytes": 1013972,
+      "sha256": "5ae67e3e0ecb63baf0755b384fb1245b9cb1c2fdfee222c1af378c118c42342b"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 103184,
-      "sha256": "2760bfaaeab0787736d7bc5d018e024c90e9d3a739baccf5259a82039c12bd35"
+      "bytes": 99238,
+      "sha256": "f581c2a4221d9f9fc7fd78f843349759b41b1288ead3a13a9f4876f165305354"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 8602,
-      "sha256": "24faa341022248f9597b9995eb763e0e1ee1331a826d60105c2dd5e3055caddd"
+      "bytes": 7989,
+      "sha256": "19d800a4c0807e7920e8826ce001e55b71b69e63743ffe124cad6d594c171df5"
     }
   }
 }

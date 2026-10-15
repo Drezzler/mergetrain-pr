@@ -25,19 +25,20 @@ services.
 
 ## Keep building through the fix
 
-**This 14-second GIF shows the default batch mode.** Passing work C and D
-lands while A and B return for a fix. By three seconds, mergetrain is checking
-A and B while two agents build new work E and F. The letters follow each
-piece of work through fixes and checks. Applied changes stay in the project;
-the agents keep starting the next work.
+**Default batch mode: passing work lands first.** Work that needs a fix
+returns to its agent. Passing work can land while the repair continues.
 
-In ordered mode, an unresolved earlier submission holds later landings.
+**Keep building during checks.** Agents start their next task while mergetrain
+checks earlier work. This 14-second loop keeps the same four agents in view.
+
+[![Default batch mode: passing work lands while other work is repaired. Agents start the next task during checks.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=5ae67e3e0ecb)](https://yongjip.github.io/mergetrain/#demo)
+
+Agents can keep building in both modes. In ordered mode, an unresolved earlier
+submission holds later landings.
 [Compare the two modes](docs/best-practices.md#choose-batch-or-ordered).
 
-[![Default batch mode. Four visible agents: A and B are checked while E and F are built by three seconds. G and H start during the next check. Applied work stays in the project.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=aa2541ac67af)](https://yongjip.github.io/mergetrain/#demo)
-
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
-[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=2760bfaaeab0) ·
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=f581c2a4221d) ·
 [Reproduce the continuous workflow](docs/development.md#documentation-media)
 
 <details>

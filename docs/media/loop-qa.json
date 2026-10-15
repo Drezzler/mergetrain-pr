@@ -1,10 +1,10 @@
 {
   "checked_on": "2026-10-15",
-  "status": "Local implementation verified; CI and production verification follow publication.",
-  "story": "Default batch mode: passing C/D deploy while A/B return for repair. Four persistent agent lanes keep work A-J distinct. E/F commits during A/B validation; G/H drafts start during E/F validation. All three deployments retain approval and the default recheck. Four final drafts remain unsubmitted.",
+  "status": "Two-message local implementation verified; train and publication evidence follow deployment.",
+  "story": "Two large messages: Passing work lands first, then Keep building during checks. C/D remain applied while A/B are repaired. The same four agent lanes show Next task during checks and following drafts. All three deployments retain approval and default rechecks. Four final drafts remain unsubmitted.",
   "automated": {
     "playback_tests": 8,
-    "evidence_guard_and_story_tests": 23,
+    "evidence_guard_and_story_tests": 24,
     "landing_page_tests": 3,
     "recorded_commands": 147,
     "final_remote_tests": 6,
@@ -67,18 +67,26 @@
       "pass": 4,
       "finding": "The 24-second cycle felt slow and did not name its processing mode.",
       "change": "Keep Batch \u00b7 default visible. Shorten idle holds with an explicit timing map; export 14 seconds and show the first overlap at 3 seconds. Link captions to the batch/ordered distinction."
+    },
+    {
+      "pass": 5,
+      "finding": "Letter-by-letter narration obscured the batch benefit, and Submitted labels made continuing agents look inactive.",
+      "change": "Keep only two large headlines. Hold passing-first through visible repair; label actual new work Next task, distinguish checks from application, group applied receipts by batch and reduce decorative motion. Preserve 14 seconds and recorded work identity."
+    },
+    {
+      "pass": 6,
+      "finding": "The first revised still poster placed its second message too close to the agent heading.",
+      "change": "Give the poster two complete large lines, so both messages remain readable without playback."
     }
   ],
-  "first_overlap_seconds": 3,
+  "first_overlap_seconds": 3.5,
   "encoded_frames_reviewed_seconds": [
     0,
-    1.7916666666666667,
-    3.5,
-    5,
-    6,
+    2.5,
+    4.5,
+    7,
     9.5,
-    12.5,
-    13.916666666666666
+    13
   ],
   "seam": {
     "full_scene_dissolve": false,
@@ -94,5 +102,10 @@
     "Two fixture gate barriers make overlap deterministic. Timing is condensed and is not a speed claim.",
     "The animation repeats one recorded window. G-J are drafts, not submitted or validated work."
   ],
-  "processing_mode": "batch"
+  "processing_mode": "batch",
+  "primary_messages": [
+    "Passing work lands first.",
+    "Keep building during checks."
+  ],
+  "first_message_seconds": 3.5
 }
