@@ -95,6 +95,7 @@ def verify(snapshot: Path, output: Path) -> dict:
         "".join(difflib.unified_diff(
             sources[name].splitlines(keepends=True), adapted[name].splitlines(keepends=True),
             fromfile=f"a/{name}", tofile=f"b/{name}",
+            n=0,
         )) for name in sources
     )
     output.mkdir(parents=True, exist_ok=True)

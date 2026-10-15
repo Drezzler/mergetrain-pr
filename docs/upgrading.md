@@ -140,6 +140,11 @@ python benchmarks/external_integrations/darklang_compat.py \
   --output /tmp/mergetrain-darklang-evidence
 ```
 
+The generated patch uses zero context so blank patch-context lines do not
+violate source whitespace checks. In the matching pinned checkout, review it
+with `git apply --check --unidiff-zero /tmp/mergetrain-darklang-evidence/darklang-contract-5.patch`.
+Apply with the same `--unidiff-zero` option only after the consumer review.
+
 Applying a consumer migration upstream and changing its running installation
 remain that repository operator's actions. A compatible native queue does not
 replace benchmark exception policy or an AI repair controller.
