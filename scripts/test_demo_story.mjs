@@ -100,6 +100,8 @@ test('two stable messages are supported by applied work, repair and ongoing next
   for(let frame=0;frame<DURATION*20;frame++) {
     const svg=frameSvg(frame/20,story);
     messages.add(svg.match(/data-message="([^"]+)"/)[1]);
+    assert.ok(svg.includes('Passing work lands first.'));
+    assert.ok(svg.includes('Keep building during checks.'));
     assert.ok(!svg.includes('Submitted'));
     assert.ok(!svg.includes('Checking A + B. Building E + F.'));
   }

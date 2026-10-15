@@ -73,7 +73,7 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "Two large messages carry the story: Passing work lands first, then Keep building during checks. Passing C-D is retained while A-B is visibly repaired. Four agent identities stay visible; new work is labeled Next task in the same lanes, beginning at 3.5 seconds during checks. Letters remain evidence identifiers without a letter-by-letter narration. Applied receipts are grouped by batch. G-H starts during E-F validation; I-J follows deployment. Dashed cards remain unsubmitted drafts. The poster contains both messages. Agents and paths stay visible through replay.",
+  "design": "Two large messages stay visible for all 14 seconds: Passing work lands first and Keep building during checks. Landing is emphasized first; the next-task message turns blue when overlapping work begins. Passing C-D is retained while A-B is visibly repaired. Four agent identities stay visible; new work is labeled Next task in the same lanes, beginning at 3.5 seconds during checks. Letters remain evidence identifiers without a letter-by-letter narration. Applied receipts are grouped by batch. G-H starts during E-F validation; I-J follows deployment. Dashed cards remain unsubmitted drafts. The poster contains both messages. Agents and paths stay visible through replay.",
   "source_commit": "0be337d36305995865c150c1b3c475284ccc8cf8",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
@@ -188,20 +188,20 @@
   "first_overlap_seconds": 3.5,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 474047,
-      "sha256": "354cd512323762bd394d5a16e2254df59b694f273011ef06cc51b81c614e4d51"
+      "bytes": 495958,
+      "sha256": "fb54009c1a809c6894a196afe04789ef5255df16ba61eb492906922aff6bab86"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1013972,
-      "sha256": "5ae67e3e0ecb63baf0755b384fb1245b9cb1c2fdfee222c1af378c118c42342b"
+      "bytes": 1049557,
+      "sha256": "7ee9eb01d24e66b172e408320b22602c193681f2b53270470deab33521d67567"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 99238,
-      "sha256": "f581c2a4221d9f9fc7fd78f843349759b41b1288ead3a13a9f4876f165305354"
+      "bytes": 100052,
+      "sha256": "56d261f82d438947aaf82ef923d08442119e00528b9f377616c44a8f723f279f"
     },
     "mergetrain-loop-poster.svg": {
       "bytes": 7989,
-      "sha256": "19d800a4c0807e7920e8826ce001e55b71b69e63743ffe124cad6d594c171df5"
+      "sha256": "45faf20fd0783c1e9c8037a66531b71aeb0da75295c493e21f2373dd185e2766"
     }
   }
 }

@@ -34,8 +34,9 @@
 ### Documentation
 
 - Simplify the 14-second default batch animation around two messages: passing
-  work lands first, and agents keep building during checks. Hold the first
-  message through visible repair, label new work in the same agent lanes,
+  work lands first, and agents keep building during checks. Keep both visible
+  throughout playback, emphasize passing work through repair, label new work
+  in the same agent lanes,
   group applied work by batch, and give the still poster both messages.
   Keep the recorded repairs, both overlaps, approvals, default rechecks and
   replay continuity. Align README and landing copy with the two messages and

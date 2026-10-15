@@ -285,9 +285,9 @@ Passing C/D deploy while A/B return for repair. Ordered processing would hold
 later landings behind an unresolved earlier submission; this is not an ordered
 demo. The preserved recording ran version 3.5.0, before ordered was added.
 
-Two large messages carry the story: **Passing work lands first**, then
-**Keep building during checks**. The first stays visible for 3.5 seconds; C/D
-remain applied while A/B are visibly repaired. At 3.5 seconds, agents start E/F
+Two large messages stay visible throughout the loop: **Passing work lands
+first** and **Keep building during checks**. The first has the emphasis for
+3.5 seconds; C/D remain applied while A/B are visibly repaired. At 3.5 seconds, agents start E/F
 while mergetrain checks A/B. New work is labeled `Next task` in the same four
 agent lanes. Applied receipts are grouped by batch. Letters retain recorded
 work identity without a changing letter-by-letter narration. The still poster

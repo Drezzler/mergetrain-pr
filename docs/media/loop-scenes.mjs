@@ -235,15 +235,14 @@ export function frameSvg(t,story,{poster=false}={}) {
   if(story.length!==6) throw new Error('The scene requires the recorded following batch.');
   t=poster?5:storyTime(t);
   const labelTime=t>=23.9?0:t;
-  const message=poster?PRIMARY_MESSAGES[0]:stateAt(labelTime).message;
+  const message=stateAt(labelTime).message;
   let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.blue}" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="fix-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.amber}" stroke-width="1.5" stroke-linecap="round"/></marker></defs><rect width="960" height="800" fill="${C.paper}"/>`;
   svg+=text(40,46,'mergetrain',29,C.blue,600);
   svg+=`<g data-processing="${PROCESSING_MODE}">`+text(920,46,'Batch · default',26,C.muted,500,'text-anchor="end"')+'</g>';
   svg+=`<g data-message="${message.id}">`;
-  if(poster) svg+=text(40,111,'Passing work lands first.',52,C.green,600,'letter-spacing="-1.5"')+
-    text(40,180,'Keep building during checks.',52,C.blue,600,'letter-spacing="-1.5"');
-  else svg+=text(40,111,message.lines[0],64,C.ink,600,'letter-spacing="-1.5"')+
-    text(40,180,message.lines[1],64,message.id==='passing-first'?C.green:C.blue,600,'letter-spacing="-1.5"');
+  svg+=text(40,111,PRIMARY_MESSAGES[0].lines.join(' '),56,C.green,600,'letter-spacing="-1.5"')+
+    text(40,180,PRIMARY_MESSAGES[1].lines.join(' '),56,
+      message.id==='keep-building'?C.blue:C.muted,600,'letter-spacing="-1.5"');
   svg+='</g>';
   svg+=text(52,256,'AI agents',31,C.ink,600)+text(577,256,'mergetrain',31,C.blue,600);
   svg+=`<path d="M453 470C505 470 500 410 554 410" fill="none" stroke="${C.blue}" stroke-width="3" marker-end="url(#arrow)" opacity=".55"/>`;

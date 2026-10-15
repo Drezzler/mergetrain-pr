@@ -1,7 +1,7 @@
 {
   "checked_on": "2026-10-15",
   "status": "Two-message local implementation verified; train and publication evidence follow deployment.",
-  "story": "Two large messages: Passing work lands first, then Keep building during checks. C/D remain applied while A/B are repaired. The same four agent lanes show Next task during checks and following drafts. All three deployments retain approval and default rechecks. Four final drafts remain unsubmitted.",
+  "story": "Two large messages remain visible throughout playback: Passing work lands first and Keep building during checks. C/D remain applied while A/B are repaired. The same four agent lanes show Next task during checks and following drafts. All three deployments retain approval and default rechecks. Four final drafts remain unsubmitted.",
   "automated": {
     "playback_tests": 8,
     "evidence_guard_and_story_tests": 24,
@@ -77,6 +77,11 @@
       "pass": 6,
       "finding": "The first revised still poster placed its second message too close to the agent heading.",
       "change": "Give the poster two complete large lines, so both messages remain readable without playback."
+    },
+    {
+      "pass": 7,
+      "finding": "Visitors who enter midway through playback can miss a headline that only appears in the opening segment.",
+      "change": "Keep both complete messages visible throughout the loop in large type. Emphasize passing work first; turn the next-task message blue when work begins during checks. Match the still poster to the same layout."
     }
   ],
   "first_overlap_seconds": 3.5,
@@ -107,5 +112,6 @@
     "Passing work lands first.",
     "Keep building during checks."
   ],
-  "first_message_seconds": 3.5
+  "first_message_emphasis_seconds": 3.5,
+  "messages_visible_seconds": 14
 }
