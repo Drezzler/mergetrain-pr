@@ -69,7 +69,7 @@ pushes. Repeating these actions can slow parallel work.
 mergetrain records this workflow in a durable local queue:
 
 ```text
-agent branches → ordered queue → isolated integration worktree → combined gates
+agent branches → local queue → isolated integration worktree → combined gates
                → explicit approval → one atomic push → post-push verification
 ```
 
@@ -87,11 +87,6 @@ Use mergetrain when:
 It is harness-agnostic: Codex, Claude Code, agy, scripts, and humans all use the
 same CLI and JSON contract.
 
-Batch processing is the default. Projects that need one change per landing
-and the same submission order after repair can select
-[`queue.processing: ordered`](docs/config.md#queue). Agents submit through the
-same interface and can continue developing while the runner integrates work.
-
 ## Who should not use it?
 
 You probably do not need mergetrain when:
@@ -104,6 +99,33 @@ You probably do not need mergetrain when:
 
 For PR-first teams, use GitHub Merge Queue or GitLab Merge Trains. mergetrain is
 for local-agent, worktree-first integration, with or before a PR.
+
+## Batch by default; ordered when needed
+
+**Start with `batch`, the default.** It suits independent work from parallel
+agents. The runner combines the queued work available when it starts; it does
+not wait for every agent to finish. Compatible work can land while an agent
+repairs a failed submission.
+
+Use `ordered` when each change needs its own landing and the original
+submission order must survive a failure and retry.
+
+| Comparison | `batch` (default) | `ordered` (optional) |
+| --- | --- | --- |
+| Agent work example | A fixes login, B adds search filters, C updates the admin screen | A, B, and C make compiler optimizations; measure each change against the previous landed result |
+| Landing unit | Available submissions together | One submission at a time |
+| If B fails | After isolating B and passing checks on A+C, A+C can land | A can land; C waits until B is repaired and lands, or is explicitly canceled |
+| B after `retry` | Joins the back of the queue | Keeps B's original position, before C |
+
+Both modes let agents start their next task after handoff. Both keep deploy
+approval and the default pre-push recheck. Ordered processing can run checks
+more often because each submission lands separately. Queue order starts at
+submission, not when an agent starts work, and does not express code dependencies.
+
+**Availability:** `ordered` is on `main` and is not yet in the published 3.5.1
+package. Keep `batch` for released installations until the next release.
+See the [agent work examples](docs/best-practices.md#choose-batch-or-ordered),
+[configuration](docs/config.md#queue), and [upgrade procedure](docs/upgrading.md).
 
 ## Enforcement boundary
 

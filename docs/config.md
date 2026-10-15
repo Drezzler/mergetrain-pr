@@ -258,9 +258,24 @@ commands renew the lease every `heartbeat_interval_seconds`; the heartbeat must
 be shorter than the TTL. `command_timeout_seconds` terminates a command and
 marks the affected job failed. All queue timing values must be positive.
 
-`processing` is optional and defaults to `batch`, which combines the queued
-jobs available when a runner claims work. It does not wait for other agents
-to finish. For one submission per landing with strict order through repair:
+`processing` is a repository-wide setting. **Keep the default `batch` for
+ordinary parallel agent work.** It combines eligible queued jobs available
+when a runner claims work and does not wait for other agents to finish.
+For example, a login fix, a search filter, and an admin-screen change can share
+checks. If one fails, compatible work can land after failure isolation and
+checks on the remaining combination. A repaired job joins the back on `retry`.
+
+Choose `ordered` only when each submission needs a separate landing and must
+keep its original position through repair. For example, compiler agents can
+measure each optimization against the preceding landed result. If the middle
+submission fails, later landings wait for its repair or explicit cancellation.
+See the [agent work examples](best-practices.md#choose-batch-or-ordered).
+
+**Release availability:** `ordered` is on `main` and is not yet in the published
+3.5.1 package. Keep `batch` until the next release and follow the
+[upgrade procedure](upgrading.md) before enabling it.
+
+To select ordered processing in a version that supports it:
 
 ```yaml
 queue:

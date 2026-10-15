@@ -92,18 +92,85 @@ Do not leave a validated train waiting while continuing to edit its branches.
 Freeze the intended membership, validate it, inspect the exact `train_id`, and
 request deploy approval promptly. A changed task head is correctly refused.
 
-### Changes that must land in order
+### Choose batch or ordered
 
-Default `batch` processing merges in submission order, sets failed jobs aside
-so later jobs can land, and appends retries to the back. For workflows that
-must retain submission order through failure and repair, select
-`queue.processing: ordered`. It lands one submission per train and retains
-the original position when `retry` creates a freshly pinned replacement.
-An unresolved head holds later landings; agents can continue developing and
-submitting work. This trades some batching efficiency for predictable
-change-by-change measurement and recovery.
+**Keep `batch` for ordinary parallel development.** Use `ordered` when the
+workflow needs one submission per landing and must keep the same order after
+a failed submission is repaired. This is a repository setting; task agents
+use the same handoff commands in both modes. See
+[configuration and release availability](config.md#queue) before enabling it.
 
-Queue order does not express a code dependency. Express that in Git:
+| Question | `batch` (default) | `ordered` (optional) |
+| --- | --- | --- |
+| What does the runner take? | The eligible queued submissions available when it starts | The earliest unfinished submission only |
+| Can later work pass a failed submission? | Yes, after failure isolation and checks on the remaining combination | No; resolve the earlier submission first |
+| Where does a retry go? | The back of the queue | The original submission's position |
+| What is the tradeoff? | Share checks across compatible work | Run checks per submission and accept waiting behind an unresolved head |
+
+#### Example: agents develop independent web features
+
+Suppose three agents finish unrelated changes and submit A, B, then C:
+
+- A fixes login in the authentication module.
+- B adds a search filter in the search module.
+- C updates the admin screen.
+
+With `batch`, if all three are queued when the runner starts, it merges them
+in submission order and checks the combined result. If B is proven to fail
+on its own, the runner checks A+C as a fresh combination. A+C can land only
+after those checks pass. B's agent repairs and commits its branch, then an
+authorized operator or repair controller uses `retry`. The replacement joins
+the back of the queue and may be processed with other waiting work.
+
+```text
+A+B+C checks → isolate failing B → A+C checks and landing
+B repair → retry → back of queue
+```
+
+`ordered` would land A, then hold C while B is repaired. Choose `batch` here
+when B's original position has no value to the workflow. It also processes a
+single available submission; there is no wait for a complete group of agents.
+
+#### Example: agents make compiler optimizations
+
+Suppose three agents submit A (constant folding), B (loop optimization), and
+C (register allocation). Each change must be measured against the preceding
+landed result. Configure the project gates to run the required performance
+checks, and select `ordered`:
+
+```text
+A checks, measurement, landing
+  → B fails
+  → B repair and retry at the same position
+  → B checks, measurement, landing
+  → C checks, measurement, landing
+```
+
+After A lands, B's candidate includes A. After B lands, C's candidate includes
+A+B. This lets the project compare each candidate with the previous landed
+baseline. B's repair retains its position before C, including after a runner
+restart. A batch of all three would measure their combined effect instead.
+
+The reviewed [Darklang compiler integration](https://github.com/pbiggar/darklang-compiler/blob/096c7d42d1ece1dd63e51077d53e0f701822e676/scripts/run-mergetrain-integrator.sh)
+uses a separate first-in, first-out ledger and promotes a landed performance
+baseline before advancing to the next submission. That source is a concrete
+example of this ordering need. Our [compatibility evidence](evidence/darklang-compatibility-2026-10-15.json)
+covers the pinned integration code and disposable Git workflows; it does not
+claim an upstream migration or execution of the external compiler.
+
+In both examples, agents can continue developing and submitting new work
+while the runner integrates earlier submissions. `ordered` pauses later
+landings, not agent development. Agents or a repair controller still make
+fixes and request retries; the processing mode does not perform coding work.
+Both modes retain deploy approval, configured verification, and the default
+pre-push recheck. With the same checks and several compatible submissions,
+`ordered` runs those checks per submission instead of sharing a batch run.
+
+#### Changes that must land in order
+
+Submission order starts when finished work is enqueued, not when development
+starts. Neither mode reserves a slot before work begins. Queue order also
+does not express a code dependency. Express that in Git:
 
 - **A change that needs another:** build its branch on top of the other and
   enqueue only the top branch. That one job carries both changes, so the later
@@ -113,9 +180,7 @@ Queue order does not express a code dependency. Express that in Git:
   preceding deployed change: use ordered processing instead of maintaining
   another admission ledger. Keep benchmark policy in project gates.
 
-Choose batch processing for independent changes when one failed branch should
-not delay the rest. Choose ordered processing when retaining the unfinished
-head is part of the workflow. Neither mode makes an absent prerequisite safe.
+Neither mode makes an absent prerequisite safe.
 
 ## Design gates for fast failure
 

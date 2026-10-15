@@ -31,6 +31,14 @@
   and verify repair, restart, individual atomic landings, manual confirmation,
   and default rechecks against disposable Git remotes.
 
+### Documentation
+
+- Recommend default `batch` processing for independent parallel agent work.
+  Compare it with `ordered` using web-feature and compiler-optimization
+  examples, including failure isolation, retry position, continued agent
+  development, and per-submission checks. Mark ordered processing as unreleased
+  and link its configuration and upgrade requirements.
+
 ## 3.5.1 - 2026-10-15
 
 ### Upgrade notes

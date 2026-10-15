@@ -86,6 +86,17 @@ preview/summary; do not reuse the stale hash.
 
 ## Gate failure
 
+The processing mode determines whether later submissions can continue:
+
+- **`batch` (default):** if A, B, and C are queued and B fails on its own,
+  mergetrain can land A+C after isolating B and passing checks on that exact
+  combination. B's repaired replacement joins the back on `retry`.
+- **`ordered`:** A lands first. If B fails, C waits. B's repaired replacement
+  keeps its position before C. Explicit cancellation or dismissal can also
+  resolve B's position. Agents can keep developing while later landings wait.
+
+See [which mode to choose and agent work examples](best-practices.md#choose-batch-or-ordered).
+
 Gate failures are pre-push failures. The deploy ref is not updated. In batch
 mode, mergetrain isolates the failure so unrelated jobs can still
 validate/deploy:
