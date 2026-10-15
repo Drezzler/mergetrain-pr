@@ -20,7 +20,7 @@ def deploy_destination_sha(config: MergetrainConfig) -> str:
 def _execution_policy_identity(config: MergetrainConfig) -> dict[str, Any]:
     """Return the configured QA/deploy policy that an approval authorizes."""
 
-    return {
+    identity: dict[str, Any] = {
         "version": 1,
         "gate_policy_sha": gate_policy_sha(config),
         "reuse": {
@@ -41,6 +41,12 @@ def _execution_policy_identity(config: MergetrainConfig) -> dict[str, Any]:
             for hook in config.deploy.verify
         ],
     }
+    # Keep the published batch identity byte-for-byte stable, including
+    # existing --auto approvals. Selecting ordered processing is a policy
+    # change and cannot inherit a batch approval or confirmed deploy plan.
+    if config.queue.processing != "batch":
+        identity["processing"] = config.queue.processing
+    return identity
 
 
 def deploy_execution_policy_sha(config: MergetrainConfig) -> str:

@@ -8,7 +8,13 @@ from collections.abc import Callable, Sequence
 from ..errors import DeployPlanChanged, QueueError
 from ..models import Job
 from .events import _record_run_event
-from .jobs import get_job, list_jobs_fifo, select_validated_train, validated_train_summaries
+from .jobs import (
+    get_job,
+    list_jobs_fifo,
+    ordered_head,
+    select_validated_train,
+    validated_train_summaries,
+)
 from .leases import _acquire_runner_lock, _release_lock_token, default_owner
 from .recovery import deploy_reconcile_pending
 from .transactions import immediate, utc_now
@@ -88,6 +94,7 @@ def claim_all_queued(
     approval_execution_policy_sha: str = "",
     blocked: list[Job] | None = None,
     unless_ready: bool = False,
+    processing: str = "batch",
 ) -> list[Job]:
     """Claim queued jobs: all of them, only --auto ones (deploy), or only manual ones.
 
@@ -98,10 +105,12 @@ def claim_all_queued(
 
     if auto_only and manual_only:
         raise QueueError("auto_only and manual_only are mutually exclusive")
+    if processing not in {"batch", "ordered"}:
+        raise QueueError("unknown queue processing policy")
     owner = owner or default_owner()
     with immediate(conn):
         lock = _acquire_runner_lock(conn, owner=owner, ttl_minutes=ttl_minutes)
-        if (auto_only or manual_only) and deploy_reconcile_pending(conn):
+        if (auto_only or manual_only or processing == "ordered") and deploy_reconcile_pending(conn):
             # Acquiring the lock can itself park marker-bearing orphans as
             # needs_reconcile (dead-owner requeue). Both daemon policies pause
             # for that state, so observe it inside the same claim transaction —
@@ -128,6 +137,15 @@ def claim_all_queued(
             # runner lock, so that one stays the only Ready train.
             _release_lock_token(conn, owner=owner, token=lock.token)
             return []
+        head = ordered_head(conn) if processing == "ordered" else None
+        if processing == "ordered" and (
+            head is None
+            or head.status != "queued"
+            or (auto_only and not head.auto_deploy)
+            or (manual_only and head.auto_deploy)
+        ):
+            _release_lock_token(conn, owner=owner, token=lock.token)
+            return []
         if auto_only:
             approvals = {
                 "approval_destination_sha": approval_destination_sha,
@@ -147,6 +165,8 @@ def claim_all_queued(
                 ).fetchall()
                 for row in mismatched:
                     job_id = int(row["id"])
+                    if head is not None and job_id != head.id:
+                        continue
                     conn.execute(
                         """
                         UPDATE deploy_queue
@@ -189,6 +209,8 @@ def claim_all_queued(
                 "SELECT id FROM deploy_queue WHERE status = 'queued' ORDER BY id ASC"
             ).fetchall()
         job_ids = [int(row["id"]) for row in rows]
+        if head is not None:
+            job_ids = [job_id for job_id in job_ids if job_id == head.id]
         if not job_ids:
             _release_lock_token(conn, owner=owner, token=lock.token)
             return []
@@ -209,6 +231,7 @@ def claim_deploy_batch(
     ttl_minutes: int = 30,
     train_id: str = "",
     confirm_plan: Callable[[Sequence[Job]], None] | None = None,
+    processing: str = "batch",
 ) -> list[Job]:
     """Claim one exact validated train, or queued jobs when none is pending.
 
@@ -220,6 +243,8 @@ def claim_deploy_batch(
     returns an empty list, which the caller must report as a refusal.
     """
 
+    if processing not in {"batch", "ordered"}:
+        raise QueueError("unknown queue processing policy")
     owner = owner or default_owner()
     with immediate(conn):
         lock = _acquire_runner_lock(conn, owner=owner, ttl_minutes=ttl_minutes)
@@ -243,6 +268,16 @@ def claim_deploy_batch(
             jobs = validated_jobs
         else:
             jobs = list_jobs_fifo(conn, status="queued")
+        if processing == "ordered":
+            head = ordered_head(conn)
+            if selected is not None:
+                if head is None or len(jobs) != 1 or jobs[0].id != head.id:
+                    raise QueueError(
+                        "ordered processing requires the earliest unfinished job; "
+                        "resolve earlier work or the existing Ready train first"
+                    )
+            else:
+                jobs = [head] if head is not None and head.status == "queued" else []
         if not jobs:
             _release_lock_token(conn, owner=owner, token=lock.token)
             return []

@@ -9,7 +9,7 @@ from .transactions import immediate, utc_now
 
 # Bump whenever a column, index, or backfill is added, so an older binary
 # refuses a database it cannot fully understand instead of acting on it.
-SCHEMA_VERSION = 15
+SCHEMA_VERSION = 16
 
 # Each column of the two evolving tables, defined once. A fresh database is
 # created from these lists; an older one gains whichever columns it lacks, so
@@ -19,6 +19,7 @@ _DEPLOY_QUEUE_COLUMNS = (
     ("id", "INTEGER PRIMARY KEY AUTOINCREMENT"),
     ("task", "TEXT NOT NULL"),
     ("branch", "TEXT NOT NULL"),
+    ("queue_order", "INTEGER NOT NULL DEFAULT 0"),
     ("worktree_path", "TEXT NOT NULL DEFAULT ''"),
     ("status", "TEXT NOT NULL DEFAULT 'queued'"),
     ("base_sha", "TEXT NOT NULL DEFAULT ''"),
@@ -73,6 +74,7 @@ _TABLES = (("deploy_queue", _DEPLOY_QUEUE_COLUMNS), ("locks", _LOCKS_COLUMNS))
 # Created after every column exists: an index on a column that an older
 # database still lacks would fail the upgrade.
 _INDEXES = (
+    "CREATE INDEX IF NOT EXISTS deploy_queue_order_idx ON deploy_queue(queue_order, id)",
     "CREATE INDEX IF NOT EXISTS run_events_created_at_idx ON run_events(created_at, id)",
     "CREATE INDEX IF NOT EXISTS run_events_claim_idx ON run_events(claim_token, id)",
     # Queue reads overwhelmingly filter by status or by one branch. Include id
@@ -143,6 +145,10 @@ def ensure_schema(conn: sqlite3.Connection) -> None:
 
         for table, columns in _TABLES:
             _ensure_columns(conn, table, columns)
+        if version < 16:
+            # Preserve the visible submission order at upgrade. Historical
+            # retry notes are not proof of a prior strict-order policy.
+            conn.execute("UPDATE deploy_queue SET queue_order = id WHERE queue_order = 0")
         conn.execute(
             """
         CREATE TABLE IF NOT EXISTS run_events (

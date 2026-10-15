@@ -148,6 +148,7 @@ def daemon_tick(
     validate_only: bool = False,
     approval_destination_sha: ApprovalDestination = "",
     approval_execution_policy_sha: ApprovalExecutionPolicy = "",
+    processing: str | Callable[[], str] = "batch",
 ) -> str:
     """Run one daemon pass over a single repo's queue.
 
@@ -279,6 +280,7 @@ def daemon_tick(
                         "" if validate_only else current_execution_policy_sha
                     ),
                     blocked=approval_blocked,
+                    processing=processing() if callable(processing) else processing,
                 )
             except LockHeld:
                 # Another runner took the lock after the read-only probe, or
@@ -356,6 +358,7 @@ def daemon_loop(
     validate_only: bool = False,
     approval_destination_sha: ApprovalDestination = "",
     approval_execution_policy_sha: ApprovalExecutionPolicy = "",
+    processing: str | Callable[[], str] = "batch",
 ) -> str:
     """Run a mergetrain daemon loop in auto-deploy or manual-validation mode.
 
@@ -404,6 +407,7 @@ def daemon_loop(
                     validate_only=validate_only,
                     approval_destination_sha=approval_destination_sha,
                     approval_execution_policy_sha=approval_execution_policy_sha,
+                    processing=processing,
                 )
             except Exception as exc:
                 say(f"mergetrain daemon tick error: {exc}")

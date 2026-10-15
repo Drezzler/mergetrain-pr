@@ -25,28 +25,35 @@ worktree ready for manual resolution and does not dismiss the old job. `retry`
 only replaces a blocked/failed job (never queued or in-progress work), inherits
 its task and note, and captures fresh base/head SHAs. It inherits `--auto`
 eligibility only while both the approved destination and execution-policy
-hashes still match; a changed destination, gate/reuse policy, command timeout,
-or verify hook turns the replacement into a manual job.
+hashes still match and the owning branch is unchanged; a changed destination,
+processing policy, gate/reuse policy, command timeout, verify hook, or repair
+branch turns the replacement into a manual job. Only explicitly bounded
+unattended authorization permits `retry JOB --auto`, which records fresh
+current destination/policy approval. Retry alone grants no deployment authority.
 
 ### Repairing on a separate branch
 
-`retry` takes its fix from the job's own branch. When that branch must stay as
-it was handed off, for example because a different agent makes the repair, put
-the fix on a new branch that starts from it, then replace the job in two steps,
-in this order:
+When the original task branch must stay as handed off, make the repair in a
+separate clean worktree and name that branch on the existing retry operation:
 
 ```sh
 git worktree add ../repair-<id> -b repair/<id> <original-branch>
 # fix and commit in ../repair-<id>, leaving it clean
-mergetrain enqueue --task "<task> (repair of job <id>)" --branch repair/<id> --note "replaces job <id>"
-mergetrain dismiss <id> --note "replaced by job <new-id>"
+mergetrain retry <id> --branch repair/<id>
 ```
 
-Enqueue first, so an interruption between the steps cannot lose the repair:
-the failed job cannot run and only stays visible until it is dismissed. The
-notes keep the failure and its replacement linked in queue history. The
-replacement is a new job at the back of the queue, and it is unattended only if
-its own enqueue passes `--auto` under the same authority as the original.
+The operation resolves the repair branch's unique worktree, checks it belongs
+to this repository and is clean, and captures the exact base/head commits.
+It creates the replacement and cancels the failed outcome in one transaction.
+An active job on the repair branch or an unresolved ambiguous push is refused;
+the original task checkout is untouched. In ordered processing the replacement
+retains `queue_order`; in batch processing it joins the back as before.
+
+A separate repair branch never inherits automatic approval. A separately
+authorized repair controller may use `retry <id> --branch repair/<id> --auto`
+under its existing bounded task/destination authority. This is an operator
+operation; ordinary task agents retain enqueue-and-stop. A repair model does
+not gain queue or push authority merely by writing a repair commit.
 
 ## Deploy authorization changed
 

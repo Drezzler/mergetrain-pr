@@ -258,6 +258,28 @@ commands renew the lease every `heartbeat_interval_seconds`; the heartbeat must
 be shorter than the TTL. `command_timeout_seconds` terminates a command and
 marks the affected job failed. All queue timing values must be positive.
 
+`processing` is optional and defaults to `batch`, which combines the queued
+jobs available when a runner claims work. It does not wait for other agents
+to finish. For one submission per landing with strict order through repair:
+
+```yaml
+queue:
+  processing: ordered
+```
+
+`ordered` admits only the earliest unfinished submission, including its
+replacement after `retry`. A blocked/failed head, a manual head waiting for
+approval, and a deployed head with unresolved verification hold later work.
+Cancellation or dismissal explicitly resolves a position. Task agents can
+continue submitting finished work; they use the same commands and MCP tools.
+This can increase gate/verify runs compared with batching. It provides no
+dependency scheduling or reservation before work starts.
+
+Before changing processing, finish in-flight work and deploy or dismiss any
+Ready train. The change is part of execution-policy approval; existing auto
+jobs from the other policy block rather than silently gaining new behavior.
+Follow [the upgrade procedure](upgrading.md) when older runners are installed.
+
 ## `notify`
 
 ```yaml

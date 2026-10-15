@@ -54,6 +54,7 @@ from ..persistence.jobs import (
     list_jobs,
     list_jobs_fifo,
     list_train_jobs,
+    ordered_head,
     validated_train_summaries,
 )
 from ..persistence.leases import get_lock
@@ -131,6 +132,7 @@ def _job_summary(
         reason, reason_truncated = public_reason(job)
     return {
         "id": job.id,
+        "queue_order": job.queue_order or job.id,
         "task": job.task,
         "branch": job.branch,
         "state": state,
@@ -266,6 +268,7 @@ def cmd_status(args: argparse.Namespace) -> int:
     count_data = dict.fromkeys(COUNT_KEYS, 0)
     recent_jobs: list[Job] = []
     decision_jobs: list[Job] = []
+    head = None
     if config.state.db.is_file():
         conn = connect(config.state.db, read_only=True)
         try:
@@ -275,6 +278,7 @@ def cmd_status(args: argparse.Namespace) -> int:
                 count_data = counts(conn)
                 recent_jobs = list_jobs(conn, limit=args.limit)
                 decision_jobs = list_attention_jobs(conn)
+                head = ordered_head(conn) if config.queue.processing == "ordered" else None
             validated_trains = _validated_trains_with_integration_state(
                 config,
                 raw_validated_trains,
@@ -311,6 +315,7 @@ def cmd_status(args: argparse.Namespace) -> int:
         },
         config_version=config.config_version,
         attention_jobs=attention_jobs,
+        ordered_job=head,
     )
     if not config.config_exists:
         health = "unconfigured"

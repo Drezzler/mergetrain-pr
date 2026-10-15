@@ -769,6 +769,9 @@ removals require a major release and their own record here.
 
 ## Replace and strict-order review — 2026-10-02
 
+The ordered-processing review of 2026-10-15 below revisits this decision for
+the measured single-change workflow and atomic repair-branch replacement.
+
 ### Evidence
 
 An external adopter's public repository runs its own dispatcher and recovery
@@ -880,3 +883,46 @@ The discovery-metadata and landing-page checks must pass. After publication,
 repeat the category search and use the existing weekly traffic snapshots to
 check discovery. Text changes do not prove indexing, ranking, adoption, or
 better agent activation.
+
+## Ordered individual processing — 2026-10-15
+
+Evidence: the public `pbiggar/darklang-compiler` integration at commit
+`096c7d42d1ece1dd63e51077d53e0f701822e676` admits one ordinary job at a time
+and maintains its original arrival position through retries and repairs. Its
+`scripts/mergetrain_fifo.py` is approximately 500 lines. The workflow compares
+each landed compiler change with the preceding deployed performance baseline;
+an unrelated later change must not pass a failed head. Its contract-4-only
+consumers also demonstrate the cost of an untested upgrade boundary.
+
+Existing fit: limiting admission outside the native queue requires a second
+ledger, cancel/dismiss/re-enqueue transitions, and crash recovery. Enqueueing
+one job and waiting manually cannot accept continuously arriving finished work
+without that dispatcher. Native `retry` already pins a fresh commit and binds
+unattended approval to unchanged destination and execution policy.
+
+Decision cost: one optional existing-section setting, `queue.processing`, with
+`batch` (unchanged default) and `ordered`. Ordered processing claims at most
+the earliest unfinished submission; retry retains its position. The existing
+advanced retry operation gains optional `--branch` for a separate clean repair
+worktree and hidden `--auto` for explicit renewal of existing bounded deploy
+authority. A changed branch never inherits approval. This replaces the
+external enqueue/dismiss/replacement sequence atomically and preserves the
+original task checkout. No core verb, MCP tool, per-job processing choice,
+LIFO, reservation, dependency scheduler, or coding-agent repair is added.
+Generated starter configuration stays minimal.
+
+Safety: selection happens under the existing runner lease and claim transaction.
+Manual and unattended authority remain separate. Ordered processing cannot pass
+an unfinished, failed, or unverified earlier submission. Explicit dismissal or
+cancellation resolves that position; ambiguous pushes still require reconciliation.
+The processing policy participates in approval identity without changing default
+batch identity. Schema migration retains all history and makes older writers
+refuse the new schema. CLI/JSON contract 5 and config schema 2 remain compatible.
+
+Success and removal trigger: replay the external committed-branch handoff,
+failure, repair, retry, restart, and post-push verification workflow against a
+disposable Git remote. Compare the external contract-4 and reviewed contract-5
+consumer behavior. Ordered processing must eliminate the separate arrival ledger
+for ordinary work while keeping original branches and all existing safety checks.
+Do not broaden this policy if the replay still requires duplicated queue truth;
+benchmark exceptions and provider-specific repair remain adapter responsibilities.

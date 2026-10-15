@@ -64,6 +64,7 @@ class Job:
     verification_policy_sha: str = ""
     supersession_id: str = ""
     supersedes_train_id: str = ""
+    queue_order: int = 0
 
     @classmethod
     def from_row(cls, row: Any) -> Job:

@@ -110,6 +110,7 @@ def enqueue_job(
         )
         job_id = cur.lastrowid
         assert job_id is not None  # an INSERT always assigns a rowid
+        conn.execute("UPDATE deploy_queue SET queue_order = id WHERE id = ?", (job_id,))
     return get_job(conn, job_id)
 
 
@@ -130,6 +131,10 @@ def retry_job(
     head_sha: str,
     current_approval_destination_sha: str | None = None,
     current_approval_execution_policy_sha: str | None = None,
+    preserve_order: bool = False,
+    branch: str | None = None,
+    worktree_path: str | None = None,
+    renew_auto: bool = False,
     force: bool = False,
 ) -> tuple[Job, Job]:
     """Atomically dismiss a failed outcome and enqueue its fresh replacement."""
@@ -147,15 +152,23 @@ def retry_job(
                 f"{original.status})"
             )
         refuse_reconcile_conflict(original, "retry", force=force)
+        replacement_branch = original.branch if branch is None else branch.strip()
+        replacement_worktree = original.worktree_path if worktree_path is None else worktree_path
+        if not replacement_branch or (branch is not None and not replacement_worktree):
+            raise QueueError("a repair branch requires its clean owning worktree")
+        if renew_auto and not (
+            current_approval_destination_sha and current_approval_execution_policy_sha
+        ):
+            raise QueueError("renewed automatic approval requires the current destination and policy")
         placeholders = _status_placeholders(ACTIVE_STATUSES)
         other_active = conn.execute(
             f"SELECT COUNT(*) AS n FROM deploy_queue "
             f"WHERE branch = ? AND id != ? AND status IN ({placeholders})",
-            (original.branch, original.id, *ACTIVE_STATUSES),
+            (replacement_branch, original.id, *ACTIVE_STATUSES),
         ).fetchone()
         if int(other_active["n"]):
             raise DuplicateActiveBranch(
-                f"branch '{original.branch}' already has an active replacement job"
+                f"branch '{replacement_branch}' already has an active replacement job"
             )
 
         now = utc_now()
@@ -169,12 +182,15 @@ def retry_job(
             and original.approval_execution_policy_sha
             == current_approval_execution_policy_sha
         )
-        inherit_auto = original.auto_deploy and approval_matches
+        inherit_auto = (
+            original.auto_deploy and approval_matches and replacement_branch == original.branch
+        )
+        auto_deploy = inherit_auto or renew_auto
         inherited_destination = (
-            original.approval_destination_sha if inherit_auto else ""
+            str(current_approval_destination_sha) if auto_deploy else ""
         )
         inherited_policy = (
-            original.approval_execution_policy_sha if inherit_auto else ""
+            str(current_approval_execution_policy_sha) if auto_deploy else ""
         )
         cur = conn.execute(
             """
@@ -186,19 +202,26 @@ def retry_job(
             """,
             (
                 original.task,
-                original.branch,
-                original.worktree_path,
+                replacement_branch,
+                replacement_worktree,
                 base_sha,
                 head_sha,
                 now,
                 original.note,
-                1 if inherit_auto else 0,
+                1 if auto_deploy else 0,
                 inherited_destination,
                 inherited_policy,
             ),
         )
         replacement_id = cur.lastrowid
         assert replacement_id is not None
+        conn.execute(
+            "UPDATE deploy_queue SET queue_order = ? WHERE id = ?",
+            (
+                (original.queue_order or original.id) if preserve_order else replacement_id,
+                replacement_id,
+            ),
+        )
         dismissed = conn.execute(
             f"""
             UPDATE deploy_queue
@@ -337,6 +360,7 @@ def supersede_validated_train(
             )
             replacement_id = cur.lastrowid
             assert replacement_id is not None
+            conn.execute("UPDATE deploy_queue SET queue_order = id WHERE id = ?", (replacement_id,))
             replacement_ids.append(int(replacement_id))
 
         replacement_text = ",".join(str(job_id) for job_id in replacement_ids)
@@ -589,6 +613,27 @@ def list_train_jobs(conn: sqlite3.Connection, train_id: str) -> list[Job]:
         (train_id,),
     ).fetchall()
     return [Job.from_row(row) for row in rows]
+
+
+def ordered_head(conn: sqlite3.Connection) -> Job | None:
+    """The first unresolved submission, including failed post-push verify.
+
+    Cancellation/dismissal explicitly resolves a position. Retry cancels the
+    old attempt atomically and transfers its position to the replacement.
+    """
+
+    placeholders = _status_placeholders(ACTIVE_STATUSES)
+    row = conn.execute(
+        f"""
+        SELECT * FROM deploy_queue
+        WHERE status IN ({placeholders})
+           OR (status = 'deployed' AND verify_status IN ('failed', 'unknown'))
+        ORDER BY CASE WHEN queue_order > 0 THEN queue_order ELSE id END, id
+        LIMIT 1
+        """,
+        ACTIVE_STATUSES,
+    ).fetchone()
+    return Job.from_row(row) if row is not None else None
 
 
 def list_jobs_fifo(conn: sqlite3.Connection, *, status: str = "queued") -> list[Job]:

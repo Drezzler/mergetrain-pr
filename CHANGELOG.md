@@ -2,6 +2,35 @@
 
 ## Unreleased
 
+### Upgrade notes
+
+- Machine contract **5** and config schema **2** are unchanged. Job JSON adds
+  `queue_order`, the stable submission position used by ordered processing.
+  The local queue schema upgrades from 15 to 16 without discarding jobs or
+  history. Finish existing runner work, stop old daemons, migrate with the new
+  CLI, and restart the same approved services before selecting ordered mode.
+  Older writers refuse schema 16. See [upgrading](docs/upgrading.md).
+- Default `batch` processing and its approval identity stay unchanged.
+  Selecting `queue.processing: ordered` changes execution policy; drain Ready
+  trains first and renew unattended approval explicitly. A release upgrade
+  alone does not renew or remove existing approval.
+
+### Changes
+
+- Add optional `queue.processing: ordered`: accept parallel branch handoffs,
+  process one submission at a time, and hold later work until the earliest
+  unfinished submission is deployed and verified or explicitly canceled.
+  `retry` preserves that submission's position across attempts and restarts.
+- Let the existing advanced `retry JOB --branch REPAIR` operation atomically
+  replace a failed/blocked job from a clean repair worktree without modifying
+  its original branch. A changed branch receives no inherited automatic
+  approval. Explicit `retry --auto` may renew bounded authorization for the
+  current destination and policy; ordinary agents still enqueue and stop.
+- Replay the pinned Darklang external consumer against native contract 5,
+  retain a reviewed contract-4/5 migration patch, refuse future contract 6,
+  and verify repair, restart, individual atomic landings, manual confirmation,
+  and default rechecks against disposable Git remotes.
+
 ## 3.5.1 - 2026-10-15
 
 ### Upgrade notes

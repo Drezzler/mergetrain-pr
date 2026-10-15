@@ -160,6 +160,10 @@ def build_parser(*, structured_errors: bool = False) -> argparse.ArgumentParser:
     p_retry = subparsers.add_parser("retry")
     p_retry.add_argument("job_id", type=int)
     p_retry.add_argument(
+        "--branch", help="Use a clean repair branch while preserving the original task checkout",
+    )
+    p_retry.add_argument("--auto", action="store_true", help=argparse.SUPPRESS)
+    p_retry.add_argument(
         "--rebase",
         action="store_true",
         help="Fetch and rebase the owning branch before replacing the queue job",

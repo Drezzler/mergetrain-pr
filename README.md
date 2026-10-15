@@ -87,6 +87,11 @@ Use mergetrain when:
 It is harness-agnostic: Codex, Claude Code, agy, scripts, and humans all use the
 same CLI and JSON contract.
 
+Batch processing is the default. Projects that need one change per landing
+and the same submission order after repair can select
+[`queue.processing: ordered`](docs/config.md#queue). Agents submit through the
+same interface and can continue developing while the runner integrates work.
+
 ## Who should not use it?
 
 You probably do not need mergetrain when:

@@ -94,22 +94,28 @@ request deploy approval promptly. A changed task head is correctly refused.
 
 ### Changes that must land in order
 
-The queue is first in, first out, but its order is not a dependency mechanism:
-a failed job is set aside so the jobs behind it still land, and a retried job
-joins the back of the queue. Express order in Git instead:
+Default `batch` processing merges in submission order, sets failed jobs aside
+so later jobs can land, and appends retries to the back. For workflows that
+must retain submission order through failure and repair, select
+`queue.processing: ordered`. It lands one submission per train and retains
+the original position when `retry` creates a freshly pinned replacement.
+An unresolved head holds later landings; agents can continue developing and
+submitting work. This trades some batching efficiency for predictable
+change-by-change measurement and recovery.
+
+Queue order does not express a code dependency. Express that in Git:
 
 - **A change that needs another:** build its branch on top of the other and
   enqueue only the top branch. That one job carries both changes, so the later
   one can never land without the earlier one. If the job fails, fix the stack
   and retry the job.
-- **One change per landing,** for example to attribute a measured regression
-  to exactly one change: the next train takes every queued job, so enqueue one
-  job, let it deploy, then enqueue the next. A dispatcher of your own can hold
-  later jobs outside the queue until then; the queue itself stays
-  mergetrain's.
+- **One change per landing,** for example to compare performance against the
+  preceding deployed change: use ordered processing instead of maintaining
+  another admission ledger. Keep benchmark policy in project gates.
 
-Holding every later job while one is stuck is deliberately not a queue mode:
-one failure would stop all work behind it.
+Choose batch processing for independent changes when one failed branch should
+not delay the rest. Choose ordered processing when retaining the unfinished
+head is part of the workflow. Neither mode makes an absent prerequisite safe.
 
 ## Design gates for fast failure
 

@@ -166,26 +166,32 @@ def cmd_retry(args: argparse.Namespace) -> int:
             )
         # Refuse before the fetch and rebase below touch the worktree.
         refuse_reconcile_conflict(original, "retry", force=args.force)
-        if not original.worktree_path:
+        repair_branch = args.branch or original.branch
+        if args.branch:
+            worktree = _resolve_enqueue_worktree(
+                repo=config.repo, branch=repair_branch, explicit_worktree=None,
+            )
+        elif not original.worktree_path:
             raise QueueError(
                 f"job {original.id} has no recorded worktree path; enqueue its "
                 "fixed branch manually"
             )
-        worktree = Path(original.worktree_path).expanduser().resolve()
-        _validate_enqueue_worktree(worktree, original.branch, repo=config.repo)
+        else:
+            worktree = Path(original.worktree_path).expanduser().resolve()
+        _validate_enqueue_worktree(worktree, repair_branch, repo=config.repo)
         if args.rebase:
             # Fetch/rebase before any queue mutation. A conflict intentionally
             # leaves the worktree in rebase state for the user to resolve, while
             # the original blocked/failed row remains untouched.
             run_command(["git", "fetch", config.git.remote], cwd=worktree)
             run_command(["git", "rebase", config.git.integration_tracking_ref], cwd=worktree)
-            _validate_enqueue_worktree(worktree, original.branch, repo=config.repo)
+            _validate_enqueue_worktree(worktree, repair_branch, repo=config.repo)
 
         base_sha = _capture_sha_or_error(config.repo, config.git.integration_tracking_ref, label="base")
-        head_sha = _capture_sha_or_error(worktree, f"refs/heads/{original.branch}", label="head")
+        head_sha = _capture_sha_or_error(worktree, f"refs/heads/{repair_branch}", label="head")
         current_destination_sha = ""
         current_execution_policy_sha = ""
-        if original.auto_deploy:
+        if original.auto_deploy or args.auto:
             current_execution_policy_sha = deploy_execution_policy_sha(config)
             try:
                 current_destination_sha = deploy_destination_sha(config)
@@ -200,6 +206,10 @@ def cmd_retry(args: argparse.Namespace) -> int:
             head_sha=head_sha,
             current_approval_destination_sha=current_destination_sha,
             current_approval_execution_policy_sha=current_execution_policy_sha,
+            preserve_order=config.queue.processing == "ordered",
+            branch=repair_branch,
+            worktree_path=str(worktree),
+            renew_auto=args.auto,
             force=args.force,
         )
         next_action = _recovery_next_action(conn, config)

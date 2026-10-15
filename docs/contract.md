@@ -1,5 +1,13 @@
 # Machine contract and compatibility policy
 
+Ordered-processing addition: contract 5 adds integer `queue_order` to job
+objects and compact job summaries. In `queue.processing: ordered`, retry
+attempts retain the original submission position while receiving fresh job IDs
+and pinned commits. Default batch retries keep their previous append behavior.
+Consumers may ignore this additive field; neither job ID semantics nor the five
+MCP tool names/inputs change. See [queue policy](config.md#queue) and the
+[schema-16 upgrade](upgrading.md#ordered-processing-and-queue-schema-16).
+
 mergetrain is designed for coding agents and scripts that read state instead of
 guessing. The checked-in contract fingerprints fail CI whenever a JSON surface
 changes without an explicit compatibility decision.

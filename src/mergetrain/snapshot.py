@@ -17,7 +17,13 @@ from .models import Job, RunEvent, RunnerLock, public_owner
 from .observability import _gate_runs
 from .persistence.connection import connect
 from .persistence.events import list_history_events
-from .persistence.jobs import counts, list_jobs, list_jobs_fifo, validated_train_summaries
+from .persistence.jobs import (
+    counts,
+    list_jobs,
+    list_jobs_fifo,
+    ordered_head,
+    validated_train_summaries,
+)
 from .persistence.leases import get_lock
 from .persistence.transactions import _parse_utc, read_snapshot, utc_now
 from .reuse import reuse_explanation
@@ -189,6 +195,7 @@ def plan_next_action(
     *,
     config_version: int = CONFIG_VERSION,
     attention_jobs: Sequence[Job] = (),
+    ordered_job: Job | None = None,
 ) -> NextActionPlan:
     if config_version > CONFIG_VERSION:
         return _plan_for_code("upgrade_mergetrain")
@@ -235,13 +242,15 @@ def plan_next_action(
             else None
         )
         return _plan_for_code("resolve_failed_verification", job=target)
-    if count_data.get("blocked", 0) or count_data.get("failed", 0):
+    if (count_data.get("blocked", 0) or count_data.get("failed", 0)) and (
+        ordered_job is None or ordered_job.status in {"blocked", "failed"}
+    ):
         target = (
             selected
             if selected_reason in {"semantic_conflict", "blocked", "failed"}
             else None
         )
-        return _plan_for_code("fix_blocked_job", job=target)
+        return _plan_for_code("fix_blocked_job", job=ordered_job or target)
     # A reconcile-finalized deploy whose post-push verify could not be proven.
     if count_data.get("deployed_verify_unknown", 0):
         target = selected if selected_reason == "post_push_verification_unknown" else None
@@ -270,6 +279,11 @@ def plan_next_action(
             "fetch_integration_ref",
             remote_name=str(payload.get("remote_name") or "origin"),
         )
+    if ordered_job is not None and ordered_job.status == "queued":
+        return _plan_for_code(
+            "run_daemon_when_approved" if ordered_job.auto_deploy else "validate_queued_jobs",
+            job=ordered_job,
+        )
     if payload.get("validated_trains"):
         if any(train.get("deploy_eligible") for train in payload["validated_trains"]):
             return _plan_for_code("deploy_when_approved")
@@ -283,10 +297,15 @@ def plan_next_action(
     return _plan_for_code("enqueue_clean_branch")
 
 
-def next_action(payload: dict[str, Any], *, config_version: int = CONFIG_VERSION) -> str:
+def next_action(
+    payload: dict[str, Any], *, config_version: int = CONFIG_VERSION,
+    ordered_job: Job | None = None,
+) -> str:
     """Compatibility wrapper for read models that consume only the code."""
 
-    return plan_next_action(payload, config_version=config_version).code
+    return plan_next_action(
+        payload, config_version=config_version, ordered_job=ordered_job,
+    ).code
 
 
 def _readiness(config: MergetrainConfig) -> dict[str, Any]:
@@ -378,6 +397,7 @@ def build_queue_summary(config: MergetrainConfig) -> dict[str, Any]:
             count_data = counts(conn)
             lock = _public_lock(get_lock(conn))
             validated_trains = validated_train_summaries(conn)
+            head = ordered_head(conn) if config.queue.processing == "ordered" else None
     finally:
         conn.close()
     payload: dict[str, Any] = {
@@ -392,11 +412,17 @@ def build_queue_summary(config: MergetrainConfig) -> dict[str, Any]:
             "gc": {"worktree_candidates": []},
         },
         config_version=config.config_version,
+        ordered_job=head,
     )
     return payload
 
 
-def _selected_jobs(conn) -> tuple[list[Job], str]:
+def _selected_jobs(conn, *, processing: str = "batch") -> tuple[list[Job], str]:
+    if processing == "ordered":
+        head = ordered_head(conn)
+        if head is not None and head.status in {"queued", "validated", "in_progress"}:
+            return [head], "running" if head.status == "in_progress" else head.status
+        return [], "idle"
     in_progress = list_jobs_fifo(conn, status="in_progress")
     if in_progress:
         return in_progress, "running"
@@ -426,7 +452,8 @@ def build_repo_snapshot(config: MergetrainConfig) -> dict[str, Any]:
     try:
         with read_snapshot(conn):
             recent_jobs = list_jobs(conn, limit=50)
-            selected_jobs, selection = _selected_jobs(conn)
+            selected_jobs, selection = _selected_jobs(conn, processing=config.queue.processing)
+            head = ordered_head(conn) if config.queue.processing == "ordered" else None
             history_events = list_history_events(conn)
             # The 40 newest events.
             raw_events = history_events[-40:]
@@ -490,7 +517,8 @@ def build_repo_snapshot(config: MergetrainConfig) -> dict[str, Any]:
             ),
         }
         payload["next_action"] = next_action(
-            {**payload, **_readiness(config)}, config_version=config.config_version
+            {**payload, **_readiness(config)}, config_version=config.config_version,
+            ordered_job=head,
         )
         return payload
     finally:

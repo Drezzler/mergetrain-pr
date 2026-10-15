@@ -93,6 +93,57 @@ responses, including refusal of unknown safety actions and unsupported
 contracts. Use fixtures or disposable repositories for checks that would
 otherwise validate or deploy live work.
 
+## Ordered processing and queue schema 16
+
+The release that adds `queue.processing` retains machine contract 5 and config
+schema 2. Default batch behavior and its stored approval hash are unchanged.
+The local queue gains `queue_order` and upgrades to schema 16. Existing rows
+receive their current job ID; the migration does not reinterpret historical
+retry notes or discard any queued/Ready work. Later ordered retries retain
+the submission position while recording a new attempt ID and fresh commit.
+
+First record live state and stop old runners at the idle execution boundary
+described below. With the target CLI, run `mergetrain gc --json` inside the
+repository to migrate without applying garbage collection. Restart the same
+authorized runner and MCP environment. An older writer refuses schema 16;
+do not downgrade or edit the schema number to work around that refusal.
+
+Selecting ordered processing is a separate policy change. Finish or dismiss
+existing Ready trains before changing the setting. Existing auto approvals
+from the other policy must be reviewed and renewed through the normal
+bounded authorization path; they are not silently upgraded. Unknown modes
+are rejected. `retry JOB --branch REPAIR` preserves the original worktree,
+but a branch change defaults to manual approval. Only an explicitly authorized
+`retry --auto` renews approval for current destination and execution policy.
+
+## External contract-4 consumers
+
+The public Darklang consumer at commit
+`096c7d42d1ece1dd63e51077d53e0f701822e676` checks contract 4 in its handoff,
+FIFO dispatcher, progress renderer, and integrator shell loop. Review all four;
+changing only the first refusal leaves progress and later passes unsupported.
+Its consumed `status`/`inspect` fields remain present in contract 5, including
+inspect progress. The fields removed in 3.4 were full Hub snapshot fields.
+
+The reproducible check in
+`benchmarks/external_integrations/darklang_compat.py` verifies the pinned Git
+blobs before executing consumer code against disposable repositories. It
+reproduces the original rejection, tests reviewed contract 4 fixtures and
+native contract 5 idle/waiting/Attention output, refuses future contract 6,
+and emits a minimal migration patch. It also replays native ordered repair,
+restart, three individual landings, manual confirmation, and default rechecks.
+It does not run the external compiler, a hosted service, or a coding model.
+
+```sh
+python benchmarks/external_integrations/darklang_compat.py \
+  --snapshot /path/to/pinned/darklang-compiler \
+  --output /tmp/mergetrain-darklang-evidence
+```
+
+Applying a consumer migration upstream and changing its running installation
+remain that repository operator's actions. A compatible native queue does not
+replace benchmark exception policy or an AI repair controller.
+
 ## Keep the control checkout ready for the handover
 
 In 3.4, default policy comes from the control checkout's working tree. Project
