@@ -113,3 +113,17 @@ test('two stable messages are supported by applied work, repair and ongoing next
   assert.ok(poster.includes('lands first.'));
   assert.ok(poster.includes('Keep building during checks.'));
 });
+test('returning work stays below section headings and the two cards remain distinct', () => {
+  const story=readStory(original);
+  for(let frame=0;frame<18;frame++) {
+    const svg=frameSvg(frame/24,story);
+    const positions=['A','B'].map(id=>{
+      const match=svg.match(new RegExp(`data-work="${id}"[^>]*transform="translate\\(([^ ]+) ([^)]+)\\)"`));
+      assert.ok(match);
+      return [+match[1],+match[2]];
+    });
+    for(const [,y] of positions) assert.ok(y-31>=271,'a returned card covers the section heading');
+    const [[ax,ay],[bx,by]]=positions;
+    assert.ok(Math.abs(ax-bx)>=110 || Math.abs(ay-by)>=62,'returned cards overlap');
+  }
+});

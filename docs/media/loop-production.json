@@ -188,12 +188,12 @@
   "first_overlap_seconds": 3.5,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 495958,
-      "sha256": "fb54009c1a809c6894a196afe04789ef5255df16ba61eb492906922aff6bab86"
+      "bytes": 491735,
+      "sha256": "62e475ffbe0af093679e8f80516397ade78868565327338f007052339e8787c9"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1049557,
-      "sha256": "7ee9eb01d24e66b172e408320b22602c193681f2b53270470deab33521d67567"
+      "bytes": 1054096,
+      "sha256": "52a4b5ae1ed5d4863f9fe6737dab250b5fa2dd691206a4180343910e0e34367f"
     },
     "mergetrain-loop-poster.png": {
       "bytes": 100052,

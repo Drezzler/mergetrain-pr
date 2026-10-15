@@ -204,7 +204,7 @@ function dynamic(t, {labels=true, cards=true}={}) {
   if(!cards) return svg;
   // The recorded conflicting pair returns before the first approved deployment.
   for(let i=0;i<2;i++) {
-    if(t<.9) svg+=card(travel(queue[i],agents[i],progress(t,0,.9),-90),letters[i],{state:'fix'});
+    if(t<.9) svg+=card(travel(queue[i],agents[i],progress(t,0,.9),i===0?0:36),letters[i],{state:'fix'});
     else if(t<2.2) svg+=card(agents[i],letters[i],{state:'fix'});
     else if(t<2.9) svg+=card(agents[i],letters[i],{writing:progress(t,2.2,2.9)});
     else if(t<3.6) svg+=card(travel(agents[i],queue[i],progress(t,2.9,3.6)),letters[i]);

@@ -4,7 +4,7 @@
   "story": "Two large messages remain visible throughout playback: Passing work lands first and Keep building during checks. C/D remain applied while A/B are repaired. The same four agent lanes show Next task during checks and following drafts. All three deployments retain approval and default rechecks. Four final drafts remain unsubmitted.",
   "automated": {
     "playback_tests": 8,
-    "evidence_guard_and_story_tests": 24,
+    "evidence_guard_and_story_tests": 25,
     "landing_page_tests": 3,
     "recorded_commands": 147,
     "final_remote_tests": 6,
@@ -82,6 +82,11 @@
       "pass": 7,
       "finding": "Visitors who enter midway through playback can miss a headline that only appears in the opening segment.",
       "change": "Keep both complete messages visible throughout the loop in large type. Emphasize passing work first; turn the next-task message blue when work begins during checks. Match the still poster to the same layout."
+    },
+    {
+      "pass": 8,
+      "finding": "At the beginning of the return motion, cards crossed the section headings.",
+      "change": "Move returned cards below the heading band with separate vertical paths, and check the early encoded-frame positions for heading and card overlap."
     }
   ],
   "first_overlap_seconds": 3.5,
