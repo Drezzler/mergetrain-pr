@@ -31,7 +31,7 @@ returns to its agent. Passing work can land while the repair continues.
 **Keep building during checks.** Agents start their next task while mergetrain
 checks earlier work. This 14-second loop keeps the same four agents in view.
 
-[![Default batch mode: passing work lands while other work is repaired. Agents start the next task during checks.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=52a4b5ae1ed5)](https://yongjip.github.io/mergetrain/#demo)
+[![Default batch mode: passing work lands while other work is repaired. Agents start the next task during checks.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=3e62de9895b8)](https://yongjip.github.io/mergetrain/#demo)
 
 Agents can keep building in both modes. In ordered mode, an unresolved earlier
 submission holds later landings.

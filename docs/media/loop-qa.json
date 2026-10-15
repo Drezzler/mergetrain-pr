@@ -86,7 +86,7 @@
     {
       "pass": 8,
       "finding": "At the beginning of the return motion, cards crossed the section headings.",
-      "change": "Move returned cards below the heading band with separate vertical paths, and check the early encoded-frame positions for heading and card overlap."
+      "change": "Stagger the return paths below headings and above the passing cards; check all four early card positions for heading and mutual overlap."
     }
   ],
   "first_overlap_seconds": 3.5,

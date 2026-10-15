@@ -175,6 +175,13 @@ function travel(from,to,p,bend=0) {
   return curve(from,[from[0]+direction*100,from[1]+bend],[to[0]-direction*100,to[1]+bend],to,p);
 }
 
+function returnPosition(i,t) {
+  // Stagger the two returns and keep the second above the passing cards.
+  const p=progress(t,i===0?0:.2,i===0?.7:.9);
+  return curve(queue[i],[queue[i][0]-100,queue[i][1]],
+    [agents[i][0]+100,i===0?agents[i][1]:queue[i][1]],agents[i],p);
+}
+
 function dynamic(t, {labels=true, cards=true}={}) {
   const s=stateAt(t);
   let svg='';
@@ -204,7 +211,7 @@ function dynamic(t, {labels=true, cards=true}={}) {
   if(!cards) return svg;
   // The recorded conflicting pair returns before the first approved deployment.
   for(let i=0;i<2;i++) {
-    if(t<.9) svg+=card(travel(queue[i],agents[i],progress(t,0,.9),i===0?0:36),letters[i],{state:'fix'});
+    if(t<.9) svg+=card(returnPosition(i,t),letters[i],{state:'fix'});
     else if(t<2.2) svg+=card(agents[i],letters[i],{state:'fix'});
     else if(t<2.9) svg+=card(agents[i],letters[i],{writing:progress(t,2.2,2.9)});
     else if(t<3.6) svg+=card(travel(agents[i],queue[i],progress(t,2.9,3.6)),letters[i]);
