@@ -1,7 +1,18 @@
 // A condensed illustration of recorded CLI results, not a product UI recording.
 export const WIDTH = 960;
 export const HEIGHT = 800;
-export const DURATION = 24;
+export const DURATION = 14;
+export const PROCESSING_MODE = 'batch';
+// Playback seconds -> the existing recorded-story timeline. Shorten holds more
+// than handoffs, and retain both overlaps, three approvals and the replay seam.
+export const TIMELINE = [[0,0],[1.7,2.2],[3,3.8],[5.2,7.1],[7.1,10.4],
+  [8.4,12.7],[10.5,15.3],[12.4,18.7],[13.85,23.8],[14,24]];
+export function storyTime(seconds) {
+  const t=((Math.max(0,seconds)%DURATION)+DURATION)%DURATION;
+  const end=TIMELINE.findIndex(([playback])=>playback>t);
+  const [a,x]=TIMELINE[end-1], [b,y]=TIMELINE[end];
+  return x+(y-x)*(t-a)/(b-a);
+}
 function readRepairStory(evidence) {
   const records = evidence.records;
   const one = (phase, match) => records.find(r => r.phase === phase && match(r));
@@ -117,8 +128,10 @@ const project = [733,666];
 const check = (x,y,color=C.blue) => `<path d="M-8 0L-2 6L10-8" transform="translate(${x} ${y})" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>`;
 
 // Display letters identify recorded work items, not queue replacement-job IDs.
-export function sceneAt(t) {
-  t=((Math.max(0,t)%DURATION)+DURATION)%DURATION;
+export function sceneAt(seconds) {
+  return stateAt(storyTime(seconds));
+}
+function stateAt(t) {
   const rows=[{state:'Needs fix',work:'A'},{state:'Needs fix',work:'B'},{state:'Submitted',work:'C'},{state:'Submitted',work:'D'}];
   if(t>=2.2) for(let i=0;i<2;i++) rows[i]={state:t<2.9?'Fixing':t<3.6?'Submitting':'Submitted',work:letters[i]};
   if(t>=2.2) for(let i=2;i<4;i++) rows[i]={state:'Ready',work:null};
@@ -149,7 +162,7 @@ function travel(from,to,p,bend=0) {
 }
 
 function dynamic(t, {labels=true, cards=true}={}) {
-  const s=sceneAt(t);
+  const s=stateAt(t);
   let svg='';
   if(labels) {
   svg+=text(40,205,s.caption,30,C.muted,400);
@@ -207,9 +220,10 @@ function dynamic(t, {labels=true, cards=true}={}) {
 
 export function frameSvg(t,story,{poster=false}={}) {
   if(story.length!==6) throw new Error('The scene requires the recorded following batch.');
-  t=poster?5:((Math.max(0,t)%DURATION)+DURATION)%DURATION;
+  t=poster?5:storyTime(t);
   let svg=`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="800" viewBox="0 0 960 800"><defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.blue}" stroke-width="1.5" stroke-linecap="round"/></marker><marker id="fix-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L8 5L1 9" fill="none" stroke="${C.amber}" stroke-width="1.5" stroke-linecap="round"/></marker></defs><rect width="960" height="800" fill="${C.paper}"/>`;
   svg+=text(40,46,'mergetrain',29,C.blue,600);
+  svg+=`<g data-processing="${PROCESSING_MODE}">`+text(920,46,'Batch · default',26,C.muted,500,'text-anchor="end"')+'</g>';
   svg+=text(40,111,'Agents keep building.',58,C.ink,600,'letter-spacing="-1.5"');
   svg+=text(40,164,'Checks run. New work starts.',36,C.ink,400);
   svg+=text(52,256,'AI agents',31,C.ink,600)+text(577,256,'mergetrain',31,C.blue,600);

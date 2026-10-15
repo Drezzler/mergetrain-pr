@@ -33,6 +33,10 @@
 
 ### Documentation
 
+- Label the introductory animation as default batch processing and connect its
+  passing-work-first example to the batch/ordered guide. Shorten the loop from
+  24 to 14 seconds while preserving recorded repair, overlapping development,
+  approval, default rechecks, persistent agents and replay continuity.
 - Recommend default `batch` processing for independent parallel agent work.
   Compare it with `ordered` using web-feature and compiler-optimization
   examples, including failure isolation, retry position, continued agent

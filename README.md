@@ -25,15 +25,19 @@ services.
 
 ## Keep building through the fix
 
-Four agents stay in view. By the first five seconds, mergetrain is checking
-work A and B while two agents build new work E and F. The letters follow each
+**This 14-second GIF shows the default batch mode.** Passing work C and D
+lands while A and B return for a fix. By three seconds, mergetrain is checking
+A and B while two agents build new work E and F. The letters follow each
 piece of work through fixes and checks. Applied changes stay in the project;
 the agents keep starting the next work.
 
-[![Four visible agents: A and B are checked while E and F are built within five seconds. G and H start during the next check. Applied work stays in the project.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=2509de92da92)](https://yongjip.github.io/mergetrain/#demo)
+In ordered mode, an unresolved earlier submission holds later landings.
+[Compare the two modes](docs/best-practices.md#choose-batch-or-ordered).
+
+[![Default batch mode. Four visible agents: A and B are checked while E and F are built by three seconds. G and H start during the next check. Applied work stays in the project.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=aa2541ac67af)](https://yongjip.github.io/mergetrain/#demo)
 
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
-[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=fcd79330a80d) ·
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=2760bfaaeab0) ·
 [Reproduce the continuous workflow](docs/development.md#documentation-media)
 
 <details>
@@ -51,7 +55,7 @@ the final remote passes six tests.
 
 G and H then refresh onto that result without losing their edits. I and J start
 there too. These four drafts remain unsubmitted. Your agents or operator create,
-fix, refresh and resubmit work; mergetrain checks and integrates it. The 24-second
+fix, refresh and resubmit work; mergetrain checks and integrates it. The 14-second
 animation repeats this recorded window with condensed timing.
 
 </details>

@@ -5,7 +5,7 @@ import {createRequire} from 'node:module';
 import {spawn, spawnSync} from 'node:child_process';
 import {once} from 'node:events';
 import {createHash} from 'node:crypto';
-import {DURATION, WIDTH, HEIGHT, readStory, frameSvg} from '../docs/media/loop-scenes.mjs';
+import {DURATION, WIDTH, HEIGHT, PROCESSING_MODE, TIMELINE, readStory, frameSvg} from '../docs/media/loop-scenes.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const require = createRequire(new URL('../docs/media/package.json', import.meta.url));
@@ -43,15 +43,16 @@ for (const ext of ['.mp4', '.gif', '-poster.png', '-poster.svg']) {
   hashes[`mergetrain-loop${ext}`] = {bytes: bytes.length, sha256: createHash('sha256').update(bytes).digest('hex')};
 }
 await fs.writeFile(path.join(root, 'docs/media/loop-production.json'), JSON.stringify({
+  processing_mode: PROCESSING_MODE, timeline: TIMELINE,
   duration_seconds: DURATION, width: WIDTH, height: HEIGHT, frames_per_second: fps,
   audio: false, gif: {width: 720, height: 600, frames_per_second: 20},
   method: 'Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.',
-  design: 'Four agent identities stay visible. Work A-D returns or moves ahead; E-F appears at 3.8 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.',
+  design: 'Four agent identities stay visible. A persistent Batch · default label identifies the mode. Work A-D returns or moves ahead; E-F appears at 3 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.',
   source_commit: evidence.source_commit, runtime_version: evidence.version, scope: evidence.scope,
   operator_actions: 'The capture scripts agent-authored changes and operator approvals for three deployments to a disposable local bare remote. Two fixture gate barriers prove next-batch commits and following drafts overlap validation; elapsed time is not a speed claim. The four agent lanes are illustrative roles, not recorded AI process identities. Four final drafts are neither submitted nor validated. Mergetrain does not launch an AI agent or author changes.',
   evidence_sha256: createHash('sha256').update(evidenceBytes).digest('hex'),
   rows: story, drafts: evidence.proof.following_drafts.map(d=>({...d,visualId:'ABCDEFGHIJ'[d.item-1]})),
-  first_overlap_seconds: 3.8, assets: hashes,
+  first_overlap_seconds: 3, assets: hashes,
 }, null, 2) + '\n');
 // Returning visitors must not combine the new story with an older cached file.
 for (const relative of ['README.md', 'site/index.html']) {

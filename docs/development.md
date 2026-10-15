@@ -280,9 +280,12 @@ Supported and tested Python: 3.10 through 3.14. See the
 
 ## Documentation media
 
-The introduction is a 24-second silent cycle. Four agent identities remain in
+The introduction is a 14-second silent cycle of the default **batch** mode.
+Passing C/D deploy while A/B return for repair. Ordered processing would hold
+later landings behind an unresolved earlier submission; this is not an ordered
+demo. The preserved recording ran version 3.5.0, before ordered was added. Four agent identities remain in
 view after submitting their work. Letters identify work across fixes and queue
-replacement jobs. At 3.8 seconds, agents start E and F while mergetrain checks
+replacement jobs. At 3 seconds, agents start E and F while mergetrain checks
 A and B. The project retains applied work so the result is visible.
 
 | Visual work | Recorded branches | Outcome in this window |
@@ -327,7 +330,10 @@ test or draft evidence. The earlier repair-only recording remains in
 The renderer exports `docs/images/mergetrain-loop.gif` (720×600, 20 fps), a
 silent H.264 MP4 (960×800, 24 fps, baseline profile, fast-start metadata), and a
 readable PNG poster. `docs/media/loop-production.json` contains evidence mapping,
-asset hashes, and sizes. It also updates content-version query strings in the
+asset hashes, sizes, mode, and the playback-to-story timing map. The 14-second
+export shortens holds on the original story timeline while retaining repair,
+both overlaps, all approvals and the default rechecks. It does not change the
+recorded commands or imply that the commands finish in 14 seconds. It also updates content-version query strings in the
 README and landing page so returning visitors request the new files. `--stills`
 renders just the poster. The README embeds the GIF. The landing page loads the
 MP4 when visible, unless reduced motion or data saving is enabled. Playback

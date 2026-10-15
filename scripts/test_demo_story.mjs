@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {readStory, frameSvg, sceneAt, DURATION} from '../docs/media/loop-scenes.mjs';
+import {readStory, frameSvg, sceneAt, DURATION, TIMELINE, storyTime} from '../docs/media/loop-scenes.mjs';
 const original = JSON.parse(fs.readFileSync(new URL('../docs/media/cycle-evidence.json', import.meta.url)));
 test('the captured story preserves work-item identity across fresh queue jobs', () => {
   assert.deepEqual(readStory(original).map(r => [r.id,r.deployedId]), [[1,5],[2,6],[3,3],[4,4],[5,7],[6,8]]);
@@ -50,14 +50,34 @@ test('following drafts cannot be shown during checks without overlapping edit ev
   const edit=evidence.records.find(r=>r.phase==='following_work_during_validation' && r.branch);
   edit.finished_seconds=evidence.proof.draft_overlap.validation_finished_seconds+1;
   assert.throws(()=>readStory(evidence), /following-draft overlap/);
-  assert.deepEqual(sceneAt(14).checking,['E','F']);
-  assert.deepEqual(sceneAt(14).rows.filter(r=>r.state==='New draft').map(r=>r.work),['G','H']);
+  assert.deepEqual(sceneAt(9.5).checking,['E','F']);
+  assert.deepEqual(sceneAt(9.5).rows.filter(r=>r.state==='New draft').map(r=>r.work),['G','H']);
 });
 test('agent identities remain visible after their work leaves and through replay', () => {
   const story=readStory(original);
-  for(const time of [0,3,4.5,10,14,19,23.9]) {
+  for(const time of [0,1.7,3,4.5,7.1,9.5,12.4,13.9]) {
     const svg=frameSvg(time,story);
+    assert.ok(svg.includes('data-processing="batch"'));
+    assert.ok(svg.includes('Batch · default'));
     for(let id=1;id<=4;id++) assert.ok(svg.includes(`data-agent="${id}"`));
   }
   assert.equal(frameSvg(0,story),frameSvg(DURATION,story));
+});
+test('the faster batch story preserves passing work, repair and both overlaps', () => {
+  assert.equal(DURATION,14);
+  assert.deepEqual(sceneAt(1.8).added,['C','D']);
+  assert.deepEqual(sceneAt(1.8).rows.slice(0,2).map(r=>r.state),['Fixing','Fixing']);
+  assert.deepEqual(sceneAt(3.2).checking,['A','B']);
+  assert.deepEqual(sceneAt(3.2).rows.slice(2).map(r=>r.work),['E','F']);
+  assert.deepEqual(sceneAt(12.5).added,['C','D','A','B','E','F']);
+  assert.deepEqual(sceneAt(12.5).rows.map(r=>r.work),['G','H','I','J']);
+  for(let i=1;i<TIMELINE.length;i++) {
+    assert.ok(TIMELINE[i][0]>TIMELINE[i-1][0]);
+    assert.ok(TIMELINE[i][1]>TIMELINE[i-1][1]);
+  }
+  for(const [playback,logical] of TIMELINE.slice(0,-1))
+    assert.ok(Math.abs(storyTime(playback)-logical)<1e-10);
+  // The two logical replay phases still have time for at least one 20fps frame.
+  assert.ok(storyTime(13.9)<23.9);
+  assert.ok(storyTime(13.95)>=23.9);
 });

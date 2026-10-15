@@ -1,5 +1,48 @@
 {
-  "duration_seconds": 24,
+  "processing_mode": "batch",
+  "timeline": [
+    [
+      0,
+      0
+    ],
+    [
+      1.7,
+      2.2
+    ],
+    [
+      3,
+      3.8
+    ],
+    [
+      5.2,
+      7.1
+    ],
+    [
+      7.1,
+      10.4
+    ],
+    [
+      8.4,
+      12.7
+    ],
+    [
+      10.5,
+      15.3
+    ],
+    [
+      12.4,
+      18.7
+    ],
+    [
+      13.85,
+      23.8
+    ],
+    [
+      14,
+      24
+    ]
+  ],
+  "duration_seconds": 14,
   "width": 960,
   "height": 800,
   "frames_per_second": 24,
@@ -10,7 +53,7 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "Four agent identities stay visible. Work A-D returns or moves ahead; E-F appears at 3.8 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.",
+  "design": "Four agent identities stay visible. A persistent Batch · default label identifies the mode. Work A-D returns or moves ahead; E-F appears at 3 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.",
   "source_commit": "0be337d36305995865c150c1b3c475284ccc8cf8",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
@@ -122,23 +165,23 @@
       "visualId": "J"
     }
   ],
-  "first_overlap_seconds": 3.8,
+  "first_overlap_seconds": 3,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 706393,
-      "sha256": "ca7de1da52a733d7c33f45bf36c41081798303b2736a5be21edcf08393761ba0"
+      "bytes": 515190,
+      "sha256": "65b1ffef471d3c856b15bcc602b479da4a0659aa07e6ef88513a8a6203f2b600"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1549207,
-      "sha256": "2509de92da924eb591e1e12b4b187204c2b957f57759347ab0e1048e2e5ea54d"
+      "bytes": 1101103,
+      "sha256": "aa2541ac67aff9dfc89b5ac4403a0ea3979483c9dc60d5cc8afe41b759d9ee24"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 100678,
-      "sha256": "fcd79330a80d7098ffe45b67f64f5bb05ceaa5667c476d6c605640d41c80ef9e"
+      "bytes": 103184,
+      "sha256": "2760bfaaeab0787736d7bc5d018e024c90e9d3a739baccf5259a82039c12bd35"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 8429,
-      "sha256": "b5e3d9e7fc611efb4b1f8623dd7f5c9fe5c3853bb277c1dc19b42332e53d2ba0"
+      "bytes": 8602,
+      "sha256": "24faa341022248f9597b9995eb763e0e1ee1331a826d60105c2dd5e3055caddd"
     }
   }
 }

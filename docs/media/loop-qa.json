@@ -1,18 +1,18 @@
 {
-  "checked_on": "2026-10-13",
+  "checked_on": "2026-10-15",
   "status": "Local implementation verified; CI and production verification follow publication.",
-  "story": "Four persistent agent lanes and work A-J. E/F commits during A/B validation; G/H drafts start during E/F validation. All three deployments retain approval and the default recheck. Four final drafts remain unsubmitted.",
+  "story": "Default batch mode: passing C/D deploy while A/B return for repair. Four persistent agent lanes keep work A-J distinct. E/F commits during A/B validation; G/H drafts start during E/F validation. All three deployments retain approval and the default recheck. Four final drafts remain unsubmitted.",
   "automated": {
     "playback_tests": 8,
-    "evidence_guard_and_story_tests": 22,
+    "evidence_guard_and_story_tests": 23,
     "landing_page_tests": 3,
     "recorded_commands": 147,
     "final_remote_tests": 6,
-    "ruff": "passed"
+    "ruff": "pending required train gate"
   },
   "media": {
-    "duration_seconds": 24,
-    "gif_frames": 480,
+    "duration_seconds": 14,
+    "gif_frames": 280,
     "gif_dimensions": [
       720,
       600
@@ -22,7 +22,7 @@
       960,
       800
     ],
-    "mp4_frames": 576,
+    "mp4_frames": 336,
     "codec": "H.264 constrained baseline, yuv420p, BT.709, fast-start",
     "audio_streams": 0
   },
@@ -62,22 +62,29 @@
       "pass": 3,
       "finding": "The replay crossfade double-exposed task labels. The repair path crowded the check heading.",
       "change": "Switch labels once and fade work cards sequentially. Keep agent identities visible. Move the repair path into the gap."
+    },
+    {
+      "pass": 4,
+      "finding": "The 24-second cycle felt slow and did not name its processing mode.",
+      "change": "Keep Batch \u00b7 default visible. Shorten idle holds with an explicit timing map; export 14 seconds and show the first overlap at 3 seconds. Link captions to the batch/ordered distinction."
     }
   ],
-  "first_overlap_seconds": 3.8,
+  "first_overlap_seconds": 3,
   "encoded_frames_reviewed_seconds": [
     0,
-    4.5,
-    14,
-    23.85,
-    23.9,
-    23.95
+    1.7916666666666667,
+    3.5,
+    5,
+    6,
+    9.5,
+    12.5,
+    13.916666666666666
   ],
   "seam": {
     "full_scene_dissolve": false,
     "completion_screen": false,
     "exact_svg_start_end_match": true,
-    "work_marker_transition_seconds": 0.2,
+    "work_marker_transition_seconds": 0.15,
     "labels_double_exposed": false,
     "agent_identities_remain_visible": true
   },
@@ -86,5 +93,6 @@
     "The capture scripts agent-authored changes and approvals; it does not launch an AI service. Four displayed agent roles are illustrative.",
     "Two fixture gate barriers make overlap deterministic. Timing is condensed and is not a speed claim.",
     "The animation repeats one recorded window. G-J are drafts, not submitted or validated work."
-  ]
+  ],
+  "processing_mode": "batch"
 }
