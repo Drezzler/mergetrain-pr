@@ -26,6 +26,8 @@
 - Preserve selected configuration and queue paths in MCP terminal fallback.
   Add the existing job ID to duplicate errors and a conditional `retry_command`
   to inspect output. No commands, options, modes, or MCP tools are added.
+- Make the cancellation safety test wait for its gate process to start,
+  instead of assuming Git setup finishes within 0.5 seconds on busy runners.
 - Add optional `queue.processing: ordered`: accept parallel branch handoffs,
   process one submission at a time, and hold later work until the earliest
   unfinished submission is landed or explicitly canceled.
