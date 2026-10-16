@@ -46,6 +46,9 @@ def _execution_policy_identity(config: MergetrainConfig) -> dict[str, Any]:
     # change and cannot inherit a batch approval or confirmed deploy plan.
     if config.queue.processing != "batch":
         identity["processing"] = config.queue.processing
+        # Earlier unreleased ordered approvals also required post-push verify
+        # to finish before the next landing. Do not silently relax that policy.
+        identity["processing_version"] = 2
     return identity
 
 

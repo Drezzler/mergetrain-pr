@@ -42,13 +42,14 @@ def _status_placeholders(statuses: tuple[str, ...] | list[str]) -> str:
     return ",".join("?" for _ in statuses)
 
 
-def _active_branch_count(conn: sqlite3.Connection, branch: str) -> int:
+def _active_branch_job_id(conn: sqlite3.Connection, branch: str) -> int | None:
     placeholders = _status_placeholders(ACTIVE_STATUSES)
     row = conn.execute(
-        f"SELECT COUNT(*) AS n FROM deploy_queue WHERE branch = ? AND status IN ({placeholders})",
+        f"SELECT id FROM deploy_queue WHERE branch = ? AND status IN ({placeholders}) "
+        "ORDER BY id LIMIT 1",
         (branch, *ACTIVE_STATUSES),
     ).fetchone()
-    return int(row["n"])
+    return int(row["id"]) if row is not None else None
 
 
 def _task_label(task: str) -> str:
@@ -78,13 +79,15 @@ def enqueue_job(
     if not branch:
         raise QueueError("--branch is required")
     with immediate(conn):
-        if not allow_duplicate and _active_branch_count(conn, branch):
+        existing_job_id = _active_branch_job_id(conn, branch) if not allow_duplicate else None
+        if existing_job_id is not None:
             raise DuplicateActiveBranch(
-                f"branch '{branch}' already has an active job. "
-                "Read mergetrain status --json. For a blocked/failed job, "
+                f"branch '{branch}' already has active job {existing_job_id}. "
+                f"Read mergetrain inspect {existing_job_id} --json. For a blocked/failed job, "
                 "fix its owning branch, commit a clean result, then run "
                 "mergetrain retry <job-id>. Queued or in-progress jobs "
-                "cannot be retried."
+                "cannot be retried.",
+                existing_job_id=existing_job_id,
             )
         now = utc_now()
         cur = conn.execute(
@@ -162,13 +165,15 @@ def retry_job(
             raise QueueError("renewed automatic approval requires the current destination and policy")
         placeholders = _status_placeholders(ACTIVE_STATUSES)
         other_active = conn.execute(
-            f"SELECT COUNT(*) AS n FROM deploy_queue "
-            f"WHERE branch = ? AND id != ? AND status IN ({placeholders})",
+            f"SELECT id FROM deploy_queue "
+            f"WHERE branch = ? AND id != ? AND status IN ({placeholders}) ORDER BY id LIMIT 1",
             (replacement_branch, original.id, *ACTIVE_STATUSES),
         ).fetchone()
-        if int(other_active["n"]):
+        if other_active is not None:
             raise DuplicateActiveBranch(
-                f"branch '{replacement_branch}' already has an active replacement job"
+                f"branch '{replacement_branch}' already has active job {other_active['id']}; "
+                f"read mergetrain inspect {other_active['id']} --json",
+                existing_job_id=int(other_active["id"]),
             )
 
         now = utc_now()
@@ -616,7 +621,7 @@ def list_train_jobs(conn: sqlite3.Connection, train_id: str) -> list[Job]:
 
 
 def ordered_head(conn: sqlite3.Connection) -> Job | None:
-    """The first unresolved submission, including failed post-push verify.
+    """The first submission not yet landed or explicitly canceled.
 
     Cancellation/dismissal explicitly resolves a position. Retry cancels the
     old attempt atomically and transfers its position to the replacement.
@@ -627,7 +632,6 @@ def ordered_head(conn: sqlite3.Connection) -> Job | None:
         f"""
         SELECT * FROM deploy_queue
         WHERE status IN ({placeholders})
-           OR (status = 'deployed' AND verify_status IN ('failed', 'unknown'))
         ORDER BY CASE WHEN queue_order > 0 THEN queue_order ELSE id END, id
         LIMIT 1
         """,

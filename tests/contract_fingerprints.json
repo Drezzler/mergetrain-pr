@@ -263,6 +263,16 @@
       "ok": null,
       "skipped": "[]?"
     },
+    "duplicate_enqueue": {
+      "contract_version": null,
+      "error": {
+        "code": null,
+        "message": null,
+        "retryable": null
+      },
+      "existing_job_id": null,
+      "ok": null
+    },
     "enqueue": {
       "contract_version": null,
       "job": {
@@ -730,6 +740,73 @@
         "state": null,
         "updated_at": null
       },
+      "train": null
+    },
+    "inspect_failed": {
+      "contract_version": null,
+      "events": "[]?",
+      "job": {
+        "auto_deploy": null,
+        "base_sha": null,
+        "branch": null,
+        "cancel_requested_at": null,
+        "conflict_with": null,
+        "deploy_sha": null,
+        "finished_at": null,
+        "head_sha": null,
+        "id": null,
+        "log_path": null,
+        "note": null,
+        "note_truncated": null,
+        "pending_deploy_sha": null,
+        "push_status": null,
+        "queue_order": null,
+        "requested_at": null,
+        "reused_validation_sha": null,
+        "started_at": null,
+        "status": null,
+        "supersedes_train_id": null,
+        "supersession_id": null,
+        "task": null,
+        "train_id": null,
+        "train_size": null,
+        "validated_at": null,
+        "validated_head_sha": null,
+        "validation_base_sha": null,
+        "validation_environment_sha": null,
+        "validation_gate_policy_sha": null,
+        "validation_sha": null,
+        "validation_train_sha": null,
+        "validation_tree_sha": null,
+        "verify_status": null,
+        "worktree_path": null
+      },
+      "ok": null,
+      "outcome": {
+        "category": null,
+        "failure_category": null,
+        "message": null,
+        "message_truncated": null,
+        "severity": null,
+        "warning_categories": "[]?"
+      },
+      "progress": {
+        "detail": null,
+        "elapsed_seconds": null,
+        "gate": null,
+        "heartbeat_at": null,
+        "latest_event_id": null,
+        "lease_expires_at": null,
+        "lease_liveness": null,
+        "lost_lease": null,
+        "message": null,
+        "message_truncated": null,
+        "phase": null,
+        "started_at": null,
+        "state": null,
+        "updated_at": null
+      },
+      "retry_command": null,
       "train": null
     },
     "reconcile": {

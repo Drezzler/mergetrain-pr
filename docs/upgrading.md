@@ -116,6 +116,12 @@ are rejected. `retry JOB --branch REPAIR` preserves the original worktree,
 but a branch change defaults to manual approval. Only an explicitly authorized
 `retry --auto` renews approval for current destination and execution policy.
 
+Earlier unreleased builds held ordered submissions until post-push verification
+succeeded. Ordered processing now orders Git landings; verification warnings
+remain visible without holding later landings. Its approval identity changed.
+Old ordered auto jobs block and need the existing reviewed retry/approval path;
+upgrading does not renew approval. Batch approval identity is unchanged.
+
 ## External contract-4 consumers
 
 The public Darklang consumer at commit

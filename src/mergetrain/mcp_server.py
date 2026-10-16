@@ -669,7 +669,12 @@ class MergetrainTools:
             ]
         )
         train_id = str(jobs[0].get("train_id") or "") if jobs else ""
-        command = shlex.join(["mergetrain", "--repo", str(self.repo), "deploy"])
+        command_args = ["mergetrain", "--repo", str(self.repo.expanduser().resolve())]
+        if self.config:
+            command_args += ["--config", self.config]
+        if self.db:
+            command_args += ["--db", self.db]
+        command = shlex.join([*command_args, "deploy"])
         return _DeployPlan(
             train_id=train_id,
             plan_sha=plan_sha,

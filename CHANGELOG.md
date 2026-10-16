@@ -17,9 +17,18 @@
 
 ### Changes
 
+- Keep agent handoff at status, enqueue, and stop. Guide authorized runners to
+  eligible work without hiding batch survivors behind another failed job.
+  Preserve all Attention evidence, approval checks, and reconciliation blocks.
+- Complete an ordered position at its successful Git landing. Keep post-push
+  verification warnings visible while allowing corrective submissions to land.
+  Invalidate earlier unreleased ordered approvals; batch approvals are unchanged.
+- Preserve selected configuration and queue paths in MCP terminal fallback.
+  Add the existing job ID to duplicate errors and a conditional `retry_command`
+  to inspect output. No commands, options, modes, or MCP tools are added.
 - Add optional `queue.processing: ordered`: accept parallel branch handoffs,
   process one submission at a time, and hold later work until the earliest
-  unfinished submission is deployed and verified or explicitly canceled.
+  unfinished submission is landed or explicitly canceled.
   `retry` preserves that submission's position across attempts and restarts.
 - Let the existing advanced `retry JOB --branch REPAIR` operation atomically
   replace a failed/blocked job from a clean repair worktree without modifying

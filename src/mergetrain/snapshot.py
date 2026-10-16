@@ -233,6 +233,32 @@ def plan_next_action(
     if count_data.get("blocked_with_marker", 0):
         target = selected if selected_reason == "reconcile_conflict" else None
         return _plan_for_code("reconcile_conflict_manual", job=target)
+    # Repair the submission that currently holds ordered admission, even when
+    # an earlier landing still has an unresolved verification warning.
+    if ordered_job is not None and ordered_job.status in {"blocked", "failed"}:
+        return _plan_for_code("fix_blocked_job", job=ordered_job)
+    # Remote truth and runner ownership block progress. Ordinary failed jobs
+    # and post-push verification stay in Attention without hiding eligible work.
+    stranded = claim_is_stranded(lock, in_progress)
+    ready_for_work = all(
+        payload.get(key) is not False
+        for key in ("config_exists", "repo_ready", "remote_ready", "integration_ref_ready")
+    )
+    if not stranded and ready_for_work:
+        if ordered_job is not None and ordered_job.status == "queued":
+            return _plan_for_code(
+                "run_daemon_when_approved" if ordered_job.auto_deploy else "validate_queued_jobs",
+                job=ordered_job,
+            )
+        if ordered_job is None or ordered_job.status == "validated":
+            trains = payload.get("validated_trains") or []
+            if any(train.get("deploy_eligible") for train in trains):
+                return _plan_for_code("deploy_when_approved")
+            if not trains and ordered_job is None:
+                if count_data.get("auto_queued", 0):
+                    return _plan_for_code("run_daemon_when_approved")
+                if count_data.get("queued", 0):
+                    return _plan_for_code("validate_queued_jobs")
     if selected_reason == "post_push_verification_failed" or count_data.get(
         "deployed_verify_failed", 0
     ):
@@ -262,7 +288,7 @@ def plan_next_action(
     # different set. Name it instead of letting doctor report an idle queue.
     # A crash usually leaves its lock row behind, so a provably dead owner
     # counts the same as no lock at all (#227).
-    if claim_is_stranded(lock, in_progress):
+    if stranded:
         return _plan_for_code("reconcile_stranded_claim")
     # Every queue-advancing command refuses without a config -- the deploy path
     # is fail-closed on purpose -- so pointing at queue work here would send the
@@ -279,19 +305,8 @@ def plan_next_action(
             "fetch_integration_ref",
             remote_name=str(payload.get("remote_name") or "origin"),
         )
-    if ordered_job is not None and ordered_job.status == "queued":
-        return _plan_for_code(
-            "run_daemon_when_approved" if ordered_job.auto_deploy else "validate_queued_jobs",
-            job=ordered_job,
-        )
     if payload.get("validated_trains"):
-        if any(train.get("deploy_eligible") for train in payload["validated_trains"]):
-            return _plan_for_code("deploy_when_approved")
         return _plan_for_code("cancel_and_reenqueue_legacy_validated_jobs")
-    if count_data.get("auto_queued", 0):
-        return _plan_for_code("run_daemon_when_approved")
-    if count_data.get("queued", 0):
-        return _plan_for_code("validate_queued_jobs")
     if payload.get("gc", {}).get("worktree_candidates"):
         return _plan_for_code("gc_available")
     return _plan_for_code("enqueue_clean_branch")

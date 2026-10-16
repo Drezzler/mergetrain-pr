@@ -22,7 +22,10 @@ processing claims only the earliest unresolved `queue_order`. Each original
 submission starts at its job ID; `retry` transfers its position to a fresh job
 in the same transaction that cancels the failed attempt. The order survives
 restart without an adapter ledger. Ordered claims cannot pass a failed,
-blocked, manual, or unverified earlier submission. Existing runner leases,
+blocked or unapproved earlier submission. A successful Git landing completes
+its ordered position; post-push verification warnings remain visible without
+holding later submissions. An uncertain push still requires reconciliation.
+Existing runner leases,
 atomic pushes, reconciliation, confirmation, and default rechecks are shared.
 Processing policy is approval-bound; the default batch identity is unchanged.
 

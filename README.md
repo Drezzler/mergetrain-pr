@@ -126,6 +126,8 @@ Both modes let agents start their next task after handoff. Both keep deploy
 approval and the default pre-push recheck. Ordered processing can run checks
 more often because each submission lands separately. Queue order starts at
 submission, not when an agent starts work, and does not express code dependencies.
+Order ends at a successful Git landing. Post-push verification warnings remain
+visible while later work proceeds; an uncertain push still requires reconciliation.
 
 **Availability:** `ordered` is on `main` and is not yet in the published 3.5.1
 package. Keep `batch` for released installations until the next release.

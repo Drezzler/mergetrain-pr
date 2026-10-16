@@ -5,7 +5,8 @@ rules:
 
 1. Work on the assigned task branch and worktree.
 2. Commit a clean HEAD before handoff.
-3. Read `mergetrain status --json` and follow its stated next action.
+3. Read `mergetrain status --json`. A task agent submits its finished branches;
+   an authorized runner follows the stated next action.
 4. Enqueue every named finished branch in the requested order with task and
    branch only; mergetrain resolves the worktree and captures exact commits.
 5. Stop after the last enqueue unless the user explicitly authorized validation
@@ -40,6 +41,10 @@ queue database, or rewrite `refs/mergetrain/deploys/*`.
 
 ## State-guided detail
 
+A runner's wait or validation action does not prevent another task agent from
+submitting its clean branch. Enqueue checks submission preconditions. A task
+agent does not execute the runner's action unless separately authorized.
+
 Routine instructions intentionally omit retry, supersede, reuse, daemon, Hub,
 and recovery procedures. Read `status` for the current next step and approval
 class; a blocked job can first direct you to `inspect JOB_ID --json` for its
@@ -51,6 +56,9 @@ replace the old outcome atomically. Re-enqueueing the same active branch is
 rejected. Retry does not apply to queued/in-progress work and does not grant
 new validation or deployment authority; follow status after the replacement.
 A successful retry means the replacement is queued, not integrated or deployed.
+`inspect` supplies `retry_command` for these ordinary failures. The tool checks
+approval retention; read status after retry. A deployed job's verification
+warning is not a failed submission and does not use retry.
 
 The default daemon deploys only jobs explicitly enqueued with `--auto`.
 `daemon --validate-only` handles manual jobs but never pushes. A destination,

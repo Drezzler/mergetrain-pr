@@ -6,6 +6,7 @@ import inspect
 import io
 import json
 import os
+import shlex
 import signal
 import subprocess
 import sys
@@ -983,6 +984,18 @@ class DeployGateTests(unittest.TestCase):
         self.assertEqual(payload["error"]["code"], "confirmation_required")
         self.assertTrue(payload["command"].endswith(" deploy"))
         self.assertNotIn("expected-plan", payload["command"])
+        self.assertFalse(any(is_guarded_deploy_call(args) for args in calls))
+
+    def test_terminal_fallback_preserves_selected_config_and_queue(self) -> None:
+        self.tools = MergetrainTools(
+            repo=Path("/repo with spaces"), config="policy/selected config.yaml",
+            db="state/selected queue.sqlite",
+        )
+        payload, calls = self._deploy(FakeContext(elicitation=False))
+        self.assertEqual(shlex.split(payload["command"]), [
+            "mergetrain", "--repo", str(self.tools.repo.resolve()),
+            "--config", self.tools.config, "--db", self.tools.db, "deploy",
+        ])
         self.assertFalse(any(is_guarded_deploy_call(args) for args in calls))
 
     def test_a_declined_dialog_does_not_deploy(self) -> None:

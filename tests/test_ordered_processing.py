@@ -16,7 +16,11 @@ from test_git_runner import SHELL_PYTHON, git, make_demo_repo
 from mergetrain.cli import main
 from mergetrain.config import load_config
 from mergetrain.daemon import daemon_tick
-from mergetrain.deploy_plan import deploy_destination_sha, deploy_execution_policy_sha
+from mergetrain.deploy_plan import (
+    _execution_policy_identity,
+    deploy_destination_sha,
+    deploy_execution_policy_sha,
+)
 from mergetrain.errors import ConfigError, DuplicateActiveBranch, QueueError
 from mergetrain.git_runner import GitRunner
 from mergetrain.persistence.claims import claim_all_queued, claim_deploy_batch
@@ -31,6 +35,7 @@ from mergetrain.persistence.jobs import (
 )
 from mergetrain.persistence.leases import release_runner_lock
 from mergetrain.persistence.schema import SCHEMA_VERSION
+from mergetrain.reuse import _sha256_json
 from mergetrain.snapshot import plan_next_action
 
 
@@ -143,21 +148,29 @@ class OrderedStoreTests(unittest.TestCase):
                 self.assertEqual(get_job(self.conn, second.id).status, "queued")
                 self.release(jobs[0])
 
-    def test_failed_or_unknown_verification_holds_later_submissions(self) -> None:
+    def test_landed_jobs_do_not_hold_later_submissions_for_verification(self) -> None:
         for verify in ("failed", "unknown"):
             with self.subTest(verify=verify):
                 self.conn.execute("DELETE FROM deploy_queue")
                 self.conn.commit()
                 first, second = self.enqueue("first"), self.enqueue("second")
-                mark_job(self.conn, first.id, status="deployed", verify_status=verify)
-                self.assertEqual(self.claim(), [])
-                self.assertEqual(claim_deploy_batch(
-                    self.conn, owner=self.owner, processing="ordered",
-                ), [])
-                mark_job(self.conn, first.id, status="deployed", verify_status="succeeded")
+                mark_job(
+                    self.conn, first.id, status="deployed", push_status="succeeded",
+                    verify_status=verify,
+                )
                 (claimed,) = self.claim()
                 self.assertEqual(claimed.id, second.id)
+                self.assertEqual(get_job(self.conn, first.id).verify_status, verify)
                 self.release(claimed)
+
+    def test_uncertain_push_still_holds_the_next_ordered_submission(self) -> None:
+        first = self.enqueue("first")
+        self.enqueue("second")
+        mark_job(self.conn, first.id, status="needs_reconcile")
+        self.assertEqual(self.claim(), [])
+        self.assertEqual(claim_deploy_batch(
+            self.conn, owner=self.owner, processing="ordered",
+        ), [])
 
     def test_policy_failure_does_not_allow_the_next_auto_job_to_pass(self) -> None:
         first, second = self.enqueue("first", auto=True), self.enqueue("second", auto=True)
@@ -197,6 +210,29 @@ class OrderedStoreTests(unittest.TestCase):
         self.assertEqual(action.code, "validate_queued_jobs")
         self.assertEqual(action.target_job_id, first.id)
 
+    def test_failed_correction_is_actionable_before_an_old_verification_warning(self) -> None:
+        for status in ("blocked", "failed"):
+            with self.subTest(status=status):
+                self.conn.execute("DELETE FROM deploy_queue")
+                self.conn.commit()
+                first, correction, later = [self.enqueue(name) for name in ("first", "fix", "later")]
+                mark_job(self.conn, first.id, status="deployed", verify_status="failed")
+                mark_job(self.conn, correction.id, status=status)
+                action = plan_next_action(
+                    {"counts": {"deployed_verify_failed": 1, status: 1, "queued": 1}},
+                    attention_jobs=[get_job(self.conn, first.id), get_job(self.conn, correction.id)],
+                    ordered_job=ordered_head(self.conn),
+                )
+                self.assertEqual(action.code, "fix_blocked_job")
+                self.assertEqual(action.command, f"mergetrain inspect {correction.id}")
+                _, retried = retry_job(
+                    self.conn, correction.id, base_sha="base", head_sha="repaired",
+                    preserve_order=True,
+                )
+                self.assertGreater(retried.id, later.id)
+                self.assertEqual(ordered_head(self.conn).id, retried.id)
+                self.assertEqual(retried.queue_order, correction.id)
+
     def test_an_existing_ready_batch_cannot_be_reinterpreted_as_ordered(self) -> None:
         first, second = self.enqueue("first"), self.enqueue("second")
         for job in (first, second):
@@ -217,6 +253,91 @@ class OrderedWorkflowTests(unittest.TestCase):
         with redirect_stdout(stream):
             result = main(["--repo", str(repo), *args, "--json"])
         return result, json.loads(stream.getvalue())
+
+    def test_post_push_failure_allows_a_corrective_landing_without_erasing_evidence(self) -> None:
+        for verification in ("failed", "unknown"):
+            with self.subTest(verification=verification), tempfile.TemporaryDirectory() as td:
+                root = Path(td)
+                verify = (
+                    f'{SHELL_PYTHON} -c "from pathlib import Path; '
+                    "assert Path('app.txt').read_text().strip() != 'bad'\""
+                )
+                repo, marker = make_demo_repo(root, verify_command=verify)
+                path = repo / ".mergetrain.yaml"
+                path.write_text(path.read_text().replace("queue:\n", "queue:\n  processing: ordered\n"))
+                git(repo, "add", ".mergetrain.yaml")
+                git(repo, "commit", "-m", "ordered policy")
+                git(repo, "push", "origin", "main")
+                git(repo, "switch", "feature/a")
+                git(repo, "rebase", "main")
+                (repo / "app.txt").write_text("bad\n")
+                git(repo, "add", "app.txt")
+                git(repo, "commit", "-m", "post-push defect")
+                code, first = self.invoke(repo, "enqueue", "--task", "first",
+                                          "--branch", "feature/a", "--auto")
+                self.assertEqual(code, 0, first)
+                # Each invocation reloads the policy, as after runner restart.
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    code = main(["--repo", str(repo), "daemon", "--once"])
+                self.assertEqual(code, 0, output.getvalue())
+                config = load_config(repo=repo)
+                conn = connect(config.state.db)
+                original = get_job(conn, first["job"]["id"])
+                self.assertEqual(original.verify_status, "failed")
+                if verification == "unknown":
+                    # A confirmed push whose verify process was interrupted.
+                    mark_job(conn, original.id, status="deployed", verify_status="unknown")
+                conn.close()
+                git(repo, "fetch", "origin")
+                git(repo, "switch", "-c", "fix/deployed", "origin/main")
+                (repo / "app.txt").write_text("good\n")
+                git(repo, "add", "app.txt")
+                git(repo, "commit", "-m", "repair deployed defect")
+                code, repair = self.invoke(repo, "enqueue", "--task", "repair",
+                                           "--branch", "fix/deployed", "--auto")
+                self.assertEqual(code, 0, repair)
+                _, status = self.invoke(repo, "status")
+                self.assertEqual(status["next_action"]["code"], "run_daemon_when_approved")
+                self.assertEqual(status["next_action"]["target_job_id"], repair["job"]["id"])
+                self.assertEqual(status["counts"]["attention"], 1)
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    code = main(["--repo", str(repo), "daemon", "--once"])
+                _, detail = self.invoke(repo, "inspect", str(repair["job"]["id"]))
+                self.assertEqual(code, 0, (output.getvalue(), detail))
+                self.assertEqual(git(root / "remote.git", "show", "main:app.txt"), "good")
+                conn = connect(config.state.db)
+                self.assertEqual(get_job(conn, original.id).verify_status, verification)
+                self.assertEqual(get_job(conn, repair["job"]["id"]).verify_status, "succeeded")
+                conn.close()
+                self.assertEqual(marker.read_text(), "xx")
+
+    def test_old_ordered_approval_blocks_before_gates(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            repo, marker = make_demo_repo(Path(td))
+            path = repo / ".mergetrain.yaml"
+            path.write_text(path.read_text().replace("queue:\n", "queue:\n  processing: ordered\n"))
+            git(repo, "add", ".mergetrain.yaml")
+            git(repo, "commit", "-m", "ordered policy")
+            git(repo, "push", "origin", "main")
+            git(repo, "switch", "feature/a")
+            git(repo, "rebase", "main")
+            _, queued = self.invoke(repo, "enqueue", "--task", "old approval",
+                                    "--branch", "feature/a", "--auto")
+            current = load_config(repo=repo)
+            batch = replace(current, queue=replace(current.queue, processing="batch"))
+            legacy_identity = _execution_policy_identity(batch)
+            legacy_identity["processing"] = "ordered"
+            conn = connect(current.state.db)
+            conn.execute("UPDATE deploy_queue SET approval_execution_policy_sha = ? WHERE id = ?",
+                         (_sha256_json(legacy_identity), queued["job"]["id"]))
+            conn.commit()
+            with redirect_stdout(io.StringIO()):
+                main(["--repo", str(repo), "daemon", "--once"])
+            self.assertEqual(get_job(conn, queued["job"]["id"]).status, "blocked")
+            self.assertFalse(marker.exists())
+            conn.close()
 
     def test_parallel_handoffs_repair_restart_and_individual_atomic_landings(self) -> None:
         with tempfile.TemporaryDirectory() as td:

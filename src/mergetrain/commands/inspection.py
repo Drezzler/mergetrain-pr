@@ -554,6 +554,11 @@ def cmd_inspect(args: argparse.Namespace) -> int:
         print(f"outcome: {outcome['severity']} / {outcome['category']}")
         if outcome["severity"] in {"failure", "warning"} and outcome["message"]:
             print(f"reason: {outcome['message']}")
+        if payload.get("retry_command"):
+            print(
+                "After fixing the cause, commit any branch changes and retry from "
+                f"its clean owning worktree: {payload['retry_command']}"
+            )
     return 0
 
 

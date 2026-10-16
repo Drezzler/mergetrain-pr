@@ -282,9 +282,12 @@ queue:
   processing: ordered
 ```
 
-`ordered` admits only the earliest unfinished submission, including its
-replacement after `retry`. A blocked/failed head, a manual head waiting for
-approval, and a deployed head with unresolved verification hold later work.
+`ordered` admits only the earliest submission not yet landed, including its
+replacement after `retry`. A blocked/failed head and a manual head waiting for
+approval hold later work. A successful Git push completes that position.
+Post-push verification failures or unknown results remain in Attention and
+history while later submissions can land, as in batch mode. An uncertain push
+still blocks progress until reconciliation determines what landed.
 Cancellation or dismissal explicitly resolves a position. Task agents can
 continue submitting finished work; they use the same commands and MCP tools.
 This can increase gate/verify runs compared with batching. It provides no
