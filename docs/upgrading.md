@@ -95,7 +95,7 @@ otherwise validate or deploy live work.
 
 ## Ordered processing and queue schema 16
 
-The release that adds `queue.processing` retains machine contract 5 and config
+The 3.6.0 release adds `queue.processing` and retains machine contract 5 and config
 schema 2. Default batch behavior and its stored approval hash are unchanged.
 The local queue gains `queue_order` and upgrades to schema 16. Existing rows
 receive their current job ID; the migration does not reinterpret historical
@@ -279,7 +279,7 @@ and ask it to reread the project's instructions. Existing branches and commits
 can continue; this is not a reason to discard the task or recreate its queue.
 For example:
 
-> Continue the existing task with mergetrain target 3.5.1. Read the project's
+> Continue the existing task with mergetrain target 3.6.0. Read the project's
 > current agent instructions and the upgrade guide. Check the CLI, running
 > daemon, and MCP versions separately; adapt affected consumers using the
 > documented contract 4-to-5 migration. Preserve existing branches, queued SHAs,

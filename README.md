@@ -129,8 +129,8 @@ submission, not when an agent starts work, and does not express code dependencie
 Order ends at a successful Git landing. Post-push verification warnings remain
 visible while later work proceeds; an uncertain push still requires reconciliation.
 
-**Availability:** `ordered` is on `main` and is not yet in the published 3.5.1
-package. Keep `batch` for released installations until the next release.
+**Availability:** `ordered` is available in **3.6.0 and newer**.
+Keep the default `batch` for ordinary parallel agent work.
 See the [agent work examples](docs/best-practices.md#choose-batch-or-ordered),
 [configuration](docs/config.md#queue), and [upgrade procedure](docs/upgrading.md).
 

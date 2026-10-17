@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.6.0 - 2026-10-18
 
 ### Upgrade notes
 
@@ -14,6 +14,9 @@
   Selecting `queue.processing: ordered` changes execution policy; drain Ready
   trains first and renew unattended approval explicitly. A release upgrade
   alone does not renew or remove existing approval.
+- Refresh Codex, Claude Code, and agy plugins and start fresh MCP sessions.
+  Their launchers now pin **3.6.0**. Updating the global CLI does not replace
+  a loaded MCP server or daemon; follow the idle-boundary upgrade sequence.
 
 ### Changes
 
@@ -55,8 +58,8 @@
 - Recommend default `batch` processing for independent parallel agent work.
   Compare it with `ordered` using web-feature and compiler-optimization
   examples, including failure isolation, retry position, continued agent
-  development, and per-submission checks. Mark ordered processing as unreleased
-  and link its configuration and upgrade requirements.
+  development, and per-submission checks. Document ordered availability from
+  3.6.0 and link its configuration and upgrade requirements.
 
 ## 3.5.1 - 2026-10-15
 

@@ -271,9 +271,9 @@ measure each optimization against the preceding landed result. If the middle
 submission fails, later landings wait for its repair or explicit cancellation.
 See the [agent work examples](best-practices.md#choose-batch-or-ordered).
 
-**Release availability:** `ordered` is on `main` and is not yet in the published
-3.5.1 package. Keep `batch` until the next release and follow the
-[upgrade procedure](upgrading.md) before enabling it.
+**Release availability:** `ordered` requires **3.6.0 or newer**. Keep the default
+`batch` for ordinary parallel work and follow the [upgrade procedure](upgrading.md)
+before enabling ordered processing.
 
 To select ordered processing in a version that supports it:
 
