@@ -39,6 +39,9 @@ ADAPTER_ALLOWED = {
     "mergetrain.mcp_server": (
         "mergetrain.contract",
         "mergetrain.errors",
+        # Validates a per-call repo with the CLI's own config discovery, so the
+        # adapter and the child it spawns can never disagree what is configured.
+        "mergetrain.config",
         # Stops the CLI's Windows process tree; imports nothing from mergetrain.
         "mergetrain.windows_job",
     ),

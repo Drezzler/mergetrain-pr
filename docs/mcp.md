@@ -18,15 +18,29 @@ initializes the server, and checks the tool list and deploy schema.
 
 | Tool | Inputs | Effect |
 | --- | --- | --- |
-| `mergetrain_status` | optional recent-job limit | read-only state and exact next action |
-| `mergetrain_inspect` | job ID, detail=`summary/events/logs`, bounded limit/cursor | read-only job evidence |
-| `mergetrain_enqueue` | task, branch | captures exact clean SHAs and queues work; never grants auto deploy |
-| `mergetrain_validate` | none | assembles the queued train and runs gates; never pushes |
-| `mergetrain_deploy` | no model-visible plan or confirmation parameter | may validate, shows a client-rendered exact plan, then pushes only after human acceptance |
+| `mergetrain_status` | optional recent-job limit, optional `repo` | read-only state and exact next action |
+| `mergetrain_inspect` | job ID, detail=`summary/events/logs`, bounded limit/cursor, optional `repo` | read-only job evidence |
+| `mergetrain_enqueue` | task, branch, optional `repo` | captures exact clean SHAs and queues work; never grants auto deploy |
+| `mergetrain_validate` | optional `repo` | assembles the queued train and runs gates; never pushes |
+| `mergetrain_deploy` | optional `repo`; no model-visible plan or confirmation parameter | may validate, shows a client-rendered exact plan, then pushes only after human acceptance |
 
 History, statistics, GC, cancellation, unattended deploy, lock mutation, and
 recovery are intentionally absent. Exposing them would increase tool-selection
 ambiguity and create authority the normal coding agent does not need.
+
+## Repository scope
+
+The server answers for the repository it was launched in. Every tool takes an
+optional `repo` path to operate on a different configured checkout, and any
+path that is not a checkout already configured by `mergetrain init` is refused
+with `unknown_scope` before a CLI runs — never silently answered from the bound
+repository.
+
+Agent rule: verify the `repo` field in `mergetrain_status` output before
+trusting queue state. `health: "unconfigured"` or `"degraded"`, or a repo that
+does not match the project being worked on, means wrong scope — not an empty
+queue — so never act on init advice from a mismatched scope. Outside the server,
+use `mergetrain --repo <root> ...` for a different checkout.
 
 ## Deploy confirmation
 

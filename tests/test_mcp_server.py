@@ -27,6 +27,7 @@ from mergetrain.contract import CONTRACT_VERSION
 from mergetrain.mcp_server import (
     MergetrainTools,
     _deploy_approval,
+    _DeployPlan,
     _replace_local_path_root,
     _stop_cli_process,
     _stop_windows_process_tree,
@@ -57,6 +58,18 @@ def current_checkout_cli() -> Iterator[None]:
     )
     with patch.dict(os.environ, {"PYTHONPATH": child_pythonpath}):
         yield
+
+
+def make_configured_checkout(root: Path, name: str = "mcp-scope") -> Path:
+    """A git checkout mergetrain is configured in, safe for read-only calls."""
+
+    repo = root / name
+    repo.mkdir()
+    subprocess.run(["git", "init", "-q", str(repo)], check=True)
+    (repo / ".mergetrain.yaml").write_text(
+        f"version: 2\nproject:\n  name: {name}\ngates: []\n", encoding="utf-8"
+    )
+    return repo
 
 
 DOCTOR = {
@@ -553,6 +566,145 @@ class PayloadTests(unittest.TestCase):
                 self.assertEqual(payload["contract_version"], CONTRACT_VERSION)
 
 
+class RepositoryScopeTests(unittest.TestCase):
+    """A wrong-scope answer must be refused, never passed off as a real one."""
+
+    def setUp(self) -> None:
+        self.tools = MergetrainTools(repo=Path("/repo"))
+
+    def test_repo_argument_selects_the_child_repo_in_argv(self) -> None:
+        other = Path("/other/checkout")
+        argv = self.tools._argv(["status", "--json"], repo=other)
+        self.assertEqual(argv[argv.index("--repo") + 1], str(other))
+        self.assertEqual(argv[argv.index("--repo") + 2], "status")
+        self.assertEqual(
+            self.tools._argv(["status", "--json"])[3:5],
+            ["--repo", str(Path("/repo"))],
+        )
+
+    def test_each_tool_threads_the_requested_repo_into_the_child_call(self) -> None:
+        calls: list[tuple[list[str], Any]] = []
+
+        async def fake_run(_self: Any, args: list[str], repo: Any = None) -> Any:
+            calls.append((args, repo))
+            return completed("{}")
+
+        with tempfile.TemporaryDirectory() as td:
+            other = make_configured_checkout(Path(td))
+            with patch.object(MergetrainTools, "_run", new=fake_run):
+                asyncio.run(self.tools.status(repo=str(other)))
+                asyncio.run(self.tools.inspect(job_id=7, repo=str(other)))
+                asyncio.run(self.tools.inspect(job_id=7, detail="events", repo=str(other)))
+                asyncio.run(self.tools.inspect(job_id=7, detail="logs", repo=str(other)))
+                asyncio.run(self.tools.validate(repo=str(other)))
+                asyncio.run(
+                    self.tools.enqueue(task="t", branch="agent/one", repo=str(other))
+                )
+        requested = other.resolve()
+        self.assertEqual(len(calls), 6)
+        for args, repo in calls:
+            self.assertEqual(repo, requested, args)
+
+    def test_no_repo_argument_keeps_the_bound_repo(self) -> None:
+        # One representative call: the scoping default must be exactly today's
+        # behavior, not a second resolution of the launch-time repository.
+        with patch.object(MergetrainTools, "_run", return_value=completed("{}")) as run:
+            asyncio.run(self.tools.status())
+        self.assertIsNone(run.call_args.args[1])
+
+    def test_an_unknown_repo_is_refused_before_the_cli_runs(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            unconfigured = Path(td) / "unconfigured"
+            subprocess.run(["git", "init", "-q", str(unconfigured)], check=True)
+            for bad in (str(unconfigured), str(Path(td) / "missing")):
+                with self.subTest(bad=bad):
+                    with patch.object(MergetrainTools, "_run") as run:
+                        status = asyncio.run(self.tools.status(repo=bad))
+                        inspected = asyncio.run(self.tools.inspect(job_id=1, repo=bad))
+                        validated = asyncio.run(self.tools.validate(repo=bad))
+                        enqueued = asyncio.run(
+                            self.tools.enqueue(task="t", branch="agent/one", repo=bad)
+                        )
+                        plan = asyncio.run(self.tools.prepare_deploy(FakeContext(), repo=bad))
+                    run.assert_not_called()
+                    for payload in (status, inspected, validated, enqueued, plan.refusal):
+                        self.assertEqual(payload["error"]["code"], "unknown_scope")
+                        self.assertIn("mergetrain init", payload["error"]["message"])
+                    refused = str(Path(bad).resolve())
+                    self.assertIn(refused, status["error"]["message"])
+
+    def test_a_configured_checkout_is_answered_from_that_repo(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            other = make_configured_checkout(Path(td))
+            with current_checkout_cli():
+                payload = asyncio.run(
+                    MergetrainTools(repo=Path("/repo")).status(repo=str(other))
+                )
+        self.assertTrue(payload["ok"])
+        self.assertEqual(payload["repo"], str(other.resolve()))
+
+    def test_deploy_repo_scopes_the_preview_summary_and_guarded_call(self) -> None:
+        calls: list[tuple[list[str], Any]] = []
+
+        async def fake_run(_self: Any, args: list[str], repo: Any = None) -> Any:
+            calls.append((args, repo))
+            if args == ["deploy", "--json"]:
+                return completed(json.dumps(PREVIEW))
+            return completed(json.dumps({"ok": True, "result": "success"}))
+
+        with tempfile.TemporaryDirectory() as td:
+            other = make_configured_checkout(Path(td))
+            with patch.object(MergetrainTools, "_run", new=fake_run):
+                plan = asyncio.run(self.tools.prepare_deploy(FakeContext(), repo=str(other)))
+                approval = SimpleNamespace(action="accept", data=SimpleNamespace(confirm=True))
+                payload = asyncio.run(self.tools.deploy(plan, approval))
+        requested = other.resolve()
+        self.assertEqual(payload, {"ok": True, "result": "success"})
+        self.assertEqual(plan.repo, requested)
+        self.assertTrue(plan.summary.startswith(f"Repository: {requested}"))
+        self.assertEqual(
+            [repo for args, repo in calls if args == ["deploy", "--json"]],
+            [requested],
+        )
+        self.assertEqual(
+            [repo for args, repo in calls if is_guarded_deploy_call(args)],
+            [requested],
+        )
+
+    def test_deploy_repo_scopes_the_terminal_fallback_command(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            other = make_configured_checkout(Path(td))
+            with patch.object(
+                MergetrainTools,
+                "_run",
+                return_value=completed(json.dumps(PREVIEW)),
+            ):
+                plan = asyncio.run(
+                    self.tools.prepare_deploy(FakeContext(elicitation=False), repo=str(other))
+                )
+                payload = asyncio.run(self.tools.deploy(plan, None))
+        requested = other.resolve()
+        self.assertEqual(payload["error"]["code"], "confirmation_required")
+        self.assertTrue(payload["command"].startswith("mergetrain --repo "))
+        self.assertIn(str(requested), payload["command"])
+        self.assertNotIn(str(Path("/repo").resolve()), payload["command"])
+        self.assertNotIn("expected-plan", payload["command"])
+
+    def test_deploy_unknown_repo_refusal_skips_the_preview(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            unconfigured = Path(td) / "unconfigured"
+            subprocess.run(["git", "init", "-q", str(unconfigured)], check=True)
+            with patch.object(MergetrainTools, "_run") as run:
+                plan = asyncio.run(
+                    self.tools.prepare_deploy(FakeContext(), repo=str(unconfigured))
+                )
+                approval = SimpleNamespace(action="accept", data=SimpleNamespace(confirm=True))
+                payload = asyncio.run(self.tools.deploy(plan, approval))
+        run.assert_not_called()
+        self.assertEqual(plan.refusal["error"]["code"], "unknown_scope")
+        self.assertEqual(payload["error"]["code"], "unknown_scope")
+
+
 class ProcessLifecycleTests(unittest.TestCase):
     # Every program these tests start exits on its own after about a minute,
     # so no Windows cleanup has to kill by process ID: Windows soon reuses the
@@ -905,7 +1057,7 @@ class DeployGateTests(unittest.TestCase):
     def _deploy(self, ctx: Any, *, preview: dict[str, Any] | None = None) -> Any:
         calls: list[list[str]] = []
 
-        async def fake_run(_self: Any, args: list[str]) -> Any:
+        async def fake_run(_self: Any, args: list[str], repo: Any = None) -> Any:
             calls.append(args)
             if args == ["deploy", "--json"]:
                 return completed(json.dumps(preview or PREVIEW))
@@ -1088,7 +1240,7 @@ class MCPV2DeployProtocolTests(unittest.TestCase):
         calls: list[list[str]] = []
         messages: list[str] = []
 
-        async def fake_json(_self: Any, args: list[str]) -> dict[str, Any]:
+        async def fake_json(_self: Any, args: list[str], repo: Any = None) -> dict[str, Any]:
             calls.append(args)
             if args == ["deploy", "--json"]:
                 return PREVIEW
@@ -1161,6 +1313,39 @@ class MCPV2DeployProtocolTests(unittest.TestCase):
         # refusal proves the CLI rechecked the plan before its Git push path.
         self.assertEqual(sum(is_guarded_deploy_call(args) for args in calls), 1)
 
+    def test_the_repo_argument_reaches_the_plan_resolver(self) -> None:
+        # The resolver framework fills resolver parameters from tool arguments
+        # by name; this pins that wiring for repo through a real v2 client.
+        from mcp import Client
+
+        from mergetrain.mcp_server import build_server
+
+        captured: dict[str, str] = {}
+
+        async def fake_prepare(_self: Any, ctx: Any, repo: str = "") -> Any:
+            captured["repo"] = repo
+            return _DeployPlan(
+                refusal={
+                    "contract_version": CONTRACT_VERSION,
+                    "ok": False,
+                    "error": {
+                        "code": "unknown_scope",
+                        "message": "refused",
+                        "retryable": False,
+                    },
+                }
+            )
+
+        async def scenario() -> dict[str, Any]:
+            async with Client(build_server(Path("/repo"))) as client:
+                result = await client.call_tool("mergetrain_deploy", {"repo": "/elsewhere"})
+            return result.model_dump(by_alias=True, exclude_none=True)["structuredContent"]
+
+        with patch.object(MergetrainTools, "prepare_deploy", new=fake_prepare):
+            payload = asyncio.run(scenario())
+        self.assertEqual(captured["repo"], "/elsewhere")
+        self.assertEqual(payload["error"]["code"], "unknown_scope")
+
     def test_client_callback_error_is_fail_closed(self) -> None:
         from mcp import Client
         from mcp.shared.exceptions import MCPError
@@ -1170,7 +1355,7 @@ class MCPV2DeployProtocolTests(unittest.TestCase):
 
         calls: list[list[str]] = []
 
-        async def fake_json(_self: Any, args: list[str]) -> dict[str, Any]:
+        async def fake_json(_self: Any, args: list[str], repo: Any = None) -> dict[str, Any]:
             calls.append(args)
             if args == ["deploy", "--json"]:
                 return PREVIEW
@@ -1296,7 +1481,22 @@ class ServerRegistrationTests(unittest.TestCase):
             tool for tool in asyncio.run(server.list_tools()) if tool.name == "mergetrain_deploy"
         )
         self.assertNotIn("ctx", deploy.input_schema.get("properties", {}))
-        self.assertEqual(set(deploy.input_schema.get("properties", {})), set())
+        self.assertEqual(set(deploy.input_schema.get("properties", {})), {"repo"})
+
+    def test_every_tool_offers_only_a_described_repo_scoping_input(self) -> None:
+        # `repo` is the one added model input; its description is the contract
+        # an agent reads, and it must say unconfigured paths are refused.
+        from mergetrain.mcp_server import build_server
+
+        server = build_server(Path("/repo"))
+        for tool in asyncio.run(server.list_tools()):
+            properties = tool.input_schema.get("properties", {})
+            if tool.name != "mergetrain_deploy":
+                self.assertIn("repo", properties, tool.name)
+            description = str(properties.get("repo", {}).get("description"))
+            self.assertIn("mergetrain init", description, tool.name)
+            self.assertIn("refused", description, tool.name)
+            self.assertNotIn("repo", tool.input_schema.get("required") or [], tool.name)
 
 
 class SubcommandTests(unittest.TestCase):

@@ -78,6 +78,8 @@ Without machine output, argument errors retain the ordinary usage message.
 `status --json` is the one state entry point. Its stable top-level concepts are:
 
 - `health`: `healthy`, `unconfigured`, or `degraded`;
+- `repo`: the resolved repository root this state describes, so a consumer
+  can tell the right repository's empty queue from the wrong repository;
 - `state`: `idle`, `waiting`, `running`, `ready`, or `attention`;
 - `summary`;
 - `next_action`: `code`, nullable `command`, `requires_approval`, nullable

@@ -961,3 +961,14 @@ must be reachable through status without repairing unrelated work first.
 Old ordered approvals, uncertain pushes, changed plans, and manual retries must
 remain blocked at their existing boundaries. Remove any added guidance that
 requires another operator choice instead of using the existing procedure.
+
+## MCP repository-scoping correction — 2026-10-19
+
+Evidence: agents connected through a server launched in one repository trusted
+queue answers for the wrong repository — wrong-scope status read as an empty
+queue, and `health: "unconfigured"` was misread as advice to run init.
+Classification: consolidation of an existing workflow. The five existing tools
+gain one optional `repo` input, refused as `unknown_scope` unless the path is a
+checkout configured by `mergetrain init`, and `status --json` reports its
+resolved `repo` root additively. No new command, tool, or authority; the
+six-command/five-tool baselines are unchanged.

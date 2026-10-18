@@ -1211,6 +1211,7 @@
           "updated_at": null
         }
       },
+      "repo": null,
       "state": null,
       "summary": null,
       "warnings": "[]?"
@@ -1391,6 +1392,7 @@
           "updated_at": null
         }
       },
+      "repo": null,
       "state": null,
       "summary": null,
       "warnings": "[]?"

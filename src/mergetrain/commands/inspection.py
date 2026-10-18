@@ -327,6 +327,9 @@ def cmd_status(args: argparse.Namespace) -> int:
     payload: dict[str, Any] = {
         "ok": True,
         "health": health,
+        # The discriminator between "right repo, empty queue" and "wrong repo":
+        # consumers cannot tell them apart from counts alone.
+        "repo": str(config.repo),
         "state": system_state,
         "summary": _state_summary(system_state, grouped),
         "next_action": plan.to_dict(),

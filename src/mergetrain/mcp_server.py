@@ -13,6 +13,12 @@ cannot start an unattended deploy or a destructive cleanup whatever a prompt
 tells it. ``mergetrain_deploy`` additionally requires a human accept that the
 model cannot fabricate: confirm-then-deploy is a mechanism here, not a rule
 written in prose that an agent may or may not follow.
+
+Each tool takes an optional ``repo`` path naming a different configured
+checkout. A path mergetrain is not configured in is refused with
+``unknown_scope`` rather than answered from the bound repository: an empty
+queue in the wrong scope is indistinguishable from a real one, so the scope
+itself has to fail loudly.
 """
 
 from __future__ import annotations
@@ -33,6 +39,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
+from .config import config_file_path
 from .contract import CONTRACT_VERSION
 from .errors import escape_controls, redact_secrets
 from .windows_job import CREATE_SUSPENDED, WindowsJob
@@ -45,6 +52,14 @@ try:
 except ImportError:  # pragma: no cover - depends on whether the extra is present
     Context = Any  # type: ignore[assignment, misc]
 
+# The parameter contract an agent reads before passing ``repo``: it selects an
+# existing configured checkout, and anything else is refused, not reinterpreted.
+_REPO_PARAM_DESCRIPTION = (
+    "Filesystem path of the mergetrain project root to operate on. Defaults to "
+    "the repository this server was launched in. Must be a checkout already "
+    "configured by `mergetrain init`; any other path is refused."
+)
+
 try:
     from pydantic import BaseModel, Field
 
@@ -53,8 +68,11 @@ try:
 
         confirm: bool = Field(default=False, description="Deploy this validated train now")
 
+    # The plain-str fallback keeps the tool logic importable without the extra.
+    _RepoPath = Annotated[str, Field(description=_REPO_PARAM_DESCRIPTION)]
 except ImportError:  # pragma: no cover - pydantic ships with the mcp extra
     _DeployConfirmation = None  # type: ignore[assignment, misc]
+    _RepoPath = str  # type: ignore[no-redef, misc]
 
 INSTALL_HINT = (
     "the MCP server needs the optional 'mcp' extra: "
@@ -96,6 +114,10 @@ class _DeployPlan:
     summary: str = ""
     command: str = ""
     can_elicit: bool = False
+    # The checkout this plan was resolved for; the guarded deploy call and the
+    # terminal fallback both reuse it, so a human approves and the queue ships
+    # in the same repository.
+    repo: Path | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -338,21 +360,46 @@ class MergetrainTools:
     config: str | None = None
     db: str | None = None
 
-    def _argv(self, args: list[str]) -> list[str]:
+    def _argv(self, args: list[str], repo: Path | None = None) -> list[str]:
         # sys.executable -m keeps the child on this interpreter even when the
         # server was started from a venv that is not first on PATH.
-        selected = ["--repo", str(self.repo)]
+        selected = ["--repo", str(repo if repo is not None else self.repo)]
         if self.config:
             selected += ["--config", self.config]
         if self.db:
             selected += ["--db", self.db]
         return [sys.executable, "-m", "mergetrain", *selected, *args]
 
-    async def _run(self, args: list[str]) -> subprocess.CompletedProcess[str]:
+    def _resolve_repo(self, repo: str) -> tuple[Path | None, dict[str, Any] | None]:
+        """Resolve a model-supplied ``repo`` to the child's ``--repo``, or refuse.
+
+        An empty argument keeps the bound repository the server was launched
+        in. Any other path must name a checkout mergetrain is configured in,
+        checked with the CLI's own config discovery so this check and the
+        child it guards can never disagree about what is configured. A wrong
+        path is refused here rather than falling back silently: an empty
+        queue in the wrong repo is indistinguishable from a real one.
+        """
+
+        if not repo:
+            return None, None
+        resolved = Path(repo).expanduser().resolve()
+        if not resolved.is_dir() or not config_file_path(self.config, resolved).exists():
+            return None, _error(
+                "unknown_scope",
+                f"'{resolved}' is not a checkout configured by 'mergetrain init'; "
+                "pass the root of a configured mergetrain checkout, or omit repo "
+                "to use the repository this server was launched in",
+            )
+        return resolved, None
+
+    async def _run(
+        self, args: list[str], repo: Path | None = None
+    ) -> subprocess.CompletedProcess[str]:
         # Use an async child handle rather than a worker-thread subprocess.run:
         # MCP request cancellation and server shutdown must terminate the CLI
         # process tree instead of returning while validate/deploy keeps running.
-        argv = self._argv(args)
+        argv = self._argv(args, repo)
         popen_options: dict[str, Any] = {
             "stdin": subprocess.DEVNULL,
             "stdout": subprocess.PIPE,
@@ -424,7 +471,7 @@ class MergetrainTools:
         detail = _replace_local_path_root(detail, home, "~")
         return detail[:2000]
 
-    async def _json(self, args: list[str]) -> dict[str, Any]:
+    async def _json(self, args: list[str], repo: Path | None = None) -> dict[str, Any]:
         """Run a --json command and return its payload untouched.
 
         A failing command still emits the contract's failure envelope, so a
@@ -434,7 +481,7 @@ class MergetrainTools:
 
         command = _display_command(args)
         try:
-            completed = await self._run(args)
+            completed = await self._run(args, repo)
         except subprocess.TimeoutExpired:
             message = f"'mergetrain {command}' exceeded {_CLI_TIMEOUT_SECONDS}s and was stopped"
             if args[:1] == ["deploy"]:
@@ -463,17 +510,36 @@ class MergetrainTools:
 
     # --- read-only -------------------------------------------------------
 
-    async def status(self, limit: int = 20) -> dict[str, Any]:
-        """Current queue state, action-required work, and the exact next action."""
+    async def status(self, limit: int = 20, repo: _RepoPath = "") -> dict[str, Any]:
+        """Current queue state, action-required work, and the exact next action.
 
-        return await self._json(["status", "--json", "--limit", str(max(1, min(limit, 200)))])
+        The payload's ``repo`` field names the checkout that answered; treat a
+        mismatch with the project being worked on as wrong scope, not as an
+        empty queue.
+        """
 
-    async def _inspect_job(self, job_id: int) -> dict[str, Any]:
+        scope, refusal = self._resolve_repo(repo)
+        if refusal is not None:
+            return refusal
+        return await self._json(
+            ["status", "--json", "--limit", str(max(1, min(limit, 200)))],
+            repo=scope,
+        )
+
+    async def _inspect_job(
+        self, job_id: int, repo: Path | None = None
+    ) -> dict[str, Any]:
         """One job with its latest run, failure category, and train outcome."""
 
-        return await self._json(["inspect", str(job_id), "--json"])
+        return await self._json(["inspect", str(job_id), "--json"], repo=repo)
 
-    async def _events(self, job_id: int, limit: int = 50, after: int = 0) -> dict[str, Any]:
+    async def _events(
+        self,
+        job_id: int,
+        limit: int = 50,
+        after: int = 0,
+        repo: Path | None = None,
+    ) -> dict[str, Any]:
         """One job's recent runner event frames, bounded and never following.
 
         Returns the CLI's own JSONL frames under ``frames``; the frames
@@ -493,7 +559,7 @@ class MergetrainTools:
         if after:
             args += ["--after", str(after)]
         try:
-            completed = await self._run(args)
+            completed = await self._run(args, repo)
         except subprocess.TimeoutExpired:
             return _error("cli_timeout", f"'mergetrain {' '.join(args)}' timed out")
         frames: list[dict[str, Any]] = []
@@ -512,7 +578,9 @@ class MergetrainTools:
             return _error("cli_output_unreadable", f"events failed: {detail}")
         return {"contract_version": CONTRACT_VERSION, "frames": frames}
 
-    async def _logs(self, job_id: int, tail: int = 200) -> dict[str, Any]:
+    async def _logs(
+        self, job_id: int, tail: int = 200, repo: Path | None = None
+    ) -> dict[str, Any]:
         """A capped tail of one job's runner log. Never follows.
 
         The log is plain text, so this returns text rather than a queue payload;
@@ -522,7 +590,7 @@ class MergetrainTools:
         lines = max(1, min(tail, _LOG_TAIL_MAX_LINES))
         args = ["logs", str(job_id), "--tail", str(lines)]
         try:
-            completed = await self._run(args)
+            completed = await self._run(args, repo)
         except subprocess.TimeoutExpired:
             return _error("cli_timeout", f"'mergetrain {' '.join(args)}' timed out")
         if completed.returncode != 0:
@@ -545,19 +613,24 @@ class MergetrainTools:
         detail: Literal["summary", "events", "logs"] = "summary",
         limit: int = 100,
         after_event_id: int = 0,
+        repo: _RepoPath = "",
     ) -> dict[str, Any]:
         """Inspect one job; request bounded events or raw log text explicitly."""
 
+        scope, refusal = self._resolve_repo(repo)
+        if refusal is not None:
+            return refusal
         if detail == "summary":
-            return await self._inspect_job(job_id)
+            return await self._inspect_job(job_id, repo=scope)
         if detail == "events":
             return await self._events(
                 limit=limit,
                 job_id=job_id,
                 after=after_event_id,
+                repo=scope,
             )
         if detail == "logs":
-            return await self._logs(job_id, tail=limit)
+            return await self._logs(job_id, tail=limit, repo=scope)
         return _error(
             "invalid_inspect_detail",
             "detail must be one of: summary, events, logs",
@@ -565,7 +638,7 @@ class MergetrainTools:
 
     # --- mutating, but never shipping ------------------------------------
 
-    async def validate(self) -> dict[str, Any]:
+    async def validate(self, repo: _RepoPath = "") -> dict[str, Any]:
         """Validate the queued train without pushing anything.
 
         Run it only when the user explicitly asked for validation or for the
@@ -576,9 +649,14 @@ class MergetrainTools:
         claiming otherwise to the client.
         """
 
-        return await self._json(["validate", "--json"])
+        scope, refusal = self._resolve_repo(repo)
+        if refusal is not None:
+            return refusal
+        return await self._json(["validate", "--json"], repo=scope)
 
-    async def enqueue(self, task: str, branch: str) -> dict[str, Any]:
+    async def enqueue(
+        self, task: str, branch: str, repo: _RepoPath = ""
+    ) -> dict[str, Any]:
         """Queue a committed branch, pinning the SHA that was reviewed.
 
         The CLI always captures the exact clean commit, so later work on the
@@ -586,19 +664,30 @@ class MergetrainTools:
         unattended deploy is not reachable from here.
         """
 
-        return await self._json(["enqueue", "--task", task, "--branch", branch, "--json"])
+        scope, refusal = self._resolve_repo(repo)
+        if refusal is not None:
+            return refusal
+        return await self._json(
+            ["enqueue", "--task", task, "--branch", branch, "--json"],
+            repo=scope,
+        )
 
     # --- ships code, human-gated -----------------------------------------
 
-    async def prepare_deploy(self, ctx: Context) -> _DeployPlan:
+    async def prepare_deploy(self, ctx: Context, repo: _RepoPath = "") -> _DeployPlan:
         """Validate if needed and resolve the exact plan shown to the human.
 
         There is no model-supplied confirmation or train selector. The CLI owns
         the single-Ready invariant, and the accept comes only through MCP
-        elicitation.
+        elicitation. A ``repo`` argument scopes the whole chain -- preview,
+        final call, and terminal fallback -- to that one checkout, so the plan
+        a human approves and the queue it lands in are the same repository.
         """
 
-        preview = await self._json(["deploy", "--json"])
+        scope, refusal = self._resolve_repo(repo)
+        if refusal is not None:
+            return _DeployPlan(refusal=refusal)
+        preview = await self._json(["deploy", "--json"], repo=scope)
         if preview.get("ok") is False:
             return _DeployPlan(refusal=preview)
         if preview.get("result") in {"partial", "failed"}:
@@ -657,8 +746,12 @@ class MergetrainTools:
             for warning in preview.get("warnings") or []
             if warning.get("summary")
         ]
+        resolved_repo = (scope if scope is not None else self.repo).expanduser().resolve()
         summary = "\n".join(
             [
+                # First, because scope confusion must be visible before the
+                # counts it would explain away.
+                f"Repository: {escape_controls(str(resolved_repo))}",
                 changes,
                 *job_lines,
                 f"Destination: {destination} ({refs or 'configured refs'})",
@@ -669,7 +762,7 @@ class MergetrainTools:
             ]
         )
         train_id = str(jobs[0].get("train_id") or "") if jobs else ""
-        command_args = ["mergetrain", "--repo", str(self.repo.expanduser().resolve())]
+        command_args = ["mergetrain", "--repo", str(resolved_repo)]
         if self.config:
             command_args += ["--config", self.config]
         if self.db:
@@ -681,6 +774,7 @@ class MergetrainTools:
             summary=summary,
             command=command,
             can_elicit=_client_can_elicit(ctx),
+            repo=scope,
         )
 
     async def deploy(self, plan: _DeployPlan, approval: Any) -> dict[str, Any]:
@@ -712,7 +806,8 @@ class MergetrainTools:
                 "--expected-plan",
                 plan.plan_sha,
                 "--json",
-            ]
+            ],
+            repo=plan.repo,
         )
 
 
@@ -805,12 +900,21 @@ def build_server(repo: Path, *, config: str | None = None, db: str | None = None
             "explicitly authorized. Never push integration refs directly. "
             "mergetrain_deploy ships code and requires a client-rendered human "
             "accept; unattended deploy, recovery, cancellation, and destructive "
-            "cleanup are not available through this server."
+            "cleanup are not available through this server. "
+            "Every tool also accepts an optional repo argument naming the "
+            "mergetrain project root to operate on, which must be a checkout "
+            "already configured by mergetrain init. Before trusting queue state, "
+            "check that the repo field in mergetrain_status output matches the "
+            "project being worked on: health \"unconfigured\" or a repo mismatch "
+            "means wrong scope, not an empty queue; fall back to the CLI with "
+            "--repo."
         ),
     )
 
-    async def resolve_deploy_plan(ctx: Context) -> _DeployPlan:
-        return await tools.prepare_deploy(ctx)
+    async def resolve_deploy_plan(ctx: Context, repo: str = "") -> _DeployPlan:
+        # ``repo`` arrives by name from the tool's own arguments, so the plan
+        # is scoped before anything is shown to or answered by a human.
+        return await tools.prepare_deploy(ctx, repo=repo)
 
     async def resolve_deploy_confirmation(plan: _DeployPlan) -> Any:
         if plan.refusal is not None:
@@ -833,9 +937,14 @@ def build_server(repo: Path, *, config: str | None = None, db: str | None = None
         Elicit[_DeployConfirmation] | _ConfirmationSkipped
     )
 
-    async def deploy_tool(plan: Any, approval: Any) -> dict[str, Any]:
+    async def deploy_tool(
+        plan: Any, approval: Any, repo: _RepoPath = ""
+    ) -> dict[str, Any]:
         """Deploy one exact validated plan after client-rendered human confirmation."""
 
+        # ``repo`` is model-visible only so the plan resolver can scope to it;
+        # this body acts on the resolved plan, which carries the validated
+        # repository, never on the raw string.
         return await tools.deploy(plan, approval)
 
     deploy_tool.__annotations__["plan"] = plan_dependency

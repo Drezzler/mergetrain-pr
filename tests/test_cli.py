@@ -913,6 +913,34 @@ class CliTests(unittest.TestCase):
             self.assertEqual(payload["next_action"]["code"], "initialize_config")
             self.assertEqual(payload["next_action"]["command"], "mergetrain init --write")
 
+    def test_status_names_the_repository_it_answered_for(self) -> None:
+        # A consumer that cannot tell which repository answered cannot tell
+        # an empty queue from the wrong queue; `repo` is that discriminator.
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            out = io.StringIO()
+            with redirect_stdout(out):
+                code = main(["--repo", str(repo), "status", "--json"])
+            payload = json.loads(out.getvalue())
+            self.assertEqual(code, 0)
+            self.assertEqual(payload["repo"], str(repo.resolve()))
+
+    def test_status_reports_the_checkout_root_from_a_nested_directory(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            repo = Path(td)
+            subprocess.run(["git", "init", "-q", str(repo)], check=True)
+            (repo / ".mergetrain.yaml").write_text(
+                render_default_config("scope"), encoding="utf-8"
+            )
+            nested = repo / "packages" / "app"
+            nested.mkdir(parents=True)
+            out = io.StringIO()
+            with redirect_stdout(out):
+                main(["--repo", str(nested), "status", "--json"])
+            payload = json.loads(out.getvalue())
+            self.assertEqual(payload["repo"], str(repo.resolve()))
+
     def test_next_action_points_at_init_before_any_queue_advice(self) -> None:
         # An unconfigured repo used to be told to enqueue a branch, which
         # enqueue then refused with config_error. next_action is the signal

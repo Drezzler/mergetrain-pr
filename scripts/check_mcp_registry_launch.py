@@ -213,7 +213,10 @@ def smoke(
         assert deploy is not None
         schema = deploy.get("inputSchema") or {}
         properties = schema.get("properties") or {}
-        if properties or schema.get("required"):
+        # `repo` is the one admitted model input: it selects an existing
+        # configured checkout and is refused otherwise. It is not a train
+        # selector or an approval input, which must stay absent.
+        if set(properties) - {"repo"} or schema.get("required"):
             raise RuntimeError(
                 "mergetrain_deploy must not accept model-supplied selection or "
                 f"approval inputs; received properties={sorted(properties)}"

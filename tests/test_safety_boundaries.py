@@ -310,10 +310,13 @@ class ConfirmationTextTests(unittest.TestCase):
                     plan = asyncio.run(tools.prepare_deploy(FakeContext()))
                 lines = plan.summary.splitlines()
                 self.assertEqual(_hidden_characters(plan.summary), [])
-                self.assertEqual(lines[0], "Changes (2 jobs):")
-                self.assertEqual(lines[1], "  #11 Legit fix (agent/legit)")
-                self.assertTrue(lines[2].startswith("  #12 "), lines[2])
-                self.assertTrue(lines[3].startswith("Destination: "), lines[3])
+                # The scope line leads: wrong-repo confusion must be visible
+                # before the counts it would explain away.
+                self.assertTrue(lines[0].startswith("Repository: "), lines[0])
+                self.assertEqual(lines[1], "Changes (2 jobs):")
+                self.assertEqual(lines[2], "  #11 Legit fix (agent/legit)")
+                self.assertTrue(lines[3].startswith("  #12 "), lines[3])
+                self.assertTrue(lines[4].startswith("Destination: "), lines[4])
 
     def test_escapes_read_as_python_escapes_and_keep_ordinary_text(self) -> None:
         self.assertEqual(escape_controls("x\ry\x1b\x9b"), "x\\x0dy\\x1b\\x9b")

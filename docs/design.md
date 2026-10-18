@@ -88,8 +88,10 @@ blocking CI check. It enforces the dependency direction described above:
 - Git/process/gate/worktree collaborators do not import the `GitRunner`
   coordinator;
 - MCP stays independent of core business logic and uses only the machine
-  contract plus the shared error-redaction primitive; the Hub read model uses
-  only its documented config, snapshot, and transaction dependencies;
+  contract, the shared error-redaction primitive, and the CLI's config-file
+  discovery (which validates a per-call `repo` argument before any child runs);
+  the Hub read model uses only its documented config, snapshot, and transaction
+  dependencies;
 - production modules have no internal import cycles.
 
 The same check has a deliberately coarse monolith backstop: Python production
