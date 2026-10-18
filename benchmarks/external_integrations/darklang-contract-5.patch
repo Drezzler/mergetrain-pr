@@ -1,0 +1,29 @@
+--- a/land
++++ b/land
+@@ -126 +126 @@
+-if [[ "$contract_version" != "4" ]]; then
++if [[ "$contract_version" != "4" && "$contract_version" != "5" ]]; then
+--- a/scripts/mergetrain_fifo.py
++++ b/scripts/mergetrain_fifo.py
+@@ -196 +196 @@
+-    if snapshot.get("contract_version") != 4:
++    if snapshot.get("contract_version") not in {4, 5}:
+--- a/scripts/render_mergetrain_status.py
++++ b/scripts/render_mergetrain_status.py
+@@ -247 +247 @@
+-    if not isinstance(inspection, dict) or inspection.get("contract_version") != 4:
++    if not isinstance(inspection, dict) or inspection.get("contract_version") not in {4, 5}:
+@@ -848 +848 @@
+-    if payload.get("contract_version") != 4:
++    if payload.get("contract_version") not in {4, 5}:
+--- a/scripts/run-mergetrain-integrator.sh
++++ b/scripts/run-mergetrain-integrator.sh
+@@ -582 +582 @@
+-    if [[ "$(json_value contract_version <<<"$pre_snapshot")" == "4" ]]; then
++    if [[ "$(json_value contract_version <<<"$pre_snapshot")" == "4" || "$(json_value contract_version <<<"$pre_snapshot")" == "5" ]]; then
+@@ -661 +661 @@
+-      if [[ "$live_contract_version" == "4" ]]; then
++      if [[ "$live_contract_version" == "4" || "$live_contract_version" == "5" ]]; then
+@@ -705 +705 @@
+-  if [[ "$contract_version" != "4" ]]; then
++  if [[ "$contract_version" != "4" && "$contract_version" != "5" ]]; then

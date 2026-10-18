@@ -153,6 +153,10 @@ class DuplicateActiveBranch(QueueError):
     A blocked/failed job can be replaced with retry after its branch is fixed;
     queued or in-progress jobs cannot be retried."""
 
+    def __init__(self, message: str, *, existing_job_id: int | None = None):
+        super().__init__(message)
+        self.existing_job_id = existing_job_id
+
 
 class PushRejected(MergetrainError):
     """Raised when the remote rejects the deploy push for a permission/policy

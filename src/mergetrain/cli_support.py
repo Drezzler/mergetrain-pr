@@ -16,7 +16,7 @@ from .config import (
 )
 from .contract import CONTRACT_VERSION
 from .errors import ConfigError
-from .persistence.jobs import counts, validated_train_summaries
+from .persistence.jobs import counts, ordered_head, validated_train_summaries
 from .persistence.leases import get_lock
 from .snapshot import next_action as _doctor_next_action
 
@@ -176,4 +176,5 @@ def _recovery_next_action(conn, config: MergetrainConfig) -> str:
             "config_exists": config.config_exists,
         },
         config_version=config.config_version,
+        ordered_job=ordered_head(conn) if config.queue.processing == "ordered" else None,
     )

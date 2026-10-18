@@ -51,6 +51,7 @@ from .contract import CONTRACT_VERSION
 from .errors import (
     CommandFailed,
     ConfigError,
+    DuplicateActiveBranch,
     MergetrainError,
     QueueBusy,
     QueueError,
@@ -159,6 +160,10 @@ def build_parser(*, structured_errors: bool = False) -> argparse.ArgumentParser:
 
     p_retry = subparsers.add_parser("retry")
     p_retry.add_argument("job_id", type=int)
+    p_retry.add_argument(
+        "--branch", help="Use a clean repair branch while preserving the original task checkout",
+    )
+    p_retry.add_argument("--auto", action="store_true", help=argparse.SUPPRESS)
     p_retry.add_argument(
         "--rebase",
         action="store_true",
@@ -541,6 +546,8 @@ def main(argv: Sequence[str] | None = None) -> int:
             str(exc),
             retryable=type(exc).__name__ in {"LockHeld", "LostLease", "QueueBusy"},
         )
+        if isinstance(exc, DuplicateActiveBranch) and exc.existing_job_id is not None:
+            error_payload["existing_job_id"] = exc.existing_job_id
         reason, exit_code, text = "error", 1, f"mergetrain: error: {exc}"
     if getattr(args, "json", False):
         dump_json(error_payload)

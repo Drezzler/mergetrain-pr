@@ -86,6 +86,7 @@ class QueueConfig:
     daemon_interval_seconds: int = 15
     heartbeat_interval_seconds: int = 10
     command_timeout_seconds: int = 3600
+    processing: str = "batch"
 
 
 @dataclass(frozen=True, slots=True)
@@ -782,6 +783,9 @@ def load_config(
         raise ConfigError(
             "queue.heartbeat_interval_seconds must be shorter than queue.lock_ttl_minutes"
         )
+    processing = queue_data.get("processing", "batch")
+    if not isinstance(processing, str) or processing not in {"batch", "ordered"}:
+        raise ConfigError("queue.processing must be 'batch' or 'ordered'")
     queue = QueueConfig(
         lock_ttl_minutes=lock_ttl_minutes,
         daemon_interval_seconds=_positive_int(
@@ -793,6 +797,7 @@ def load_config(
             queue_data.get("command_timeout_seconds", 3600),
             key="queue.command_timeout_seconds",
         ),
+        processing=processing,
     )
 
     notify_data = _as_mapping(data, "notify")

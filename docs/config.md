@@ -258,6 +258,46 @@ commands renew the lease every `heartbeat_interval_seconds`; the heartbeat must
 be shorter than the TTL. `command_timeout_seconds` terminates a command and
 marks the affected job failed. All queue timing values must be positive.
 
+`processing` is a repository-wide setting. **Keep the default `batch` for
+ordinary parallel agent work.** It combines eligible queued jobs available
+when a runner claims work and does not wait for other agents to finish.
+For example, a login fix, a search filter, and an admin-screen change can share
+checks. If one fails, compatible work can land after failure isolation and
+checks on the remaining combination. A repaired job joins the back on `retry`.
+
+Choose `ordered` only when each submission needs a separate landing and must
+keep its original position through repair. For example, compiler agents can
+measure each optimization against the preceding landed result. If the middle
+submission fails, later landings wait for its repair or explicit cancellation.
+See the [agent work examples](best-practices.md#choose-batch-or-ordered).
+
+**Release availability:** `ordered` requires **3.6.0 or newer**. Keep the default
+`batch` for ordinary parallel work and follow the [upgrade procedure](upgrading.md)
+before enabling ordered processing.
+
+To select ordered processing in a version that supports it:
+
+```yaml
+queue:
+  processing: ordered
+```
+
+`ordered` admits only the earliest submission not yet landed, including its
+replacement after `retry`. A blocked/failed head and a manual head waiting for
+approval hold later work. A successful Git push completes that position.
+Post-push verification failures or unknown results remain in Attention and
+history while later submissions can land, as in batch mode. An uncertain push
+still blocks progress until reconciliation determines what landed.
+Cancellation or dismissal explicitly resolves a position. Task agents can
+continue submitting finished work; they use the same commands and MCP tools.
+This can increase gate/verify runs compared with batching. It provides no
+dependency scheduling or reservation before work starts.
+
+Before changing processing, finish in-flight work and deploy or dismiss any
+Ready train. The change is part of execution-policy approval; existing auto
+jobs from the other policy block rather than silently gaining new behavior.
+Follow [the upgrade procedure](upgrading.md) when older runners are installed.
+
 ## `notify`
 
 ```yaml

@@ -28,7 +28,12 @@ from ..observability import _gate_runs
 from ..persistence.claims import claim_all_queued, claim_deploy_batch
 from ..persistence.connection import connect
 from ..persistence.events import list_history_events
-from ..persistence.jobs import counts, select_validated_train, validated_train_summaries
+from ..persistence.jobs import (
+    counts,
+    ordered_head,
+    select_validated_train,
+    validated_train_summaries,
+)
 from ..persistence.leases import default_owner, release_runner_lock
 from ..persistence.recovery import deploy_reconcile_pending
 from ..reuse import reuse_explanation
@@ -127,6 +132,13 @@ def _run_claimed(
     """Run a claimed train, release its lease, and return the run payload."""
 
     if not jobs:
+        head = ordered_head(conn) if config.queue.processing == "ordered" else None
+        if head is not None:
+            return {
+                **_results_payload([]), "result": "failed",
+                "note": f"ordered processing waits for job {head.id} ({head.status}); "
+                "read mergetrain status --json",
+            }
         return {**_results_payload([]), "note": "no queued jobs"}
     lease_token = jobs[0].claim_token
     try:
@@ -188,6 +200,7 @@ def _execute_batch(
                 ttl_minutes=config.queue.lock_ttl_minutes,
                 train_id=getattr(args, "train_id", ""),
                 confirm_plan=confirm_plan,
+                processing=config.queue.processing,
             )
             if not jobs:
                 # The claim re-checks reconcile inside its own transaction and
@@ -207,6 +220,7 @@ def _execute_batch(
                 owner=owner,
                 ttl_minutes=config.queue.lock_ttl_minutes,
                 unless_ready=True,
+                processing=config.queue.processing,
             )
             if not jobs and any(
                 train.get("deploy_eligible") for train in validated_train_summaries(conn)
@@ -321,6 +335,7 @@ def cmd_deploy(args: argparse.Namespace) -> int:
                 owner=owner,
                 ttl_minutes=config.queue.lock_ttl_minutes,
                 unless_ready=True,
+                processing=config.queue.processing,
             )
             validation_payload = _run_claimed(
                 conn, config, args, jobs, owner=owner, deploy=False

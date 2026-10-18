@@ -182,6 +182,21 @@ def _cap_inspect(repo):
     return _run_json(["--repo", str(repo), "inspect", str(job.id)])
 
 
+def _cap_inspect_failed(repo):
+    from mergetrain.persistence.jobs import mark_job
+
+    conn = connect(_db(repo))
+    job = enqueue_job(conn, task="a", branch="feature/a")
+    mark_job(conn, job.id, status="failed", note="gate failed")
+    conn.close()
+    return _run_json(["--repo", str(repo), "inspect", str(job.id)])
+
+
+def _cap_duplicate_enqueue(repo):
+    _cap_enqueue(repo)
+    return _run_json(["--repo", str(repo), "enqueue", "--task", "repeat", "--branch", "feature/a"])
+
+
 def _seed_history(repo):
     conn = connect(_db(repo))
     conn.execute(
@@ -495,6 +510,8 @@ SURFACES = {
     "init": _cap_init,
     "deploy_preview": _cap_deploy_preview,
     "inspect": _cap_inspect,
+    "inspect_failed": _cap_inspect_failed,
+    "duplicate_enqueue": _cap_duplicate_enqueue,
     "history": _cap_history,
     "stats": _cap_stats,
     "failure_envelope": _cap_failure_envelope,

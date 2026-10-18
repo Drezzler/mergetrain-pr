@@ -2833,7 +2833,11 @@ deploy:
         # same best-effort situation production handles via gc.
         with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as td:
             root = Path(td)
-            gate = f'{SHELL_PYTHON} -c "import time; time.sleep(10)"'
+            gate_ready = root / "gate-ready.txt"
+            gate = (
+                f"{SHELL_PYTHON} -c \"import time; from pathlib import Path; "
+                f"Path('{py_path(gate_ready)}').write_text('ready'); time.sleep(10)\""
+            )
             repo, _marker = make_demo_repo(root, gate_command=gate)
             config = load_config(repo=repo)
             owner = f"runner:{os.getpid()}"
@@ -2865,7 +2869,13 @@ deploy:
 
             worker = threading.Thread(target=run)
             worker.start()
-            time.sleep(0.5)
+            # Git setup can exceed 0.5s on a busy Windows runner. Wait for the
+            # actual long-running gate, so cancellation cannot race setup.
+            deadline = time.monotonic() + 15
+            while worker.is_alive() and not gate_ready.is_file() and time.monotonic() < deadline:
+                time.sleep(0.05)
+            self.assertEqual(errors, [])
+            self.assertTrue(gate_ready.is_file(), f"gate did not start; results={results}")
             control = connect(config.state.db)
             active = get_job(control, job.id)
             self.assertTrue(active.log_path)

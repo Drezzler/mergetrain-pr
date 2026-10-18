@@ -869,7 +869,7 @@ def inspect_job_payload(
                 for item in train_jobs
             ],
         }
-    return {
+    payload: dict[str, Any] = {
         "ok": True,
         "job": job.to_dict(),
         "outcome": job_outcome(job),
@@ -877,6 +877,9 @@ def inspect_job_payload(
         "train": train,
         "events": [event.to_dict() for event in events],
     }
+    if job.status in {"blocked", "failed"} and not job.pending_deploy_sha:
+        payload["retry_command"] = f"mergetrain retry {job.id}"
+    return payload
 
 
 def event_record(

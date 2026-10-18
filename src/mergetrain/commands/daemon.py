@@ -66,6 +66,11 @@ def cmd_daemon(args: argparse.Namespace) -> int:
         latest = approval_snapshot[0] if approval_snapshot else current_config()
         return deploy_execution_policy_sha(latest)
 
+    def current_processing() -> str:
+        if args.validate_only or not approval_snapshot:
+            approval_snapshot[:] = [current_config()]
+        return approval_snapshot[0].queue.processing
+
     def process_batch(conn, jobs: list[Job]) -> object:  # type: ignore[no-untyped-def]
         # Run the config the claim just compared with each job's approval. A
         # reload could read a file edited after the claim, and the runner's
@@ -95,6 +100,7 @@ def cmd_daemon(args: argparse.Namespace) -> int:
         notification_transitions=config.notify.transitions,
         notification_state_path=repo_notify_state_path(config.state.db),
         validate_only=args.validate_only,
+        processing=current_processing,
         approval_destination_sha=(
             "" if args.validate_only else current_destination_sha
         ),

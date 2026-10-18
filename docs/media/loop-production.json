@@ -1,5 +1,68 @@
 {
-  "duration_seconds": 24,
+  "processing_mode": "batch",
+  "timeline": [
+    [
+      0,
+      0
+    ],
+    [
+      1.8,
+      2.2
+    ],
+    [
+      2.8,
+      2.8
+    ],
+    [
+      3.5,
+      3.8
+    ],
+    [
+      5.7,
+      7.1
+    ],
+    [
+      7.2,
+      10.4
+    ],
+    [
+      8.4,
+      12.7
+    ],
+    [
+      10.5,
+      15.3
+    ],
+    [
+      12.4,
+      18.7
+    ],
+    [
+      13.85,
+      23.8
+    ],
+    [
+      14,
+      24
+    ]
+  ],
+  "primary_messages": [
+    {
+      "id": "passing-first",
+      "lines": [
+        "Passing work",
+        "lands first."
+      ]
+    },
+    {
+      "id": "keep-building",
+      "lines": [
+        "Keep building",
+        "during checks."
+      ]
+    }
+  ],
+  "duration_seconds": 14,
   "width": 960,
   "height": 800,
   "frames_per_second": 24,
@@ -10,7 +73,7 @@
     "frames_per_second": 20
   },
   "method": "Code-authored summary of recorded CLI results. No invented product UI or terminal output. Time is condensed; this is not a performance benchmark.",
-  "design": "Four agent identities stay visible. Work A-D returns or moves ahead; E-F appears at 3.8 seconds while A-B is checked. G-H starts during E-F validation, and I-J follows deployment. Letters track recorded work across repair and replacement jobs; dashed cards are unsubmitted drafts. Applied work remains visible. Only work markers transition at replay; agents and paths do not dissolve.",
+  "design": "Two large messages stay visible for all 14 seconds: Passing work lands first and Keep building during checks. Landing is emphasized first; the next-task message turns blue when overlapping work begins. Passing C-D is retained while A-B is visibly repaired. Four agent identities stay visible; new work is labeled Next task in the same lanes, beginning at 3.5 seconds during checks. Letters remain evidence identifiers without a letter-by-letter narration. Applied receipts are grouped by batch. G-H starts during E-F validation; I-J follows deployment. Dashed cards remain unsubmitted drafts. The poster contains both messages. Agents and paths stay visible through replay.",
   "source_commit": "0be337d36305995865c150c1b3c475284ccc8cf8",
   "runtime_version": "3.5.0",
   "scope": "Disposable local Git repository and bare remote; no hosted production deployment.",
@@ -122,23 +185,23 @@
       "visualId": "J"
     }
   ],
-  "first_overlap_seconds": 3.8,
+  "first_overlap_seconds": 3.5,
   "assets": {
     "mergetrain-loop.mp4": {
-      "bytes": 706393,
-      "sha256": "ca7de1da52a733d7c33f45bf36c41081798303b2736a5be21edcf08393761ba0"
+      "bytes": 491477,
+      "sha256": "1e2c3d91714ff33f8faa712f757c01fa194f5309b86cab16b6a350697453f659"
     },
     "mergetrain-loop.gif": {
-      "bytes": 1549207,
-      "sha256": "2509de92da924eb591e1e12b4b187204c2b957f57759347ab0e1048e2e5ea54d"
+      "bytes": 1046629,
+      "sha256": "3e62de9895b8b28d00516508c2641876da493c33fc73e132e032012d4b96c0b2"
     },
     "mergetrain-loop-poster.png": {
-      "bytes": 100678,
-      "sha256": "fcd79330a80d7098ffe45b67f64f5bb05ceaa5667c476d6c605640d41c80ef9e"
+      "bytes": 100052,
+      "sha256": "56d261f82d438947aaf82ef923d08442119e00528b9f377616c44a8f723f279f"
     },
     "mergetrain-loop-poster.svg": {
-      "bytes": 8429,
-      "sha256": "b5e3d9e7fc611efb4b1f8623dd7f5c9fe5c3853bb277c1dc19b42332e53d2ba0"
+      "bytes": 7989,
+      "sha256": "45faf20fd0783c1e9c8037a66531b71aeb0da75295c493e21f2373dd185e2766"
     }
   }
 }

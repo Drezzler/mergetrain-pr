@@ -25,15 +25,20 @@ services.
 
 ## Keep building through the fix
 
-Four agents stay in view. By the first five seconds, mergetrain is checking
-work A and B while two agents build new work E and F. The letters follow each
-piece of work through fixes and checks. Applied changes stay in the project;
-the agents keep starting the next work.
+**Default batch mode: passing work lands first.** Work that needs a fix
+returns to its agent. Passing work can land while the repair continues.
 
-[![Four visible agents: A and B are checked while E and F are built within five seconds. G and H start during the next check. Applied work stays in the project.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=2509de92da92)](https://yongjip.github.io/mergetrain/#demo)
+**Keep building during checks.** Agents start their next task while mergetrain
+checks earlier work. This 14-second loop keeps the same four agents in view.
+
+[![Default batch mode: passing work lands while other work is repaired. Agents start the next task during checks.](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop.gif?v=3e62de9895b8)](https://yongjip.github.io/mergetrain/#demo)
+
+Agents can keep building in both modes. In ordered mode, an unresolved earlier
+submission holds later landings.
+[Compare the two modes](docs/best-practices.md#choose-batch-or-ordered).
 
 [Pause or replay the demo](https://yongjip.github.io/mergetrain/#demo) ·
-[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=fcd79330a80d) ·
+[View the still image](https://raw.githubusercontent.com/yongjip/mergetrain/main/docs/images/mergetrain-loop-poster.png?v=56d261f82d43) ·
 [Reproduce the continuous workflow](docs/development.md#documentation-media)
 
 <details>
@@ -51,7 +56,7 @@ the final remote passes six tests.
 
 G and H then refresh onto that result without losing their edits. I and J start
 there too. These four drafts remain unsubmitted. Your agents or operator create,
-fix, refresh and resubmit work; mergetrain checks and integrates it. The 24-second
+fix, refresh and resubmit work; mergetrain checks and integrates it. The 14-second
 animation repeats this recorded window with condensed timing.
 
 </details>
@@ -69,7 +74,7 @@ pushes. Repeating these actions can slow parallel work.
 mergetrain records this workflow in a durable local queue:
 
 ```text
-agent branches → ordered queue → isolated integration worktree → combined gates
+agent branches → local queue → isolated integration worktree → combined gates
                → explicit approval → one atomic push → post-push verification
 ```
 
@@ -99,6 +104,35 @@ You probably do not need mergetrain when:
 
 For PR-first teams, use GitHub Merge Queue or GitLab Merge Trains. mergetrain is
 for local-agent, worktree-first integration, with or before a PR.
+
+## Batch by default; ordered when needed
+
+**Start with `batch`, the default.** It suits independent work from parallel
+agents. The runner combines the queued work available when it starts; it does
+not wait for every agent to finish. Compatible work can land while an agent
+repairs a failed submission.
+
+Use `ordered` when each change needs its own landing and the original
+submission order must survive a failure and retry.
+
+| Comparison | `batch` (default) | `ordered` (optional) |
+| --- | --- | --- |
+| Agent work example | A fixes login, B adds search filters, C updates the admin screen | A, B, and C make compiler optimizations; measure each change against the previous landed result |
+| Landing unit | Available submissions together | One submission at a time |
+| If B fails | After isolating B and passing checks on A+C, A+C can land | A can land; C waits until B is repaired and lands, or is explicitly canceled |
+| B after `retry` | Joins the back of the queue | Keeps B's original position, before C |
+
+Both modes let agents start their next task after handoff. Both keep deploy
+approval and the default pre-push recheck. Ordered processing can run checks
+more often because each submission lands separately. Queue order starts at
+submission, not when an agent starts work, and does not express code dependencies.
+Order ends at a successful Git landing. Post-push verification warnings remain
+visible while later work proceeds; an uncertain push still requires reconciliation.
+
+**Availability:** `ordered` is available in **3.6.0 and newer**.
+Keep the default `batch` for ordinary parallel agent work.
+See the [agent work examples](docs/best-practices.md#choose-batch-or-ordered),
+[configuration](docs/config.md#queue), and [upgrade procedure](docs/upgrading.md).
 
 ## Enforcement boundary
 

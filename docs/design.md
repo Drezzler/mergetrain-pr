@@ -17,6 +17,18 @@ This document describes the model and how the pieces fit together. For task-orie
 9. Each job is marked `validated`, `deployed`, `blocked`, or `failed`.
 10. Temporary worktrees are removed unless `--keep-worktree` is set.
 
+The default `queue.processing: batch` combines queued work. Optional `ordered`
+processing claims only the earliest unresolved `queue_order`. Each original
+submission starts at its job ID; `retry` transfers its position to a fresh job
+in the same transaction that cancels the failed attempt. The order survives
+restart without an adapter ledger. Ordered claims cannot pass a failed,
+blocked or unapproved earlier submission. A successful Git landing completes
+its ordered position; post-push verification warnings remain visible without
+holding later submissions. An uncertain push still requires reconciliation.
+Existing runner leases,
+atomic pushes, reconciliation, confirmation, and default rechecks are shared.
+Processing policy is approval-bound; the default batch identity is unchanged.
+
 Task agents never push deploy refs themselves; they enqueue the exact committed
 HEAD and stop. One separately authorized runner (or daemon) owns merge, test,
 push, and verify. Ordinary task or integration intent is not deploy approval.

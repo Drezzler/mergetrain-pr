@@ -14,7 +14,7 @@ from ..errors import ConfigError
 _AGENT_RULES = (
     "Work on a task-specific branch and worktree.",
     "Commit a clean HEAD before handing work off.",
-    "Read mergetrain status --json and follow its next action before changing queue state.",
+    "Read mergetrain status --json before handoff. Task agents submit finished branches; an authorized runner follows next_action for validation, deployment, and recovery.",
     "Enqueue every named finished branch in the requested order using only its task and branch; mergetrain resolves the worktree and captures the exact commits. Stop after the last successful enqueue unless the user explicitly authorized validation or the complete validation-and-deployment workflow.",
     "Never push configured integration refs directly. One authorized runner owns validation and deployment; recovery and destructive actions require their stated approval.",
 )
@@ -44,10 +44,12 @@ Purpose: Serialize committed local task branches through one merge/test/push/ver
 ## Safety boundary
 
 - A task agent enqueues every named finished branch, then stops. "Queue for validation" authorizes enqueue only; only an explicit request to run validation or the complete end-to-end workflow authorizes `validate`.
+- Another runner's wait or validation action does not prevent a task agent from submitting its clean branch. Enqueue checks submission preconditions; task agents do not run the runner's next action.
 - Only a separately authorized runner uses `deploy` or a daemon.
 - Deployment requires either confirmation of the human-readable exact plan or prior bounded unattended approval. Agents never select train IDs or supply plan hashes; structured evidence may include identifiers for inspection.
 - Unattended approval is bound to the exact destination and execution policy. Any change blocks before push.
 - Recovery and destructive cleanup require their stated approval. Follow `status.next_action`; never rewrite permanent deploy audit refs.
+- After fixing a blocked/failed job, use the `retry_command` from `inspect` with its clean committed owning branch. The tool determines whether approval can be retained; read `status` after retry. A deployed job's verification warning is not a failed submission to retry.
 
 ## Stable machine contract
 

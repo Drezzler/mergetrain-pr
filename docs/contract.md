@@ -1,5 +1,13 @@
 # Machine contract and compatibility policy
 
+Ordered-processing addition: contract 5 adds integer `queue_order` to job
+objects and compact job summaries. In `queue.processing: ordered`, retry
+attempts retain the original submission position while receiving fresh job IDs
+and pinned commits. Default batch retries keep their previous append behavior.
+Consumers may ignore this additive field; neither job ID semantics nor the five
+MCP tool names/inputs change. See [queue policy](config.md#queue) and the
+[schema-16 upgrade](upgrading.md#ordered-processing-and-queue-schema-16).
+
 mergetrain is designed for coding agents and scripts that read state instead of
 guessing. The checked-in contract fingerprints fail CI whenever a JSON surface
 changes without an explicit compatibility decision.
@@ -12,7 +20,7 @@ changes without an explicit compatibility decision.
 | `contract_version` | every JSON payload and JSONL `stream_start` | machine output semantics |
 | Config `version` | `.mergetrain.yaml` | committed configuration schema |
 
-mergetrain 3.5.0 uses machine contract **5** and config schema **2**. They move
+mergetrain 3.6.0 uses machine contract **5** and config schema **2**. They move
 only when their own boundary changes; neither is tied to the SQLite schema.
 
 Tooling that reads this JSON should check `contract_version` and treat a value
@@ -58,6 +66,8 @@ All failures use one shape:
 
 `next_action` may accompany the envelope. Branch on `error.code`, not message
 text.
+Duplicate-branch errors also carry `existing_job_id` when the existing job is
+known, so consumers can inspect it without searching recent history.
 
 Malformed command arguments requested with `--json` use this envelope with
 `error.code: "queue_error"` and exit 2, before any command is dispatched.
@@ -84,6 +94,11 @@ Without machine output, argument errors retain the ordinary usage message.
 
 Unknown and failed post-push verification remain in Attention until explicitly
 resolved; a later deployment does not supersede unresolved health evidence.
+The runner's next action prioritizes eligible queued or Ready work over ordinary
+failed submissions and historical verification warnings. This does not clear
+Attention or bypass runner locks, ordered pre-push failures, or reconciliation.
+Task agents may still enqueue clean work while another runner waits or checks;
+the runner's next action does not authorize a task agent to run it.
 Work still claimed by a runner that is gone, whether its lock row was removed
 or its owner is provably dead, is Attention rather than running: such rows
 carry `reason_code: stranded_claim`, and `next_action` is
@@ -102,6 +117,10 @@ database when none exists.
 Internal queue, push, verify, and recovery states remain available through
 `inspect` and diagnostics. Consumers should not reconstruct a competing state
 machine from those fields.
+For blocked/failed jobs without an unresolved push marker, `inspect` adds
+`retry_command`. Resolve the cause and commit branch changes before using it
+from the clean owning worktree, then return to status. This guidance grants no
+new validation, deployment, or recovery authority.
 
 Advanced structured views that serialize a job redact and bound its persisted
 `note` at 1,000 characters and publish `note_truncated`. Outcome and progress
@@ -262,10 +281,10 @@ safe next action.
 JSON payloads, advanced machine surfaces, the failure envelope, and every JSONL
 frame. It also compares the implemented error-code set with the table above.
 
-Coverage is currently 22 surfaces: `status_diagnose`, `status`, `enqueue`,
+Coverage is currently 24 surfaces: `status_diagnose`, `status`, `enqueue`,
 `validate`, `gc`, `reconcile`, `unlock`, `verify`, `dismiss`, `retry`, `cancel`,
 `hub_status`, `hub_status_summary`, `gc_applied`, `hub_add`, `hub_remove`,
-`init`, `deploy_preview`, `inspect`, `history`, `stats`, and
+`init`, `deploy_preview`, `inspect`, `inspect_failed`, `duplicate_enqueue`, `history`, `stats`, and
 `failure_envelope`, plus `_jsonl_frames`.
 
 Run results share one builder, so the validation fingerprint also protects the

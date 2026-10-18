@@ -91,29 +91,29 @@
           <article><span>03</span><h3>One approval, one push</h3><p>The runner pushes the approved plan atomically. It records evidence for interrupted Git push recovery.</p></article>
         </div>
         <div class="flow" aria-label="Workflow: agent branches, queue, combined gates, approval, atomic push">
-          <span>agent branches</span><b>→</b><span>ordered queue</span><b>→</b><span>combined gates</span><b>→</b><span>approval</span><b>→</b><span>atomic push</span>
+          <span>agent branches</span><b>→</b><span>local queue</span><b>→</b><span>combined gates</span><b>→</b><span>approval</span><b>→</b><span>atomic push</span>
         </div>
       </section>
 
       <section id="demo" class="section demo-band">
         <div class="shell">
-          <p class="eyebrow">24 seconds · no sound needed</p>
-          <h2>Agents keep building.<br>Work keeps moving.</h2>
-          <p class="demo-intro">Four agents stay in view. Within five seconds, A and B are being checked while E and F are being built. Each piece of work keeps its letter as the agents continue.</p>
+          <p class="eyebrow">Default batch mode · 14 seconds · no sound needed</p>
+          <h2>Passing work lands first.<br>Keep building during checks.</h2>
+          <p class="demo-intro">Work that needs a fix returns to its agent. Passing work can land while the repair continues. During checks, agents start their next task. The same four agents stay visible throughout this default batch loop.</p>
           <div class="demo-loop" data-demo-loop>
             <div class="demo-loop-media">
-              <img data-loop-poster src="./media/mergetrain-loop-poster.png?v=fcd79330a80d" width="960" height="800" alt="Four agents stay visible. A and B are checked while E and F are built. Applied work stays in the project.">
-              <video data-loop-src="./media/mergetrain-loop.mp4?v=ca7de1da52a7" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png?v=fcd79330a80d" width="960" height="800" aria-label="24-second silent summary of the recorded continuous workflow" aria-describedby="demo-summary">
+              <img data-loop-poster src="./media/mergetrain-loop-poster.png?v=56d261f82d43" width="960" height="800" alt="Default batch mode: passing work lands first. The same agents start their next task during checks.">
+              <video data-loop-src="./media/mergetrain-loop.mp4?v=1e2c3d91714f" hidden muted loop playsinline preload="none" poster="./media/mergetrain-loop-poster.png?v=56d261f82d43" width="960" height="800" aria-label="14-second batch loop: passing work lands first; agents keep building during checks" aria-describedby="demo-summary">
               </video>
             </div>
             <div class="demo-loop-controls">
               <button hidden type="button" data-loop-toggle data-play="Play loop" data-pause="Pause loop">Play loop</button>
-              <a href="./media/mergetrain-loop.gif?v=2509de92da92">View GIF</a>
-              <a href="./media/mergetrain-loop-poster.png?v=fcd79330a80d">Still image</a>
+              <a href="./media/mergetrain-loop.gif?v=3e62de9895b8">View GIF</a>
+              <a href="./media/mergetrain-loop-poster.png?v=56d261f82d43">Still image</a>
             </div>
             <p data-loop-status role="status" data-unavailable="Video unavailable. View the GIF instead."></p>
           </div>
-          <p class="demo-context" id="demo-summary">Illustrated from recorded local commands, scripted changes and approvals. Agent lanes represent roles; letters track work. Timing is condensed.</p>
+          <p class="demo-context" id="demo-summary">Illustrated from recorded local commands, scripted changes and approvals. Agent lanes represent roles; letters track work. Timing is condensed. Agents can keep building in both modes. In ordered mode, an unresolved earlier submission holds later landings. <a href="https://github.com/yongjip/mergetrain/blob/main/docs/best-practices.md#choose-batch-or-ordered">Compare the two modes.</a></p>
           <div class="demo-followup">
             <div>
               <h3>Try the basic demo</h3>

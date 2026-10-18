@@ -1,13 +1,98 @@
 # Changelog
 
-## Unreleased
+## 3.6.0 - 2026-10-18
 
-### Fixed
+### Upgrade notes
+
+- Machine contract **5** and config schema **2** are unchanged. Job JSON adds
+  `queue_order`, the stable submission position used by ordered processing.
+  The local queue schema upgrades from 15 to 16 without discarding jobs or
+  history. Finish existing runner work, stop old daemons, migrate with the new
+  CLI, and restart the same approved services before selecting ordered mode.
+  Older writers refuse schema 16. See [upgrading](docs/upgrading.md).
+- Default `batch` processing and its approval identity stay unchanged.
+  Selecting `queue.processing: ordered` changes execution policy; drain Ready
+  trains first and renew unattended approval explicitly. A release upgrade
+  alone does not renew or remove existing approval.
+- Refresh Codex, Claude Code, and agy plugins and start fresh MCP sessions.
+  Their launchers now pin **3.6.0**. Updating the global CLI does not replace
+  a loaded MCP server or daemon; follow the idle-boundary upgrade sequence.
+
+### Changes
+
+- Keep agent handoff at status, enqueue, and stop. Guide authorized runners to
+  eligible work without hiding batch survivors behind another failed job.
+  Preserve all Attention evidence, approval checks, and reconciliation blocks.
+- Complete an ordered position at its successful Git landing. Keep post-push
+  verification warnings visible while allowing corrective submissions to land.
+  Invalidate earlier unreleased ordered approvals; batch approvals are unchanged.
+- Preserve selected configuration and queue paths in MCP terminal fallback.
+  Add the existing job ID to duplicate errors and a conditional `retry_command`
+  to inspect output. No commands, options, modes, or MCP tools are added.
+- Make the cancellation safety test wait for its gate process to start,
+  instead of assuming Git setup finishes within 0.5 seconds on busy runners.
+- Add optional `queue.processing: ordered`: accept parallel branch handoffs,
+  process one submission at a time, and hold later work until the earliest
+  unfinished submission is landed or explicitly canceled.
+  `retry` preserves that submission's position across attempts and restarts.
+- Let the existing advanced `retry JOB --branch REPAIR` operation atomically
+  replace a failed/blocked job from a clean repair worktree without modifying
+  its original branch. A changed branch receives no inherited automatic
+  approval. Explicit `retry --auto` may renew bounded authorization for the
+  current destination and policy; ordinary agents still enqueue and stop.
+- Replay the pinned Darklang external consumer against native contract 5,
+  retain a reviewed contract-4/5 migration patch, refuse future contract 6,
+  and verify repair, restart, individual atomic landings, manual confirmation,
+  and default rechecks against disposable Git remotes.
+
+### Documentation
+
+- Simplify the 14-second default batch animation around two messages: passing
+  work lands first, and agents keep building during checks. Keep both visible
+  throughout playback, emphasize passing work through repair, label new work
+  in the same agent lanes,
+  group applied work by batch, and give the still poster both messages.
+  Keep the recorded repairs, both overlaps, approvals, default rechecks and
+  replay continuity. Align README and landing copy with the two messages and
+  distinguish the landing policy from development shared by both modes.
+- Recommend default `batch` processing for independent parallel agent work.
+  Compare it with `ordered` using web-feature and compiler-optimization
+  examples, including failure isolation, retry position, continued agent
+  development, and per-submission checks. Document ordered availability from
+  3.6.0 and link its configuration and upgrade requirements.
+
+## 3.5.1 - 2026-10-15
+
+### Upgrade notes
+
+- Machine contract **5** and config schema **2** are unchanged. No consumer
+  adaptation is required when upgrading from 3.5.0.
+- Refresh Codex, Claude Code, and agy plugins and start fresh MCP sessions.
+  The launchers pin **3.5.1** and select Python 3.10 or newer explicitly;
+  an exported `UV_PYTHON` alone is insufficient for the tested Codex client.
+  Prepare the pinned runtime before startup, and retain Agy's explicit MCP
+  registration and individual approvals where required. See the
+  [Orca agent guide](docs/orca-agents.md).
+- Malformed `--json` and `--jsonl` command arguments now produce the existing
+  versioned failure envelope or error stream instead of only human usage.
+  Exit code **2** and refusal before command dispatch remain unchanged.
+- At an idle execution boundary, restart previously authorized daemon and Hub
+  processes after installing 3.5.1. Preserve queued work and destination/policy
+  approval; installation does not replace loaded processes. Follow the
+  [upgrade procedure](docs/upgrading.md).
+
+### Changes
 
 - Select Python 3.10 or newer in the Codex, Claude, agy, and Registry MCP
   launchers. This prevents startup from choosing macOS Python 3.9 when a
-  client drops the shell's interpreter environment. Keep the released package
-  pin and the five-tool contract unchanged.
+  client drops the shell's interpreter environment. Keep exact package pins
+  and the five-tool contract.
+
+- Return the existing versioned failure envelope for malformed CLI arguments
+  when `--json` is requested. For `--jsonl`, emit a contract-bearing stream
+  header and an error end frame. Preserve exit 2, human usage output, and
+  refusal before dispatch; keep hidden commands out of discovery errors and
+  redact credentials in the new machine error path.
 
 ### Documentation
 
@@ -24,15 +109,6 @@
   Electron tests of initialization, shared queues, registration refusals,
   partial validation, and freshly pinned repair. Distinguish the existing CLI
   workflow from the draft Orca panel and state the local host test limits.
-### Fixes
-
-- Return the existing versioned failure envelope for malformed CLI arguments
-  when `--json` is requested. For `--jsonl`, emit a contract-bearing stream
-  header and an error end frame. Preserve exit 2, human usage output, and
-  refusal before dispatch; keep hidden commands out of discovery errors and
-  redact credentials in the new machine error path.
-
-### Documentation
 
 - Tell `init --write` users to add a meaningful project gate and land the setup
   files before creating task worktrees. Clarify that a service restart policy
@@ -65,7 +141,6 @@
   and approval, default recheck, atomic local-remote push, and verification.
 - Bring the demo forward in the README and embed a captioned video on the
   public page. Refresh the full CLI recording to use the current commands.
-
 
 ## 3.5.0 - 2026-10-11
 

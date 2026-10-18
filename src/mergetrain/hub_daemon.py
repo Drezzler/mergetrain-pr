@@ -182,6 +182,7 @@ def hub_sweep(
             owner = default_owner()
             outcome = daemon_tick(
                 db_path=str(config.state.db),
+                processing=config.queue.processing,
                 process_batch=factory(config, owner),
                 owner=owner,
                 lock_ttl_minutes=config.queue.lock_ttl_minutes,

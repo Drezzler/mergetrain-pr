@@ -769,6 +769,9 @@ removals require a major release and their own record here.
 
 ## Replace and strict-order review — 2026-10-02
 
+The ordered-processing review of 2026-10-15 below revisits this decision for
+the measured single-change workflow and atomic repair-branch replacement.
+
 ### Evidence
 
 An external adopter's public repository runs its own dispatcher and recovery
@@ -880,3 +883,81 @@ The discovery-metadata and landing-page checks must pass. After publication,
 repeat the category search and use the existing weekly traffic snapshots to
 check discovery. Text changes do not prove indexing, ranking, adoption, or
 better agent activation.
+
+## Ordered individual processing — 2026-10-15
+
+Evidence: the public `pbiggar/darklang-compiler` integration at commit
+`096c7d42d1ece1dd63e51077d53e0f701822e676` admits one ordinary job at a time
+and maintains its original arrival position through retries and repairs. Its
+`scripts/mergetrain_fifo.py` is approximately 500 lines. The workflow compares
+each landed compiler change with the preceding deployed performance baseline;
+an unrelated later change must not pass a failed head. Its contract-4-only
+consumers also demonstrate the cost of an untested upgrade boundary.
+
+Existing fit: limiting admission outside the native queue requires a second
+ledger, cancel/dismiss/re-enqueue transitions, and crash recovery. Enqueueing
+one job and waiting manually cannot accept continuously arriving finished work
+without that dispatcher. Native `retry` already pins a fresh commit and binds
+unattended approval to unchanged destination and execution policy.
+
+Decision cost: one optional existing-section setting, `queue.processing`, with
+`batch` (unchanged default) and `ordered`. Ordered processing claims at most
+the earliest unfinished submission; retry retains its position. The existing
+advanced retry operation gains optional `--branch` for a separate clean repair
+worktree and hidden `--auto` for explicit renewal of existing bounded deploy
+authority. A changed branch never inherits approval. This replaces the
+external enqueue/dismiss/replacement sequence atomically and preserves the
+original task checkout. No core verb, MCP tool, per-job processing choice,
+LIFO, reservation, dependency scheduler, or coding-agent repair is added.
+Generated starter configuration stays minimal.
+
+Safety: selection happens under the existing runner lease and claim transaction.
+Manual and unattended authority remain separate. Ordered processing cannot pass
+an unfinished or failed earlier submission. The 2026-10-16 correction below
+limits order to Git landings. Explicit dismissal or
+cancellation resolves that position; ambiguous pushes still require reconciliation.
+The processing policy participates in approval identity without changing default
+batch identity. Schema migration retains all history and makes older writers
+refuse the new schema. CLI/JSON contract 5 and config schema 2 remain compatible.
+
+Success and removal trigger: replay the external committed-branch handoff,
+failure, repair, retry, restart, and post-push verification workflow against a
+disposable Git remote. Compare the external contract-4 and reviewed contract-5
+consumer behavior. Ordered processing must eliminate the separate arrival ledger
+for ordinary work while keeping original branches and all existing safety checks.
+Do not broaden this policy if the replay still requires duplicated queue truth;
+benchmark exceptions and provider-specific repair remain adapter responsibilities.
+
+## Fixed agent procedure correction — 2026-10-16
+
+### Evidence and existing fit
+
+Disposable Git remotes reproduced ordered post-push verification failure
+blocking its corrective submission, batch status hiding a deployable survivor,
+and MCP terminal fallback selecting a different queue after losing config/DB
+arguments. A lost handoff response also required searching recent history to
+find the duplicate job. Status/inspect and the existing retry path fit these
+cases; no new command, option, mode, role, or repair planner is needed.
+
+### Decision and safety
+
+Order now ends at a successful Git landing. Verification warnings remain in
+Attention and history; an uncertain push, failed pre-push submission, unapproved
+ordered head, or active runner still prevents conflicting progress. The earlier
+unreleased ordered approval identity is invalidated rather than silently
+relaxed. Published batch approval hashes and default pre-push checks stay intact.
+Task agents read status, enqueue clean work, and stop; authorized runners follow
+next_action. Existing JSON adds only a duplicate's existing_job_id and a
+conditional inspect retry_command. These carry no approval. Recovery guidance
+returns to status, and the engine determines approval retention. The six-command,
+five-MCP-tool, five-rule, config, and state baselines above are unchanged.
+Empty project gates retain the existing warning and setup guidance.
+
+### Success measure
+
+A failed or interrupted post-push verification must allow a separately approved
+ordered repair to land while retaining the original warning. Batch survivors
+must be reachable through status without repairing unrelated work first.
+Old ordered approvals, uncertain pushes, changed plans, and manual retries must
+remain blocked at their existing boundaries. Remove any added guidance that
+requires another operator choice instead of using the existing procedure.

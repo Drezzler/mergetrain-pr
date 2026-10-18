@@ -12,8 +12,10 @@ worktrees.
    `mergetrain enqueue --task <task> --branch <branch>` and let mergetrain
    capture the exact SHAs. Stop after the last enqueue; asking to queue for
    validation does not authorize running validation.
-4. Read `mergetrain status --json` first and follow its structured
-   `next_action`. Use `status --diagnose` only for configuration, Git, runtime,
+4. Read `mergetrain status --json` first. Task agents submit finished branches
+   and stop; an authorized runner follows `next_action` for validation,
+   deployment, and recovery. A runner's wait action does not block submission.
+   Use `status --diagnose` only for configuration, Git, runtime,
    or lock detail, and `inspect <job-id>` only for job evidence.
 5. Use `--auto` only after explicit unattended-deploy approval. A bounded
    instruction to QA, deploy, verify, and finish end-to-end grants that approval
