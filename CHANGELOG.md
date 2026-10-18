@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+### Maintenance
+
+- Update the pinned GitHub Actions for Node setup and artifact transfer.
+  Keep the demo workflow test focused on an immutable action SHA rather
+  than its patch-version comment.
+
 ## 3.6.0 - 2026-10-18
 
 ### Upgrade notes
