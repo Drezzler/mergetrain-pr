@@ -108,7 +108,9 @@ Replace the path with the control checkout on the execution host. Linked task
 worktrees share that repository's queue; enqueue resolves the named branch's
 live owning worktree. Give different repositories different server names and
 start a fresh session after changing the entry. This configuration is bound to
-one repository; tool calls do not accept a repository override.
+one repository by default. The unreleased [repository scope support](mcp.md#repository-scope)
+adds an optional per-call `repo`; the 3.6.0 pinned runtime above remains
+bound to its launch repository.
 
 Start `agy` from the task worktree's terminal. `/plugin` or `/plugins` opens
 its plugin manager. In the earlier plugin-only **agy 1.3.5** check, standalone
@@ -135,11 +137,12 @@ Git branch name. Report the job ID and pinned commit, then stop.
 Do not validate, deploy, or start a daemon.
 ```
 
-The MCP server is bound to its repository when it starts. The normal tool
-inputs do not accept a per-call `repo` override. Start the session from the
-intended worktree; when changing repositories, start a new session so the MCP
-server is bound to that repository. Linked worktrees of one repository share
-its control checkout's queue.
+Start the session from the intended worktree so the MCP server's default
+repository is correct. Linked worktrees share their control checkout's queue.
+The unreleased scope support also accepts an explicit `repo`; keep it on
+every call for the same task. Servers with explicit `--config` or `--db`
+remain bound to their original checkout. The pinned 3.6.0 runtime above does
+not include this new input yet; see [Repository scope](mcp.md#repository-scope).
 
 The five stable tools are `mergetrain_status`, `mergetrain_inspect`,
 `mergetrain_enqueue`, `mergetrain_validate`, and `mergetrain_deploy`. Enqueue

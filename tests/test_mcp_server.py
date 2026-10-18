@@ -705,6 +705,136 @@ class RepositoryScopeTests(unittest.TestCase):
         self.assertEqual(payload["error"]["code"], "unknown_scope")
 
 
+    @staticmethod
+    def _committed_checkout(root: Path, name: str) -> Path:
+        repo = make_configured_checkout(root, name)
+        for key, value in (("user.name", "Scope test"), ("user.email", "scope@example.invalid")):
+            subprocess.run(["git", "-C", str(repo), "config", key, value], check=True)
+        subprocess.run(["git", "-C", str(repo), "add", "."], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "-c", "commit.gpgsign=false", "commit", "-qm", "seed"],
+            check=True,
+        )
+        subprocess.run(["git", "-C", str(repo), "branch", "-m", f"agent-{name}"], check=True)
+        subprocess.run(
+            ["git", "-C", str(repo), "update-ref", "refs/remotes/origin/main", "HEAD"],
+            check=True,
+        )
+        return repo
+
+    def test_launch_overrides_refuse_other_repositories_before_any_cli_call(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bound = make_configured_checkout(root, "bound")
+            other = make_configured_checkout(root, "other")
+            unconfigured = root / "unconfigured"
+            subprocess.run(["git", "init", "-q", str(unconfigured)], check=True)
+            overrides = (
+                {"db": str(bound / ".mergetrain/queue.sqlite")},
+                {"db": ".mergetrain/queue.sqlite"},
+                {"config": str(bound / ".mergetrain.yaml")},
+                {"config": ".mergetrain.yaml"},
+            )
+            for override in overrides:
+                for target in (other, unconfigured):
+                    with self.subTest(override=override, target=target):
+                        tools = MergetrainTools(repo=bound, **override)
+                        with patch.object(MergetrainTools, "_run") as run:
+                            payloads = [
+                                asyncio.run(tools.status(repo=str(target))),
+                                asyncio.run(tools.inspect(1, repo=str(target))),
+                                asyncio.run(tools.inspect(1, detail="events", repo=str(target))),
+                                asyncio.run(tools.inspect(1, detail="logs", repo=str(target))),
+                                asyncio.run(tools.validate(repo=str(target))),
+                                asyncio.run(tools.enqueue("task", "agent/one", repo=str(target))),
+                            ]
+                            plan = asyncio.run(tools.prepare_deploy(FakeContext(), repo=str(target)))
+                            payloads.append(asyncio.run(tools.deploy(plan, None)))
+                        run.assert_not_called()
+                        for payload in payloads:
+                            self.assertEqual(payload["error"]["code"], "unknown_scope")
+                        self.assertFalse((target / ".mergetrain/queue.sqlite").exists())
+
+    def test_fixed_db_refusal_preserves_the_original_queue(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bound = self._committed_checkout(root, "bound")
+            other = self._committed_checkout(root, "other")
+            tools = MergetrainTools(repo=bound, db=str(bound / ".mergetrain/queue.sqlite"))
+            with current_checkout_cli():
+                original = asyncio.run(tools.enqueue("Bound task", "agent-bound"))
+                self.assertTrue(original["ok"], original)
+                refused = asyncio.run(tools.enqueue("Other task", "agent-other", repo=str(other)))
+                self.assertEqual(refused["error"]["code"], "unknown_scope")
+                state = asyncio.run(tools.status())
+            self.assertEqual([job["task"] for job in state["recent_jobs"]], ["Bound task"])
+            self.assertFalse((other / ".mergetrain/queue.sqlite").exists())
+
+    def test_bound_checkout_subdirectory_keeps_the_fixed_paths(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            bound = make_configured_checkout(Path(td), "bound")
+            nested = bound / "src"
+            nested.mkdir()
+            for override in ({"config": ".mergetrain.yaml"}, {"db": ".mergetrain/custom.sqlite"}):
+                with self.subTest(override=override):
+                    tools = MergetrainTools(repo=nested, **override)
+                    scope, refusal = tools._resolve_repo(str(nested))
+                    self.assertIsNone(refusal)
+                    self.assertEqual(scope, bound.resolve())
+                    argv = tools._argv(["status", "--json"], repo=scope)
+                    self.assertEqual(argv[argv.index("--repo") + 1], str(bound.resolve()))
+                    for flag, value in override.items():
+                        self.assertEqual(argv[argv.index("--" + flag) + 1], value)
+            self.assertEqual(tools._resolve_repo(str(bound / "missing"))[1]["error"]["code"], "unknown_scope")
+
+    def test_custom_launch_config_accepts_its_original_checkout_root(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            bound = make_configured_checkout(Path(td), "bound")
+            (bound / ".mergetrain.yaml").rename(bound / "custom.yaml")
+            tools = MergetrainTools(repo=bound, config="custom.yaml")
+            with current_checkout_cli():
+                state = asyncio.run(tools.status(repo=str(bound)))
+            self.assertTrue(state["ok"], state)
+            self.assertEqual(state["repo"], str(bound.resolve()))
+
+    def test_unpinned_calls_keep_independent_queues_and_the_bound_default(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bound = self._committed_checkout(root, "bound")
+            other = self._committed_checkout(root, "other")
+            tools = MergetrainTools(repo=bound)
+            with current_checkout_cli():
+                first = asyncio.run(tools.enqueue("Bound task", "agent-bound"))
+                second = asyncio.run(tools.enqueue("Other task", "agent-other", repo=str(other)))
+                self.assertTrue(first["ok"], first)
+                self.assertTrue(second["ok"], second)
+                bound_state = asyncio.run(tools.status())
+                other_state = asyncio.run(tools.status(repo=str(other)))
+            self.assertEqual(bound_state["repo"], str(bound.resolve()))
+            self.assertEqual(other_state["repo"], str(other.resolve()))
+            self.assertEqual([job["task"] for job in bound_state["recent_jobs"]], ["Bound task"])
+            self.assertEqual([job["task"] for job in other_state["recent_jobs"]], ["Other task"])
+
+    def test_linked_worktree_paths_describe_checkouts_with_the_same_queue(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            bound = self._committed_checkout(root, "bound")
+            linked = root / "linked"
+            subprocess.run(
+                ["git", "-C", str(bound), "worktree", "add", "-q", "-b", "agent-linked", str(linked)],
+                check=True,
+            )
+            tools = MergetrainTools(repo=bound)
+            with current_checkout_cli():
+                queued = asyncio.run(tools.enqueue("Shared task", "agent-bound"))
+                self.assertTrue(queued["ok"], queued)
+                bound_state = asyncio.run(tools.status())
+                linked_state = asyncio.run(tools.status(repo=str(linked)))
+            self.assertEqual(bound_state["repo"], str(bound.resolve()))
+            self.assertEqual(linked_state["repo"], str(linked.resolve()))
+            self.assertEqual(bound_state["recent_jobs"], linked_state["recent_jobs"])
+            self.assertFalse((linked / ".mergetrain/queue.sqlite").exists())
+
 class ProcessLifecycleTests(unittest.TestCase):
     # Every program these tests start exits on its own after about a minute,
     # so no Windows cleanup has to kill by process ID: Windows soon reuses the

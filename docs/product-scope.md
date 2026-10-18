@@ -972,3 +972,10 @@ gain one optional `repo` input, refused as `unknown_scope` unless the path is a
 checkout configured by `mergetrain init`, and `status --json` reports its
 resolved `repo` root additively. No new command, tool, or authority; the
 six-command/five-tool baselines are unchanged.
+
+Keep the optional scope constant across a task's calls. Explicit launch
+config/DB overrides lock the server to its original checkout, including
+when another configured checkout or an unconfigured directory is requested.
+Success means a refused cross-scope read, enqueue, validation, or deploy
+never starts a CLI or changes either queue; ordinary independent queues and
+shared linked-worktree queues still work.

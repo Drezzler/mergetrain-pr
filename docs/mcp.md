@@ -36,11 +36,20 @@ path that is not a checkout already configured by `mergetrain init` is refused
 with `unknown_scope` before a CLI runs — never silently answered from the bound
 repository.
 
-Agent rule: verify the `repo` field in `mergetrain_status` output before
-trusting queue state. `health: "unconfigured"` or `"degraded"`, or a repo that
-does not match the project being worked on, means wrong scope — not an empty
-queue — so never act on init advice from a mismatched scope. Outside the server,
-use `mergetrain --repo <root> ...` for a different checkout.
+A server launched with `--config` or `--db` stays bound to that checkout.
+A different checkout is refused before any CLI runs; the server never
+combines another repository with its original settings or queue.
+Existing subdirectories of a checkout with the standard `.mergetrain.yaml`
+resolve to that checkout root. With a custom config, pass the checkout root.
+
+Keep the same `repo` value on every call for a task that uses an explicit
+scope. Omitting it returns to the server's launch repository; a status call
+does not change later calls. Verify the reported checkout and read `health`,
+`state`, and `next_action` together. Linked worktrees report different
+checkout paths while sharing their control checkout's configuration and queue.
+`degraded` can mean a missing remote or integration ref in the correct
+repository. Follow the reported action; do not infer wrong scope or run init
+from queue counts alone. Outside the server, use `mergetrain --repo <root> ...`.
 
 ## Deploy confirmation
 

@@ -39,7 +39,7 @@ from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Annotated, Any, Literal
 
-from .config import config_file_path
+from .config import config_file_path, configured_checkout
 from .contract import CONTRACT_VERSION
 from .errors import escape_controls, redact_secrets
 from .windows_job import CREATE_SUSPENDED, WindowsJob
@@ -57,7 +57,8 @@ except ImportError:  # pragma: no cover - depends on whether the extra is presen
 _REPO_PARAM_DESCRIPTION = (
     "Filesystem path of the mergetrain project root to operate on. Defaults to "
     "the repository this server was launched in. Must be a checkout already "
-    "configured by `mergetrain init`; any other path is refused."
+    "configured by `mergetrain init`; any other path is refused. A server "
+    "launched with --config or --db accepts only its original checkout."
 )
 
 try:
@@ -383,8 +384,23 @@ class MergetrainTools:
 
         if not repo:
             return None, None
-        resolved = Path(repo).expanduser().resolve()
-        if not resolved.is_dir() or not config_file_path(self.config, resolved).exists():
+        requested = Path(repo).expanduser().resolve()
+        is_directory = requested.is_dir()
+        resolved = configured_checkout(requested) if is_directory else requested
+        # Explicit launch overrides belong to the original checkout. Keeping
+        # them while switching --repo can read or mutate a different queue.
+        if (
+            is_directory
+            and (self.config or self.db)
+            and resolved != configured_checkout(self.repo)
+        ):
+            return None, _error(
+                "unknown_scope",
+                "this server was launched with --config or --db for "
+                f"'{configured_checkout(self.repo)}'; use that checkout or "
+                "a server launched for the requested repository",
+            )
+        if not is_directory or not config_file_path(self.config, resolved).is_file():
             return None, _error(
                 "unknown_scope",
                 f"'{resolved}' is not a checkout configured by 'mergetrain init'; "
@@ -513,9 +529,9 @@ class MergetrainTools:
     async def status(self, limit: int = 20, repo: _RepoPath = "") -> dict[str, Any]:
         """Current queue state, action-required work, and the exact next action.
 
-        The payload's ``repo`` field names the checkout that answered; treat a
-        mismatch with the project being worked on as wrong scope, not as an
-        empty queue.
+        The payload's ``repo`` field names the checkout that answered. Linked
+        worktrees may share its queue; read health and next_action before
+        treating the state as ready for handoff.
         """
 
         scope, refusal = self._resolve_repo(repo)
@@ -904,10 +920,11 @@ def build_server(repo: Path, *, config: str | None = None, db: str | None = None
             "Every tool also accepts an optional repo argument naming the "
             "mergetrain project root to operate on, which must be a checkout "
             "already configured by mergetrain init. Before trusting queue state, "
-            "check that the repo field in mergetrain_status output matches the "
-            "project being worked on: health \"unconfigured\" or a repo mismatch "
-            "means wrong scope, not an empty queue; fall back to the CLI with "
-            "--repo."
+            "verify the reported repo and read health, state, and next_action "
+            "together. Linked worktrees can name different checkouts while "
+            "sharing one queue. If repo is supplied, use the same value for "
+            "every call in that task. A server launched with --config or --db "
+            "stays bound to its original checkout."
         ),
     )
 

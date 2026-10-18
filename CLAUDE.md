@@ -18,6 +18,7 @@ Purpose: Serialize committed local task branches through one merge/test/push/ver
 
 - The v3 core commands are `init`, `status`, `enqueue`, `validate`, `deploy`, and `inspect`.
 - Start with `mergetrain status --json`. Use `mergetrain status --diagnose --json` only for configuration, Git, runtime, or lock detail, and `mergetrain inspect JOB_ID --json` for job evidence. `doctor` is removed, not an alias for `status --diagnose`.
+- MCP calls default to the launch repository. If a task uses an explicit `repo`, keep that same value on every call; a status read does not change later scope.
 - Confirm uncertain syntax with the installed `mergetrain --version` and command-specific `--help` only when command execution is permitted. Otherwise use this reference and identify missing details; do not invent commands or copy older syntax from unversioned web results. Inspection and `next_action` do not authorize recovery or deployment.
 
 ### Rules

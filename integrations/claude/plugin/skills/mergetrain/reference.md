@@ -32,6 +32,7 @@
 | `cli_output_unreadable` | The CLI did not return a JSON object; do not guess the outcome. |
 | `log_unavailable` | The requested raw log could not be read. |
 | `invalid_inspect_detail` | Detail must be summary, events, or logs. |
+| `unknown_scope` | The requested checkout is unconfigured or differs from a server bound by explicit config/DB paths; no CLI ran. |
 | `confirmation_required` | The client cannot render the human confirmation dialog; use the returned ordinary deploy command. |
 | `deploy_not_confirmed` | The human did not complete the deploy confirmation; nothing was pushed. |
 | `deploy_plan_unavailable` | CLI preview did not provide the plan identity, so confirmation was not attempted. |
