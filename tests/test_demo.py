@@ -50,9 +50,10 @@ class DemoAssetTests(unittest.TestCase):
         # The tape names JetBrains Mono; a fallback face would be silent.
         self.assertIn("fonts-jetbrains-mono", workflow)
         self.assertIn("vhs docs/demo.tape", workflow)
+        # Keep the immutable SHA requirement independent of the version comment.
         self.assertRegex(
             workflow,
-            r"uses: actions/upload-artifact@[0-9a-f]{40}\s+# v7\.0\.1",
+            r"uses: actions/upload-artifact@[0-9a-f]{40}(?:\s|$)",
         )
 
     def test_readme_embeds_the_generated_gif(self) -> None:
