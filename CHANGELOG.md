@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Changes
+
+- Let the five existing MCP tools select a configured checkout per call and
+  report the answering checkout in status. Keep explicit launch config/DB
+  paths bound to the original checkout, refusing other scopes before any
+  CLI runs. Preserve independent queues, linked-worktree sharing, and the
+  existing human-confirmed deployment plan.
+- Keep task scope consistent in the agent instructions, distinguish
+  checkout paths from shared queues, and follow the reported action when
+  the correct repository has degraded Git configuration.
+
 ### Maintenance
 
 - Update the pinned GitHub Actions for Node setup and artifact transfer.
